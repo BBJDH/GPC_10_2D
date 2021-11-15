@@ -30,20 +30,30 @@ LRESULT CALLBACK WndProc
     UINT   const uMessage,
     WPARAM const wParameter,
     LPARAM const lParameter
+
+//HWND hwnd; 윈도우 핸들 어떠한 윈도우에서 발생한 메세지인가
+//UINT message; 윈도우 메세지 WM_ ...를 담는다
+//WPARAM wParam; 특정 메세지에 따라 
+//LPARAM lParam; 해당 메세지에 대한 세부정보를 담는다
+//DWORD time; 발생시간
+//POINT pt;
 )
 {
-
     switch (uMessage)
     {
-    case WM_LBUTTONDOWN:
-    {
-        //TODO: 윈도우 상에서 마우스 왼쪽 버튼 클릭시
-            //"Window has been clicked!","Click!" 메세지 박스 이용 ㄱㄱ
-        MessageBox(hWindow, "Destroy", "Message box", MB_OK);
-    }
+        case WM_LBUTTONDOWN:
+        //case WM_LBUTTONUP:
+        {
+            //TODO: 윈도우 상에서 마우스 왼쪽 버튼 클릭시
+                //"Window has been clicked!","Click!" 메세지 박스 이용
+            MessageBox(hWindow, "Window has been clicked!", "Click!", MB_OK);
+            return 0;
+
+        }
         case WM_DESTROY:
         {
-            
+            MessageBox(hWindow, "Destroy", "Message box", MB_OK);
+
             PostQuitMessage(0); //남은 프로세스에서 사라짐
             return 0;
         }
@@ -67,7 +77,7 @@ int APIENTRY WinMain
     //_Outptr_ 
     //WinMain(nullptr, nullptr, nullptr, 0);
     //strcmp(lpCmdLine,"-w")
-    int i = 0;
+
     HWND hWindow = HWND(); //윈도우 창 생성
     {//형식에 대한 정의
         WNDCLASSEX Class = WNDCLASSEX();
@@ -75,13 +85,14 @@ int APIENTRY WinMain
         Class.cbSize        = sizeof(WNDCLASSEX);  //윈도우 사이즈 지정
         Class.style         = 0;  //부호없는 정수형 윈도우 클래스 스타일
         Class.lpfnWndProc   = WndProc;
-        Class.cbClsExtra    = 0;
-        Class.cbWndExtra    = 0;
+        Class.cbClsExtra    = 0; //클래스의 여분 메모리
+        Class.cbWndExtra    = 0; //윈도우의 여분 메모리
         Class.hInstance     =hInstance; //인스턴스 핸들 (어느 인스턴스 소속인가)
-        Class.hIcon         = LoadIcon(hInstance, IDI_APPLICATION); 
+        Class.hIcon         = LoadIcon(hInstance, IDI_APPLICATION);  //아이콘 모양 뭐쓸래
         //일반적인 어플리케이션 아이콘 사용
-        Class.hCursor       = LoadCursor(hInstance, IDC_ARROW); 
+        Class.hCursor       = LoadCursor(hInstance, IDC_ARROW); //마우스 모양 뭐쓸래
         Class.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+        //배경 브러쉬 핸들
         Class.lpszMenuName  = nullptr;
         //sz => string terminated by zero =>기본 캐릭터배열 문자열 끝이 널
         Class.lpszClassName = "Window";
@@ -95,10 +106,10 @@ int APIENTRY WinMain
         CREATESTRUCT Window = CREATESTRUCT();
         //CREATESTUCT 특수목적으로 생성
         Window.dwExStyle        = 0;//WS_EX_TOPMOST;//항상 위에
-        Window.lpszClass        ="Window";
-        Window.lpszName         ="Game";
+        Window.lpszClass        ="Window";  //String terminated by Zero
+        Window.lpszName         ="Game";    //-> null로 끝나는 문자열
         Window.style            =WS_OVERLAPPEDWINDOW; //뒤에 윈도우 붙어야함
-
+                                                        //안하면 민무늬 토기 나옴
         Window.x                = 0;
         Window.y                = 0;
         Window.cx               = 500;
@@ -108,7 +119,7 @@ int APIENTRY WinMain
         Window.hInstance        = hInstance;
         Window.lpCreateParams   = nullptr;
 
-        hWindow = CreateWindowEx
+        hWindow = CreateWindowEx  //WndProc 포인터 지정 없으면 여기서 오류!
         (
             Window.dwExStyle,
             Window.lpszClass,
@@ -132,6 +143,7 @@ int APIENTRY WinMain
 
 
         //메세지 큐에서 getmessage로 받아온다
+        //WM_QUIT 은 getmessage가 false를 반환 (반복문 탈출)
         while (GetMessage(&Message, HWND(), WM_NULL, WM_NULL) == true) //몇번 메세지부터 몇번 메세지 까지
             DispatchMessage(&Message); //보내다, 파견하다 =>메세지 프로시저
         //우리가 작성한 프로시저로!
