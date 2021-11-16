@@ -22,14 +22,16 @@ _In_opt_ : 포인터 형식의 인자에 대해 nullptr를 허용함.
 //winapi -> __stdcall
 
 /*Register -> create -> show -> run -> close -> destroy -> unregister */
-#pragma warning(push,0)
+//unregister os가 클래스 찾아서 알아서 정리
+//#pragma warning(push,0) //모든 경고를 끄는 전처리기
 
 LRESULT CALLBACK WndProc
 (
     HWND   const hWindow,
     UINT   const uMessage,
-    WPARAM const wParameter,
-    LPARAM const lParameter
+    WPARAM const wParameter,   //word 파라메터 ->
+    LPARAM const lParameter    //long 파라메터 -> 용량을 늘리고 데이터를 압축해서 전달
+                                //메세지의 세부 정보를 전달
 
 //HWND hwnd; 윈도우 핸들 어떠한 윈도우에서 발생한 메세지인가
 //UINT message; 윈도우 메세지 WM_ ...를 담는다
@@ -41,20 +43,36 @@ LRESULT CALLBACK WndProc
 {
     switch (uMessage)
     {
+        //case WM_CREATE: //생성자
+        //{
+        //    CREATESTRUCT const* const pcs = reinterpret_cast<CREATESTRUCT const*>(lParameter);
+        //    
+        //    //ex)
+        //    //pcs->hMenu;
+        //    return 0;
+        //}
+        //case WM_CLOSE:
+        //{
+        //    DestroyWindow(hWindow);
+        //    //WM_ClOSE 발생
+        //    return 0;
+        //}
         case WM_LBUTTONDOWN:
         //case WM_LBUTTONUP:
         {
-            //TODO: 윈도우 상에서 마우스 왼쪽 버튼 클릭시
+
                 //"Window has been clicked!","Click!" 메세지 박스 이용
             MessageBox(hWindow, "Window has been clicked!", "Click!", MB_OK);
             return 0;
 
         }
-        case WM_DESTROY:
+        case WM_DESTROY: //소멸자 개념
         {
-            MessageBox(hWindow, "Destroy", "Message box", MB_OK);
+            MessageBox(hWindow, "Destroy", "Message box", MB_ICONWARNING | MB_OK);
 
             PostQuitMessage(0); //남은 프로세스에서 사라짐
+            //WM_QUIT 메세지 발생
+            
             return 0;
         }
         default:
@@ -87,7 +105,7 @@ int APIENTRY WinMain
         Class.lpfnWndProc   = WndProc;
         Class.cbClsExtra    = 0; //클래스의 여분 메모리
         Class.cbWndExtra    = 0; //윈도우의 여분 메모리
-        Class.hInstance     =hInstance; //인스턴스 핸들 (어느 인스턴스 소속인가)
+        Class.hInstance     = hInstance; //인스턴스 핸들 (어느 인스턴스 소속인가)
         Class.hIcon         = LoadIcon(hInstance, IDI_APPLICATION);  //아이콘 모양 뭐쓸래
         //일반적인 어플리케이션 아이콘 사용
         Class.hCursor       = LoadCursor(hInstance, IDC_ARROW); //마우스 모양 뭐쓸래
@@ -105,11 +123,21 @@ int APIENTRY WinMain
     { //생성자를 통한 인스턴스 생성
         CREATESTRUCT Window = CREATESTRUCT();
         //CREATESTUCT 특수목적으로 생성
+        //함수 인자전달시 순서가 뒤바뀌므로 역순으로 구성되어있다
         Window.dwExStyle        = 0;//WS_EX_TOPMOST;//항상 위에
-        Window.lpszClass        ="Window";  //String terminated by Zero
-        Window.lpszName         ="Game";    //-> null로 끝나는 문자열
-        Window.style            =WS_OVERLAPPEDWINDOW; //뒤에 윈도우 붙어야함
-                                                        //안하면 민무늬 토기 나옴
+        Window.lpszClass        = "Window";  //String terminated by Zero
+        Window.lpszName         = "Game";    //-> null로 끝나는 문자열
+        Window.style            = WS_OVERLAPPEDWINDOW; //뒤에 윈도우 붙어야함
+        //안하면 민무늬 토기 나옴, 여러가지 내용이 하나로 묶여있다
+        /*(WS_OVERLAPPED     | \   0000 명목상
+           WS_CAPTION        | \   
+           WS_SYSMENU        | \
+           WS_THICKFRAME     | \   창경계에서 창 크기 조절 기능
+           WS_MINIMIZEBOX    | \   최소화 버튼
+           WS_MAXIMIZEBOX)*/      
+
+        //WS_POPUP //경계없는 창모드, 따로 빠져나가서 타이틀바를 만들어줄 필요가 있다
+        
         Window.x                = 0;
         Window.y                = 0;
         Window.cx               = 500;
@@ -118,9 +146,11 @@ int APIENTRY WinMain
         Window.hMenu            = HMENU();
         Window.hInstance        = hInstance;
         Window.lpCreateParams   = nullptr;
+        //추가 인자 전달용도로 사용
 
         hWindow = CreateWindowEx  //WndProc 포인터 지정 없으면 여기서 오류!
-        (
+        (//CreateWindowEx 논큐 메세지(메세지는 큐와 논큐 메세지로 나뉜다)
+            //create은 큐를 거치지 않고 넘어감
             Window.dwExStyle,
             Window.lpszClass,
             Window.lpszName,
@@ -144,11 +174,12 @@ int APIENTRY WinMain
 
         //메세지 큐에서 getmessage로 받아온다
         //WM_QUIT 은 getmessage가 false를 반환 (반복문 탈출)
-        while (GetMessage(&Message, HWND(), WM_NULL, WM_NULL) == true) //몇번 메세지부터 몇번 메세지 까지
+        while (GetMessage(&Message, HWND(), WM_NULL, WM_NULL)) //몇번 메세지부터 몇번 메세지 까지
             DispatchMessage(&Message); //보내다, 파견하다 =>메세지 프로시저
         //우리가 작성한 프로시저로!
-    
-        return Message.wParam;
+    //GetMessage(&Message, HWND(), WM_NULL, WM_NULL)
+        //특정 메세지는 어느 윈도우에서 어떤 윈도우 메세지까지 받을지
+        return static_cast<int>(Message.wParam);   //WM_QUIT 의 wParam 0 전달
     }
 
 }
