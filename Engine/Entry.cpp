@@ -25,6 +25,10 @@ _In_opt_ : 포인터 형식의 인자에 대해 nullptr를 허용함.
 //unregister os가 클래스 찾아서 알아서 정리
 //#pragma warning(push,0) //모든 경고를 끄는 전처리기
 
+
+//서로 다른 프로시져를 가질 경우
+//같은 프로시저 안에서 처리할때
+
 LRESULT CALLBACK WndProc
 (
     HWND   const hWindow,
@@ -138,16 +142,33 @@ int APIENTRY WinMain
 
         //WS_POPUP //경계없는 창모드, 따로 빠져나가서 타이틀바를 만들어줄 필요가 있다
         
-        Window.x                = 0;
-        Window.y                = 0;
-        Window.cx               = 500;
-        Window.cy               = 500;
+        Window.x                = 0; //CW_USEDEFAULT; 디폴트 창 설정
+        Window.y                = 0; //CW_USEDEFAULT;
+        Window.cx               = 640;
+        Window.cy               = 480;
         Window.hwndParent       = HWND(); //nullptr
         Window.hMenu            = HMENU();
         Window.hInstance        = hInstance;
         Window.lpCreateParams   = nullptr;
         //추가 인자 전달용도로 사용
 
+        {//윈도우 작업공간 맞추기
+            RECT Rectangle = RECT();
+
+            Rectangle.left   = 0;
+            Rectangle.top    = 0;      
+            Rectangle.right  = Window.cx;
+            Rectangle.bottom = Window.cy;
+
+            AdjustWindowRectEx(&Rectangle, Window.style, static_cast<bool>(Window.hMenu), Window.dwExStyle);
+            //cx cy에 대해서 윈도우 스타일에 맞게 재작성해준다
+            Window.cx = Rectangle.right - Rectangle.left;
+            Window.cy = Rectangle.bottom - Rectangle.top;
+
+            //화면 가운데로 세팅
+            Window.x = (GetSystemMetrics(SM_CXSCREEN) - Window.cx) / 2; //SM_CXSCREEN 화면해상도 크기를 받아온다 
+            Window.y = (GetSystemMetrics(SM_CYSCREEN) - Window.cy) / 2;
+        }
         hWindow = CreateWindowEx  //WndProc 포인터 지정 없으면 여기서 오류!
         (//CreateWindowEx 논큐 메세지(메세지는 큐와 논큐 메세지로 나뉜다)
             //create은 큐를 거치지 않고 넘어감
@@ -165,8 +186,8 @@ int APIENTRY WinMain
             Window.lpCreateParams
         ); //마지막 세미콜론을 다시 붙이면 기본문자 세팅으로..
 
-        ShowWindow(hWindow, nShowCmd); //showcmd -> SW_ ...
-    }
+        ShowWindow(hWindow, SW_RESTORE); //showcmd -> SW_ ...
+    }   //SW_RESTORE 창 옵션 지정 못하게 막기
 
     {
         MSG Message = MSG();
@@ -174,12 +195,33 @@ int APIENTRY WinMain
 
         //메세지 큐에서 getmessage로 받아온다
         //WM_QUIT 은 getmessage가 false를 반환 (반복문 탈출)
-        while (GetMessage(&Message, HWND(), WM_NULL, WM_NULL)) //몇번 메세지부터 몇번 메세지 까지
-            DispatchMessage(&Message); //보내다, 파견하다 =>메세지 프로시저
+        //while (GetMessage(&Message, HWND(), WM_NULL, WM_NULL)) //몇번 메세지부터 몇번 메세지 까지
+        //    DispatchMessage(&Message); //보내다, 파견하다 =>메세지 프로시저
         //우리가 작성한 프로시저로!
     //GetMessage(&Message, HWND(), WM_NULL, WM_NULL)
         //특정 메세지는 어느 윈도우에서 어떤 윈도우 메세지까지 받을지
-        return static_cast<int>(Message.wParam);   //WM_QUIT 의 wParam 0 전달
+        while (true)
+        {
+            HDC hDC = GetDC(hWindow);
+            
+            if (PeekMessage(&Message, HWND(), WM_NULL, WM_NULL, PM_REMOVE))
+            {
+                if(Message.message ==WM_QUIT)
+                    return static_cast<int>(Message.wParam);   //WM_QUIT 의 wParam 0 전달
+                TextOut(hDC, 20, 20, "True  ", 6);
+
+                DispatchMessage(&Message);
+            }   
+            else
+            {
+                //메세지가 없을때 (갱신 처리)
+                TextOut(hDC, 20,20, "False",5);
+                //디바이스 컨텍스트(gdi 출력옵션) 핸들
+                //그래픽스 디바이스 인터페이스에서 제공하는 텍스트 출력
+            }
+            ReleaseDC(hWindow, hDC);
+        }
+
     }
 
 }
