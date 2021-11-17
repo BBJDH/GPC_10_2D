@@ -105,7 +105,7 @@ int APIENTRY WinMain
         WNDCLASSEX Class = WNDCLASSEX();
 
         Class.cbSize        = sizeof(WNDCLASSEX);  //윈도우 사이즈 지정
-        Class.style         = 0;  //부호없는 정수형 윈도우 클래스 스타일
+        Class.style         = 0;  //부호없는 정수형, 윈도우 클래스 스타일
         Class.lpfnWndProc   = WndProc;
         Class.cbClsExtra    = 0; //클래스의 여분 메모리
         Class.cbWndExtra    = 0; //윈도우의 여분 메모리
@@ -154,6 +154,7 @@ int APIENTRY WinMain
 
         {//윈도우 작업공간 맞추기
             RECT Rectangle = RECT();
+            
 
             Rectangle.left   = 0;
             Rectangle.top    = 0;      
@@ -169,6 +170,7 @@ int APIENTRY WinMain
             Window.x = (GetSystemMetrics(SM_CXSCREEN) - Window.cx) / 2; //SM_CXSCREEN 화면해상도 크기를 받아온다 
             Window.y = (GetSystemMetrics(SM_CYSCREEN) - Window.cy) / 2;
         }
+        
         hWindow = CreateWindowEx  //WndProc 포인터 지정 없으면 여기서 오류!
         (//CreateWindowEx 논큐 메세지(메세지는 큐와 논큐 메세지로 나뉜다)
             //create은 큐를 거치지 않고 넘어감
