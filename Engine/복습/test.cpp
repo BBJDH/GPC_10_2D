@@ -3,12 +3,18 @@
 
 LRESULT CALLBACK WndProc
 (
-    HWND const hwindow,
-    UINT const uMessage,
+    HWND   const hwindow,
+    UINT   const uMessage,
     WPARAM const wParameter,
     LPARAM const lParameter
 )
 {
+    static bool lmouseclick = false;
+    static bool rmouseclick = false;
+    static int cursor_x     = 0;
+    static int cursor_y     = 0;
+
+
     switch (uMessage)
     {
     //case WM_PAINT:
@@ -23,31 +29,73 @@ LRESULT CALLBACK WndProc
         ExitProcess(0);
         return 0;
     }
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwindow,&ps);
+        TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), "WM_PAINT", 8);
+
+        EndPaint(hwindow,&ps);
+        return 0;
+    }
     case WM_MOUSEMOVE:
     {
+        if(lmouseclick)
+        {
+            HDC hdc = GetDC(hwindow);
+
+            //SetBkMode(hdc, TRANSPARENT);
+            //SetPixel(hdc, LOWORD(lParameter), HIWORD(lParameter),RGB(0,0,0));
+            //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), ".", 1);
+            MoveToEx(hdc, cursor_x,cursor_y, NULL);
+            cursor_x = LOWORD(lParameter);
+            cursor_y = HIWORD(lParameter);
+            LineTo(hdc, cursor_x, cursor_y );
+
+            ReleaseDC(hwindow, hdc);
+        }
+        else if(rmouseclick)
+        {
+            HPEN hpen = CreatePen(PS_SOLID,1,RGB(255,255,255));
+            HDC hdc = GetDC(hwindow);
+            SelectObject(hdc,hpen);
+            Ellipse(hdc, LOWORD(lParameter)-20, HIWORD(lParameter)-20, LOWORD(lParameter)+20, HIWORD(lParameter)+20);
+            DeleteObject(hpen);
+            ReleaseDC(hwindow, hdc);
+            
+        }
+        return 0;
 
     }
 
+    case WM_RBUTTONUP:
+    {
+        rmouseclick = false;
+        return 0;
+
+    }
     case WM_RBUTTONDOWN:
     {
+        rmouseclick = true;
+
         //SendMessage(hwindow, WM_DESTROY, 0, 0);
-        //HDC hdc = GetDC(hwindow);
-        //Ellipse(hdc, LOWORD(lParameter)-20, HIWORD(lParameter)-20, LOWORD(lParameter)+20, HIWORD(lParameter)+20);
-        //ReleaseDC(hwindow, hdc);
+        
         
         return 0;
     }
     case WM_LBUTTONDOWN:
     {
-        
+        lmouseclick = true;
+        cursor_x = LOWORD(lParameter);
+        cursor_y = HIWORD(lParameter);
+
         //HDC hdc = GetDC(hwindow);
-        //SetBkMode(hdc, TRANSPARENT);
-        //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), ".", 1);
-        //ReleaseDC(hwindow, hdc);
+        
         return 0;
     }
     case WM_LBUTTONUP:
     {
+        lmouseclick = false;
     }
     
     default:
@@ -55,14 +103,13 @@ LRESULT CALLBACK WndProc
     }
 }
 
-
 //메인 생성 -HWND 생성- WNDCLASSEX 생성
 int WINAPI WinMain
 (
-    _In_ HINSTANCE hInstance,
+    _In_     HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR lpCmdLine,
-    _In_ int nShowCmd
+    _In_     LPSTR     lpCmdLine,
+    _In_     int       nShowCmd
 )
 {
     HWND hprintwindow = HWND();
@@ -70,18 +117,18 @@ int WINAPI WinMain
     WNDCLASSEXA basic = WNDCLASSEX();
     
 #pragma region 창 기본설정
-    basic.cbSize = sizeof(WNDCLASSEX);
-    basic.style = 0;
-    basic.lpfnWndProc = WndProc;
-    basic.cbClsExtra = 0;
-    basic.cbWndExtra = 0;
-    basic.hInstance = hInstance;
-    basic.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
-    basic.hCursor = LoadCursor(NULL,IDC_HAND);
-    basic.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
-    basic.lpszMenuName = nullptr;
-    basic.lpszClassName = "Basic";
-    basic.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
+    basic.cbSize          = sizeof(WNDCLASSEX);
+    basic.style           = 0;
+    basic.lpfnWndProc     = WndProc;
+    basic.cbClsExtra      = 0;
+    basic.cbWndExtra      = 0;
+    basic.hInstance       = hInstance;
+    basic.hIcon           = LoadIcon(hInstance, IDI_APPLICATION);
+    basic.hCursor         = LoadCursor(NULL,IDC_HAND);
+    basic.hbrBackground   = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+    basic.lpszMenuName    = nullptr;
+    basic.lpszClassName   = "Basic";
+    basic.hIconSm         = LoadIcon(hInstance, IDI_APPLICATION);
 
     RegisterClassEx(&basic);
 #pragma endregion
@@ -141,7 +188,7 @@ int WINAPI WinMain
         }
         else
         {
-
+             
         }
 
     }
