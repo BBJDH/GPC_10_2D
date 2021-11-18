@@ -83,15 +83,6 @@ int APIENTRY WinMain
         Window.lpszClass = "Window";  //String terminated by Zero
         Window.lpszName = "Game";    //-> null로 끝나는 문자열
         Window.style = WS_OVERLAPPEDWINDOW; //뒤에 윈도우 붙어야함
-        //안하면 민무늬 토기 나옴, 여러가지 내용이 하나로 묶여있다
-        /*(WS_OVERLAPPED     | \   0000 명목상
-           WS_CAPTION        | \
-           WS_SYSMENU        | \
-           WS_THICKFRAME     | \   창경계에서 창 크기 조절 기능
-           WS_MINIMIZEBOX    | \   최소화 버튼
-           WS_MAXIMIZEBOX)*/
-
-           //WS_POPUP //경계없는 창모드, 따로 빠져나가서 타이틀바를 만들어줄 필요가 있다
 
         Window.x = 0; //CW_USEDEFAULT; 디폴트 창 설정
         Window.y = 0; //CW_USEDEFAULT;

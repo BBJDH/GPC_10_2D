@@ -23,24 +23,31 @@ LRESULT CALLBACK WndProc
         ExitProcess(0);
         return 0;
     }
+    case WM_MOUSEMOVE:
+    {
+
+    }
+
     case WM_RBUTTONDOWN:
     {
         //SendMessage(hwindow, WM_DESTROY, 0, 0);
-        HDC hdc = GetDC(hwindow);
-        Ellipse(hdc, LOWORD(lParameter)-20, HIWORD(lParameter)-20, LOWORD(lParameter)+20, HIWORD(lParameter)+20);
-        ReleaseDC(hwindow, hdc);
+        //HDC hdc = GetDC(hwindow);
+        //Ellipse(hdc, LOWORD(lParameter)-20, HIWORD(lParameter)-20, LOWORD(lParameter)+20, HIWORD(lParameter)+20);
+        //ReleaseDC(hwindow, hdc);
         
         return 0;
     }
     case WM_LBUTTONDOWN:
     {
-        HDC hdc = GetDC(hwindow);
-        //TextOut(hdc,)
-        SetBkMode(hdc, TRANSPARENT);
-        TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), "¡Ú", 2);
-        ReleaseDC(hwindow, hdc);
+        
+        //HDC hdc = GetDC(hwindow);
+        //SetBkMode(hdc, TRANSPARENT);
+        //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), ".", 1);
+        //ReleaseDC(hwindow, hdc);
         return 0;
-
+    }
+    case WM_LBUTTONUP:
+    {
     }
     
     default:
