@@ -36,6 +36,7 @@ LRESULT CALLBACK WndProc
     {
         HDC hdc = GetDC(hwindow);
         //TextOut(hdc,)
+        SetBkMode(hdc, TRANSPARENT);
         TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), "¡Ú", 2);
         ReleaseDC(hwindow, hdc);
         return 0;
@@ -137,8 +138,6 @@ int WINAPI WinMain
         }
 
     }
-
-
 
  
     return 0;
