@@ -152,14 +152,14 @@ int APIENTRY WinMain
                 logicalfont.lfOrientation =0; //글자에 대한 회전
                 logicalfont.lfWeight =FW_HEAVY; //두께
                 logicalfont.lfItalic = false;//기울임 사실상 bool 타입
-                logicalfont.lfUnderline = false;
-                logicalfont.lfStrikeOut = false;
+                logicalfont.lfUnderline = false;  //밑줄
+                logicalfont.lfStrikeOut = false;  //취소선
 
                 //폰트 탐색 facename(폰트네임)  찾으려는 상세값을 할당,
                 //사실 네임만 명확하게 명시해도 됨
-                logicalfont.lfCharSet = DEFAULT_CHARSET;
+                logicalfont.lfCharSet = DEFAULT_CHARSET;  //문자 집합들중 설정
                 logicalfont.lfOutPrecision = OUT_DEFAULT_PRECIS;
-                logicalfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+                logicalfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;  //정밀도
                 logicalfont.lfQuality = DEFAULT_QUALITY;
                 logicalfont.lfPitchAndFamily = DEFAULT_PITCH| FF_DONTCARE;
                 strcpy_s(logicalfont.lfFaceName, 32, "궁서");

@@ -9,11 +9,12 @@ LRESULT CALLBACK WndProc
     LPARAM const lParameter
 )
 {
-    static bool lmouseclick = false;
-    static bool rmouseclick = false;
-    static int cursor_x     = 0;
-    static int cursor_y     = 0;
-
+    static bool    lmouseclick  = false;
+    static bool    rmouseclick  = false;
+    static int     cursor_x     = 0;
+    static int     cursor_y     = 0;
+    static HBITMAP hbit;
+    
 
     switch (uMessage)
     {
@@ -24,6 +25,22 @@ LRESULT CALLBACK WndProc
     //    ReleaseDC(hwindow, hdc);
     //    return 0;
     //}
+    case WM_CREATE:
+    {
+        HDC hdc =GetDC(hwindow);
+        hbit = CreateCompatibleBitmap(hdc,320,480);
+        HDC hmemdc = CreateCompatibleDC(hdc);
+        HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc,hbit));
+
+        SelectObject(hmemdc,GetStockObject((WHITE_PEN)));
+        Rectangle(hmemdc,0,0,320,480);
+
+        SelectObject(hmemdc, oldbit);
+        DeleteDC(hmemdc);
+        ReleaseDC(hwindow,hdc);
+
+        return 0;
+    }
     case WM_DESTROY:
     {
         ExitProcess(0);
@@ -33,8 +50,14 @@ LRESULT CALLBACK WndProc
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwindow,&ps);
-        TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), "WM_PAINT", 8);
+        HDC hmemdc = CreateCompatibleDC(hdc);
+        HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc, hbit));
 
+        BitBlt(hdc,0,0,320,480,hmemdc,0,0,SRCCOPY);
+        //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), "WM_PAINT", 8);
+        SelectObject(hmemdc, oldbit);
+
+        DeleteDC(hmemdc);
         EndPaint(hwindow,&ps);
         return 0;
     }
@@ -44,14 +67,24 @@ LRESULT CALLBACK WndProc
         {
             HDC hdc = GetDC(hwindow);
 
+            hbit = CreateCompatibleBitmap(hdc, 320, 480);
+            HDC hmemdc = CreateCompatibleDC(hdc);
+            HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc, hbit));
+
+           // parameter 에서 앞자리랑 뒷자리가 각각 y좌표랑 x좌표의 정보를 가지고 있어요
            //SetBkMode(hdc, TRANSPARENT);
            //SetPixel(hdc, LOWORD(lParameter), HIWORD(lParameter),RGB(0,0,0));
            //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), ".", 1);
-            MoveToEx(hdc, cursor_x,cursor_y, NULL);
-            cursor_x = LOWORD(lParameter);
-            cursor_y = HIWORD(lParameter);
-            LineTo(hdc, cursor_x, cursor_y );
+            MoveToEx(hdc, cursor_x,cursor_y, NULL); //이전에 저장되어있던 좌표
+            MoveToEx(hmemdc, cursor_x, cursor_y, NULL);
 
+            cursor_x = LOWORD(lParameter);   //좌표 업데이트
+            cursor_y = HIWORD(lParameter);
+            LineTo(hdc, cursor_x, cursor_y );  //종단점
+            LineTo(hmemdc, cursor_x, cursor_y);
+
+            SelectObject(hmemdc, oldbit);
+            DeleteDC(hmemdc);
             ReleaseDC(hwindow, hdc);
         }
         else if(rmouseclick)
@@ -198,3 +231,21 @@ int WINAPI WinMain
 }
 #pragma endregion
 
+/*
+7   0111
+6   0110
+5   0101
+4   0100
+3   0011
+2   0010
+1   0001
+0   0000
+-1  1111
+-2  1110
+-3  1101
+-4  1100
+-5  1011
+-6  1010
+-7  1001
+-8  1000
+*/
