@@ -143,6 +143,7 @@ int APIENTRY WinMain
 
             HFONT font = HFONT();
             {
+                Addf
                 LOGFONT logicalfont = LOGFONT();   //폰트 설정 생성
 
                 logicalfont.lfHeight = 24;//font size

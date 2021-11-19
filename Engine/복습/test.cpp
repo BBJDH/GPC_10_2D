@@ -44,9 +44,9 @@ LRESULT CALLBACK WndProc
         {
             HDC hdc = GetDC(hwindow);
 
-            //SetBkMode(hdc, TRANSPARENT);
-            //SetPixel(hdc, LOWORD(lParameter), HIWORD(lParameter),RGB(0,0,0));
-            //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), ".", 1);
+           //SetBkMode(hdc, TRANSPARENT);
+           //SetPixel(hdc, LOWORD(lParameter), HIWORD(lParameter),RGB(0,0,0));
+           //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), ".", 1);
             MoveToEx(hdc, cursor_x,cursor_y, NULL);
             cursor_x = LOWORD(lParameter);
             cursor_y = HIWORD(lParameter);
