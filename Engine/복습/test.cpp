@@ -28,12 +28,12 @@ LRESULT CALLBACK WndProc
     case WM_CREATE:
     {
         HDC hdc =GetDC(hwindow);
-        hbit = CreateCompatibleBitmap(hdc,320,480);
+        hbit = CreateCompatibleBitmap(hdc,480,320);
         HDC hmemdc = CreateCompatibleDC(hdc);
         HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc,hbit));
 
         SelectObject(hmemdc,GetStockObject((WHITE_PEN)));
-        Rectangle(hmemdc,0,0,320,480);
+        Rectangle(hmemdc,0,0,480,320);
 
         SelectObject(hmemdc, oldbit);
         DeleteDC(hmemdc);
@@ -53,7 +53,7 @@ LRESULT CALLBACK WndProc
         HDC hmemdc = CreateCompatibleDC(hdc);
         HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc, hbit));
 
-        BitBlt(hdc,0,0,320,480,hmemdc,0,0,SRCCOPY);
+        BitBlt(hdc,0,0,480,320,hmemdc,0,0,SRCCOPY);
         //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), "WM_PAINT", 8);
         SelectObject(hmemdc, oldbit);
 
@@ -84,7 +84,7 @@ LRESULT CALLBACK WndProc
             LineTo(hmemdc, cursor_x, cursor_y);
             
             //가상 비트맵 테스트
-            //BitBlt(hdc, 0, 0, 320, 480, hmemdc, 0, 0, SRCCOPY);
+            //BitBlt(hdc, 0, 0, 480, 320, hmemdc, 0, 0, SRCCOPY);
 
             SelectObject(hmemdc, oldbit);
             DeleteDC(hmemdc);
@@ -94,9 +94,17 @@ LRESULT CALLBACK WndProc
         {
             HPEN hpen = CreatePen(PS_SOLID,1,RGB(255,255,255));
             HDC hdc = GetDC(hwindow);
+            HDC hmemdc = CreateCompatibleDC(hdc);
+            HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc, hbit));
             SelectObject(hdc,hpen);
+            SelectObject(hmemdc, hpen);
+
             Ellipse(hdc, LOWORD(lParameter)-20, HIWORD(lParameter)-20, LOWORD(lParameter)+20, HIWORD(lParameter)+20);
-            
+            Ellipse(hmemdc, LOWORD(lParameter) - 20, HIWORD(lParameter) - 20, LOWORD(lParameter) + 20, HIWORD(lParameter) + 20);
+
+
+            SelectObject(hmemdc, oldbit);
+            DeleteDC(hmemdc);
             DeleteObject(hpen);
             ReleaseDC(hwindow, hdc);
             
