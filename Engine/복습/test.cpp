@@ -53,7 +53,7 @@ LRESULT CALLBACK WndProc
         HDC hmemdc = CreateCompatibleDC(hdc);
         HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc, hbit));
 
-        BitBlt(hdc,0,0,320,480,hmemdc,0,0,SRCCOPY);
+        //BitBlt(hdc,0,0,320,480,hmemdc,0,0,SRCCOPY);
         //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), "WM_PAINT", 8);
         SelectObject(hmemdc, oldbit);
 
@@ -71,17 +71,18 @@ LRESULT CALLBACK WndProc
             HDC hmemdc = CreateCompatibleDC(hdc);
             HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc, hbit));
 
-           // parameter 에서 앞자리랑 뒷자리가 각각 y좌표랑 x좌표의 정보를 가지고 있어요
+           // parameter 에서 앞자리랑 뒷자리가 각각 y좌표랑 x좌표의 정보
            //SetBkMode(hdc, TRANSPARENT);
            //SetPixel(hdc, LOWORD(lParameter), HIWORD(lParameter),RGB(0,0,0));
            //TextOut(hdc, LOWORD(lParameter), HIWORD(lParameter), ".", 1);
-            MoveToEx(hdc, cursor_x,cursor_y, NULL); //이전에 저장되어있던 좌표
+           // MoveToEx(hdc, cursor_x,cursor_y, NULL); //이전에 저장되어있던 좌표
             MoveToEx(hmemdc, cursor_x, cursor_y, NULL);
 
             cursor_x = LOWORD(lParameter);   //좌표 업데이트
             cursor_y = HIWORD(lParameter);
-            LineTo(hdc, cursor_x, cursor_y );  //종단점
+          //  LineTo(hdc, cursor_x, cursor_y );  //종단점
             LineTo(hmemdc, cursor_x, cursor_y);
+            BitBlt(hdc, 0, 0, 320, 480, hmemdc, 0, 0, SRCCOPY);
 
             SelectObject(hmemdc, oldbit);
             DeleteDC(hmemdc);
@@ -93,6 +94,7 @@ LRESULT CALLBACK WndProc
             HDC hdc = GetDC(hwindow);
             SelectObject(hdc,hpen);
             Ellipse(hdc, LOWORD(lParameter)-20, HIWORD(lParameter)-20, LOWORD(lParameter)+20, HIWORD(lParameter)+20);
+            
             DeleteObject(hpen);
             ReleaseDC(hwindow, hdc);
             
