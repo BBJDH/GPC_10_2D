@@ -143,8 +143,7 @@ int APIENTRY WinMain
 
             HFONT font = HFONT();
             {
-                //백슬래시 후 문자 이스케이프시퀀스
-                //절대 경로 표기 -> 모두다 표시 상대경로 표기 -> 현재 위치로부터 상위 하위로
+                
                 AddFontResourceEx("./211119_외부폰트추가/kodia.ttf",FR_PRIVATE /*|FR_NOT_ENUM*/,0);
                 //외부 폰트 적용  //경로, 설치할지 플래그
                 //그냥 파일명이면 프로젝트폴더    현재경로(./)  상위폴더(../)
