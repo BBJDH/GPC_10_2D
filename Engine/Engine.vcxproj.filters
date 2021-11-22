@@ -18,13 +18,10 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="211122_send_postmsg_time\engine.cpp">
+    <ClCompile Include="닷지\소스.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211122_send_postmsg_time\소스.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="211122_send_postmsg_time\time.cpp">
+    <ClCompile Include="닷지\Engine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
