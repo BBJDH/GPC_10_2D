@@ -1,8 +1,14 @@
 #include<Windows.h>
+
 namespace Engine{
 	LRESULT CALLBACK Procedure
 	(HWND , UINT , WPARAM , LPARAM );
 }
+struct Pos
+{
+	int x;
+	int y;
+};
 
 int WINAPI WinMain
 (

@@ -3,19 +3,32 @@
 void update_player(HWND const& hwindow, HBITMAP const& hfighterbit,
 	BITMAP const& fighter, HBITMAP const& hmapbit, int player_x, int player_y);
 
+namespace Input
+{
+	void Procedure
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, POINT& player);
+}
+namespace Time
+{
+	void Procedure
+	(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);
+}
+
 namespace Engine
 {
+	namespace
+	{
+		POINT player_pos;
+		HBITMAP hmapbit, hfighterbit, hmissilebit;
+		BITMAP fighter, missile;
+	}
+
 	LRESULT CALLBACK Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter)
 	{
-
-		static int pos_x = 350;
-		static int pos_y = 300;
-		static HBITMAP hmapbit, hfighterbit,hmissilebit;
-		static BITMAP fighter, missile;
+		
 
 
-		update_player(hwindow,hfighterbit,fighter,hmapbit,pos_x,pos_y);
 
 		switch (umessage)
 		{
@@ -54,70 +67,36 @@ namespace Engine
 				));
 				GetObject(hmissilebit, sizeof(BITMAP), &missile);
 
+				player_pos.x =350;
+				player_pos.y =300;
 
-				//BitBlt(hdc,0,0,800,600,hmemdc,0,0,SRCCOPY);
-
-				//SelectObject(hdc,oldbit);
-				//DeleteDC(hmemdc);
 				ReleaseDC(hwindow,hdc);
 				return 0;
 			}
 			case WM_APP:
 			{
-				PAINTSTRUCT ps;
-				HDC hdc = BeginPaint(hwindow,&ps);
-				HDC hmemdc = CreateCompatibleDC(hdc);
-
-				HBITMAP oldbit = 
-					static_cast<HBITMAP>(SelectObject(hmemdc,hmapbit));
-				BitBlt(hdc,0,0,800,600,hmemdc,0,0,SRCCOPY);
-
-				SelectObject(hmemdc, hfighterbit);
-				//BitBlt(hdc, pos_x, pos_y, 50, 50, hmemdc, 0, 0, SRCCOPY); //≈ı∏Ì»≠æ»µ 
-				TransparentBlt(hdc,pos_x,pos_y,fighter.bmWidth,fighter.bmHeight,hmemdc,0,0, fighter.bmWidth, fighter.bmHeight,RGB(255,255,255));
-				
-				//SelectObject(hmemdc, hmissilebit);
-				//TransparentBlt(hdc, 150, 150, missile.bmWidth, missile.bmHeight, hmemdc, 0, 0, missile.bmWidth, missile.bmHeight, RGB(255, 255, 255));
-
-
-				SelectObject(hmemdc,oldbit);
-
-				DeleteDC(hmemdc);
-				EndPaint(hwindow,&ps);
+				update_player(hwindow, hfighterbit, fighter, hmapbit, player_pos.x, player_pos.y);
+				Time::Procedure(hwindow, umessage, wparameter, lparameter);
 
 				return 0;
 			}
-			case WM_KEYDOWN:
+			case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
+			case WM_SYSKEYDOWN:   case WM_LBUTTONDOWN: case WM_LBUTTONUP:
+			case WM_SYSKEYUP:     case WM_RBUTTONDOWN: case WM_RBUTTONUP:
+			case WM_KEYDOWN:      case WM_MBUTTONDOWN: case WM_MBUTTONUP:
+			case WM_KEYUP:        case WM_XBUTTONDOWN: case WM_XBUTTONUP:
 			{
-				switch (wparameter)
-				{
-					case VK_LEFT:
-					{
-						pos_x -= 8;
-						return 0;
-					}
-					case VK_RIGHT:
-					{
-						pos_x += 8;
-						return 0;
-					}
-					case VK_UP:
-					{
-						pos_y -= 8;
-						return 0;
-					}
-					case VK_DOWN:
-					{
-						pos_y += 8;
-						return 0;
-					}
-					
-				}
+				Input::Procedure
+				(hwindow, umessage, wparameter, lparameter, player_pos);
 				return 0;
 			}
 
 			case WM_DESTROY:
 			{
+				DeleteObject(hmapbit);
+				DeleteObject(hfighterbit);
+				DeleteObject(hmissilebit);
+
 				ExitProcess(0);
 				return 0;
 			}
@@ -131,15 +110,22 @@ void update_player(HWND const& hwindow, HBITMAP const& hfighterbit,
 	BITMAP const& fighter, HBITMAP const& hmapbit,int player_x,int player_y) 
 {
 	HDC hdc = GetDC(hwindow);
-	HDC hmemdc = CreateCompatibleDC(hdc);
-	HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc,hmapbit));
-	BitBlt(hdc,0,0,800,600,hmemdc,0,0,SRCCOPY);
-	SelectObject(hmemdc,hfighterbit);
+	HDC hvirtualdc = CreateCompatibleDC(hdc);
+	HDC hbufferdc = CreateCompatibleDC(hdc);
+	HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc,800,600);
+	SelectObject(hvirtualdc, hvirtualbit);
 
-	TransparentBlt(hdc,player_x,player_y,fighter.bmWidth,fighter.bmHeight,
-		hmemdc,0,0, fighter.bmWidth, fighter.bmHeight,RGB(255,255,255));
-	SelectObject(hmemdc,oldbit);
-	DeleteDC(hmemdc);
+	HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hbufferdc,hmapbit));
+	BitBlt(hvirtualdc,0,0,800,600, hbufferdc,0,0,SRCCOPY);
+	SelectObject(hbufferdc,hfighterbit);
+
+	TransparentBlt(hvirtualdc,player_x,player_y,fighter.bmWidth,fighter.bmHeight,
+		hbufferdc,0,0, fighter.bmWidth, fighter.bmHeight,RGB(255,255,255));
+	BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);
+	SelectObject(hbufferdc,oldbit);
+	DeleteDC(hbufferdc);
+	DeleteDC(hvirtualdc);
+	DeleteObject(hvirtualbit);
 	ReleaseDC(hwindow,hdc);
 
 

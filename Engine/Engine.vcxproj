@@ -22,10 +22,10 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="211123_\engine.cpp" />
-    <ClCompile Include="211123_\Input.cpp" />
-    <ClCompile Include="211123_\time.cpp" />
-    <ClCompile Include="211123_\소스.cpp" />
+    <ClCompile Include="닷지\Engine.cpp" />
+    <ClCompile Include="닷지\Entry.cpp" />
+    <ClCompile Include="닷지\Input.cpp" />
+    <ClCompile Include="닷지\Time.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

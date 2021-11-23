@@ -35,9 +35,7 @@ Distance	1.0	1.5
 namespace Time
 {void Procedure(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);}
 namespace Input
-{
-    void Procedure(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);
-}
+{void Procedure(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);}
 namespace Engine
 {
     LRESULT CALLBACK Procedure
@@ -71,6 +69,8 @@ namespace Engine
         case WM_KEYDOWN:      case WM_MBUTTONDOWN: case WM_MBUTTONUP:
         case WM_KEYUP:        case WM_XBUTTONDOWN: case WM_XBUTTONUP:
         {
+            Input::Procedure(hWindow, uMessage, wParameter, lParameter);
+
             return 0;
         }
         default:
