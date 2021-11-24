@@ -19,17 +19,24 @@ namespace Time
 	{
 		switch (uMessage)
 		{
-		case WM_APP:
-		{
-			using namespace std::chrono;
+			case WM_APP:
+			{
+				using namespace std::chrono;
 
-			Elapsed = duration_cast<duration<float>>(steady_clock::now() - started).count();
-			Delta = duration_cast<duration<float>>(steady_clock::now() - updated).count();
-			updated = std::chrono::steady_clock::now();
-			return;
+				Elapsed = duration_cast<duration<float>>(steady_clock::now() - started).count();
+				Delta = duration_cast<duration<float>>(steady_clock::now() - updated).count();
+				updated = std::chrono::steady_clock::now();
+				return;
+			}
 		}
-
-		}
+	}
+	float const getelapsed()
+	{
+		return Elapsed;
+	}
+	float const getdelta()
+	{
+		return Delta;
 	}
 
 }
