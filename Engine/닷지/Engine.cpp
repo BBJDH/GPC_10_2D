@@ -1,9 +1,11 @@
 #include<Windows.h>
+#include<vector>
 #pragma comment(lib, "msimg32.lib")
 namespace Rendering
 {
 	void initialize(HWND const& hwindow);
-	void update_player(HWND const& hwindow, int player_x, int player_y);
+	void update(HWND const& hwindow, int player_x, int player_y,
+		std::vector<POINT> const& missilepos);
 	void destroy();
 }
 
@@ -11,21 +13,28 @@ namespace Input
 {
 	//void Procedure
 	//(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, POINT& player);
-	void input(POINT &player);
+	void initplayerpos();
+	POINT const playerpos();
+	void input();
 }
 namespace Time
 {
 	void Procedure
-	(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);
+	(HWND const , UINT const , WPARAM const , LPARAM const );
+	bool const isinterval();
+	bool const isregentime();
+}
+namespace Missile
+{
+	void push_missile(POINT const& player);
+	void move_missile();
+	void delete_missile();
+	std::vector<POINT> const vecpoint();
 }
 
 namespace Engine
 {
-	namespace
-	{
-		POINT player_pos;
 
-	}
 
 	LRESULT CALLBACK Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter)
@@ -35,16 +44,23 @@ namespace Engine
 			case WM_CREATE:
 			{
 				Rendering::initialize(hwindow);
-				player_pos.x =350;
-				player_pos.y =300;
-
+				Input::initplayerpos();
 				return 0;
 			}
 			case WM_APP:
 			{
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);
-				Input::input(player_pos);
-				Rendering::update_player(hwindow, player_pos.x, player_pos.y);
+				
+				if(Time::isregentime())
+					Missile::push_missile(Input::playerpos());
+				if(Time::isinterval())
+				{
+					Input::input();
+					Missile::move_missile();
+					Missile::delete_missile();
+				}
+				Rendering::update(hwindow, Input::playerpos().x, Input::playerpos().y,
+					Missile::vecpoint());
 
 				return 0;
 			}

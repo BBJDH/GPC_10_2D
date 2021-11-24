@@ -12,6 +12,11 @@ namespace Time
 			std::chrono::steady_clock::now();
 		float Elapsed = float();
 		float Delta = float();
+		float interval = 0;
+		float const speed = 0.03f;
+
+		float missile_interval = 0;
+		float missile_regenspeed = 0.1f;
 	}
 
 	void Procedure
@@ -30,13 +35,30 @@ namespace Time
 			}
 		}
 	}
+	bool const isregentime()
+	{
+		missile_interval += Delta;
+		if (missile_interval > missile_regenspeed)
+		{
+			missile_interval = 0;
+			return true;
+		}
+		return false;
+	}
+	bool const isinterval()
+	{
+		interval += Delta;
+		if (interval > speed)
+		{
+			interval = 0;
+			return true;
+		}
+		return false;
+	}
 	float const getelapsed()
 	{
 		return Elapsed;
 	}
-	float const getdelta()
-	{
-		return Delta;
-	}
+
 
 }

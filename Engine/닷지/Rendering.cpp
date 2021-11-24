@@ -1,4 +1,6 @@
 #include<Windows.h>
+#include<vector>
+
 
 namespace Rendering
 {
@@ -44,7 +46,8 @@ namespace Rendering
 		ReleaseDC(hwindow, hdc);
 
 	}
-	void drawbitmp_parent(HDC const& hdc_dest,int x,int y,  BITMAP const& bit_src, HBITMAP const& hbitmp)
+	void drawbitmp_transparent(HDC const& hdc_dest,int const x,int const y,
+		BITMAP const& bit_src, HBITMAP const& hbitmp)
 	{
 		HDC hmemdc = CreateCompatibleDC(hdc_dest);
 		HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc,hbitmp));
@@ -54,7 +57,8 @@ namespace Rendering
 		DeleteDC(hmemdc);
 
 	}
-	void drawbitmp(HDC const& hdc_dest,int const x, int const y, int const width,int const height,HBITMAP const& hbitmap)
+	void drawbitmp(HDC const& hdc_dest,int const x, int const y,
+		int const width,int const height,HBITMAP const& hbitmap)
 	{
 		HDC hbufferdc = CreateCompatibleDC(hdc_dest);
 		HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hbufferdc, hmapbit));
@@ -63,16 +67,30 @@ namespace Rendering
 		DeleteDC(hbufferdc);
 	}
 
-	void update_player(HWND const& hwindow, int player_x, int player_y)
+	void update(HWND const& hwindow, int const player_x, int const player_y,
+		std::vector<POINT> const& missilepos)
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
 		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
-		//SelectObject(hvirtualdc, hvirtualbit,);
+		SelectObject(hvirtualdc, hvirtualbit);
 
 		drawbitmp(hvirtualdc,0,0,800,600,hmapbit);
-		drawbitmp_parent(hvirtualdc,player_x,player_y,)
+		drawbitmp_transparent(hvirtualdc,player_x - (fighter.bmWidth/2),
+			player_y - (fighter.bmHeight/2),fighter,hfighterbit);
 		
+		//TODO: 설정된 미사일들 출력
+		if(!missilepos.empty())
+		{
+
+			for (size_t i = 0; i < missilepos.size(); i++)
+			{
+				drawbitmp_transparent(hvirtualdc, missilepos[i].x - (missile.bmWidth / 2),
+					missilepos[i].y - (missile.bmHeight / 2), missile, hmissilebit);
+			}
+
+		}
+
 		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);
 		DeleteDC(hvirtualdc);
 		DeleteObject(hvirtualbit);

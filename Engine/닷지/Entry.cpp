@@ -1,5 +1,5 @@
 #include<Windows.h>
-
+#include<time.h>
 namespace Engine{
 	LRESULT CALLBACK Procedure
 	(HWND , UINT , WPARAM , LPARAM );
@@ -18,6 +18,7 @@ int WINAPI WinMain
 	_In_ int nShowCmd
 )
 {
+	srand(static_cast<unsigned>(time(NULL)));
 	HWND hdodgewindow =HWND();
 
 	WNDCLASSEX basic = WNDCLASSEX();
@@ -55,8 +56,8 @@ int WINAPI WinMain
 		static_cast<bool>(dodgewindow.hMenu),
 		dodgewindow.dwExStyle
 	);
-	dodgewindow.cx = workspace.right;
-	dodgewindow.cy = workspace.bottom;
+	dodgewindow.cx = workspace.right - workspace.left;
+	dodgewindow.cy = workspace.bottom - workspace.top;
 
 	dodgewindow.x = (GetSystemMetrics(SM_CXSCREEN) -dodgewindow.cx)/2;
 	dodgewindow.y = (GetSystemMetrics(SM_CYSCREEN) -dodgewindow.cy)/2;
