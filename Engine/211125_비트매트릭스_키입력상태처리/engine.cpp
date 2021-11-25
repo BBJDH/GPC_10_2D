@@ -8,7 +8,9 @@
 namespace Time
 {void Procedure(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);}
 namespace Input
-{void Procedure(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);}
+{
+    void Procedure(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);
+}
 namespace Engine
 {
     LRESULT CALLBACK Procedure

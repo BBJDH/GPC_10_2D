@@ -1,41 +1,67 @@
 #include<Windows.h>
-#include<string>
 #include<iostream>
-//#pragma comment(linker,"/entry:WinMainCRTStartup /subsystem:console")
+#pragma comment(linker,"/entry:WinMainCRTStartup /subsystem:console")
 
 namespace Input
 {
 	namespace
 	{
+		size_t count =0;
+
 		class
 		{
 		public:
-			void Down(WPARAM const code)
+			
+			void print() const
 			{
+					system("cls");
+				for (size_t i = 0; i < 256; i++)
+				{
+					if ((i % 16)==0)
+						std::cout << std::endl;
+
+					if (Pressed(i))
+						std::cout << "O" << " ";
+					else
+						std::cout << "X" << " ";
+
+				}
+			}
+			bool Pressed(WPARAM const code) const
+			{
+				return State.Pressed[code >> 0x4] & (0x8000 >> (code & 0xF));
+			}
+			void Down(WPARAM const code) 
+			{
+				if(!Pressed(code)) //해당키가 이전에 안눌려있으면
+					State.Changed[code >> 0x4] |= 0x8000 >> (code & 0xF);
+				else//눌려있었으면
+					State.Changed[code >> 0x4] &= ~(0x8000 >> (code & 0xF));
 				State.Pressed[code>>0x4] |=0x8000>>(code & 0xF); 
 			}
 			void Up(WPARAM const code)
 			{
-				//State.Pressed[code >> 0x4] ^= 0x8000 >> (code & 0xF); //0111 1111 1111 1111 같으면 0 다르면1
-				State.Pressed[code >> 0x4] &= ~(0x8000) >> (code & 0xF);//0111 1111 1111 1111
-
-				//0000 0000 0000 0100
-				//
+				if (Pressed(code))  //눌려있었으면
+					State.Changed[code >> 0x4] |= 0x8000 >> (code & 0xF);
+				else //해당키가 이전에 안눌려있으면
+					State.Changed[code >> 0x4] &= ~(0x8000 >> (code & 0xF));
+				State.Pressed[code >> 0x4] &= ~(0x8000 >> (code & 0xF));
 			}
-			//지금 만든 매트릭스에 대해서 bool 타입으로 눌렸는지 안눌렸는지 확인해서 반환 Pressed
+
+			bool Changed(WPARAM const code) const
+			{
+				return State.Changed[code >> 0x4] & (0x8000 >> (code & 0xF));
+			}
 		private:
 			struct 
 			{
 				WORD Pressed[16];  //256 bit
 				WORD Changed[16];  //256 bit
-
 			}
 			State;
 
 		}
 		Key;
-
-		//bool State[256] ={false};
 	}
 	void Procedure
 	(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter)
@@ -45,19 +71,21 @@ namespace Input
 			case WM_SYSKEYDOWN:
 			case WM_KEYDOWN:
 			{
-				//State[wParameter] = true;
-				Key.Down
+				Key.Down(wParameter);
 				break;
 			}
 			case WM_SYSKEYUP:
 			case WM_KEYUP:
 			{
-				//State[wParameter] = false;
+				Key.Up(wParameter);
 				break;
 			}
-
 		}
-
+		if(Key.Changed(wParameter))
+		{
+			Key.print();
+			std::cout<<"\n키상태 변동 수 : "<<++count<<std::endl;
+		}
 
 #pragma region 삽질
 		//switch (uMessage)
@@ -234,4 +262,6 @@ namespace Input
 #pragma endregion
 
 	}
+
+
 }

@@ -19,7 +19,7 @@ namespace Input
 
 	void input()
 	{
-
+		
 		if ((GetAsyncKeyState(VK_LEFT) & 0x8000) and (player.x > 0))
 			player.x -= speed;
 		if ((GetAsyncKeyState(VK_RIGHT) & 0x8000) and (player.x < 800))
