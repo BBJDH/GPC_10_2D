@@ -1,13 +1,13 @@
 #include<Windows.h>
 #include<vector>
-
+#include<string>
 
 namespace Rendering
 {
 	namespace
 	{
-		HBITMAP hmapbit, hfighterbit, hmissilebit;
-		BITMAP fighter, missile;
+		HBITMAP hmapbit, hfighterbit, hmissilebit,hgameoverbit;
+		BITMAP fighter, missile, over;
 	}
 	void initialize(HWND const&  hwindow)
 	{
@@ -43,6 +43,16 @@ namespace Rendering
 			LR_LOADFROMFILE | LR_DEFAULTSIZE
 		));
 		GetObject(hmissilebit, sizeof(BITMAP), &missile);
+		hgameoverbit = static_cast<HBITMAP>(LoadImage
+		(
+			NULL,
+			TEXT("./소스파일/ckwlghd12/GameOver2.bmp"),
+			IMAGE_BITMAP,
+			0,
+			0,
+			LR_LOADFROMFILE | LR_DEFAULTSIZE
+		));
+		GetObject(hgameoverbit, sizeof(BITMAP), &over);
 		ReleaseDC(hwindow, hdc);
 
 	}
@@ -68,7 +78,7 @@ namespace Rendering
 	}
 
 	void update(HWND const& hwindow, int const player_x, int const player_y,
-		std::vector<POINT> const& missilepos)
+		std::vector<POINT> const& missilepos, float const time, bool const is_printover )
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
@@ -79,8 +89,46 @@ namespace Rendering
 		drawbitmp_transparent(hvirtualdc,player_x - (fighter.bmWidth/2),
 			player_y - (fighter.bmHeight/2),fighter,hfighterbit);
 		
-		//TODO: 설정된 미사일들 출력
 		if(!missilepos.empty())
+		{
+
+			for (size_t i = 0; i < missilepos.size(); i++)
+			{
+				drawbitmp_transparent(hvirtualdc, missilepos[i].x - (missile.bmWidth / 2),
+					missilepos[i].y - (missile.bmHeight / 2), missile, hmissilebit);
+			}
+
+		}
+		if(is_printover)
+		{
+			drawbitmp_transparent(hvirtualdc, (800 - over.bmWidth) / 2, (600 - over.bmHeight) / 2, over, hgameoverbit);
+		}
+		SetBkMode(hvirtualdc, TRANSPARENT);
+		SetTextColor(hvirtualdc,RGB(255,255,255));
+		std::string temp = "Missile :" + std::to_string(missilepos.size());
+		TextOut(hvirtualdc,0,0, temp.c_str(), static_cast<int>(temp.size()));
+		
+	    temp = "Time :" + std::to_string(time);
+		TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
+
+		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);
+		DeleteDC(hvirtualdc);
+		DeleteObject(hvirtualbit);
+		ReleaseDC(hwindow, hdc);
+	}
+	/*void gameover(HWND const& hwindow, int const player_x, int const player_y,
+		std::vector<POINT> const& missilepos)
+	{
+		HDC hdc = GetDC(hwindow);
+		HDC hvirtualdc = CreateCompatibleDC(hdc);
+		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
+		SelectObject(hvirtualdc, hvirtualbit);
+
+		drawbitmp(hvirtualdc, 0, 0, 800, 600, hmapbit);
+		drawbitmp_transparent(hvirtualdc, player_x - (fighter.bmWidth / 2),
+			player_y - (fighter.bmHeight / 2), fighter, hfighterbit);
+
+		if (!missilepos.empty())
 		{
 
 			for (size_t i = 0; i < missilepos.size(); i++)
@@ -95,13 +143,14 @@ namespace Rendering
 		DeleteDC(hvirtualdc);
 		DeleteObject(hvirtualbit);
 		ReleaseDC(hwindow, hdc);
-	}
-
+		
+	}*/
 	void destroy()
 	{
 		DeleteObject(hmapbit);
 		DeleteObject(hfighterbit);
 		DeleteObject(hmissilebit);
+		DeleteObject(hgameoverbit);
 	}
 
 }

@@ -99,5 +99,9 @@ namespace Missile
 	{
 		return missle_pos;
 	}
+	size_t getcount()
+	{
+		return missle_pos.size();
+	}
 
 }

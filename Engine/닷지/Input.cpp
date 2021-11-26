@@ -28,7 +28,12 @@ namespace Input
 			player.y -= speed;
 		if ((GetAsyncKeyState(VK_DOWN) & 0x8000) and (player.y < 600))
 			player.y += speed;
-	
+	}
+	bool enter()
+	{
+		if(GetAsyncKeyState(VK_RETURN) & 0x8000)
+			return true;
+		return false;
 	}
 	//void Procedure
 	//(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter,POINT & player)
