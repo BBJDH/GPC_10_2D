@@ -17,6 +17,11 @@ namespace Missile
 
 		float const speed = 8;
 	}
+	void initialize()
+	{
+		missle_pos.clear();
+		missile_ang.clear();
+	}
 
 	void setmissilepos(LONG & x, LONG & y)
 	{

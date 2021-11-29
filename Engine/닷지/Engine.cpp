@@ -31,6 +31,7 @@ namespace Time
 }
 namespace Missile
 {
+	void initialize();
 	void push_missile(POINT const& player);
 	void move_missile();
 	void delete_missile();
@@ -90,7 +91,13 @@ namespace Engine
 					else
 						Rendering::update(hwindow, Input::playerpos().x, Input::playerpos().y,
 							Missile::vecpoint(), record_time, false);
-
+					if (Input::enter())
+					{
+						Missile::initialize();
+						Input::initplayerpos();
+						isalive = true;
+						record_time = 0;
+					}
 
 				}
 	

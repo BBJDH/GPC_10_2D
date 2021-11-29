@@ -15,7 +15,7 @@ namespace Collision
 	{
 		for (size_t i = 0; i < missile.size(); i++)
 		{
-			if(distance(player.x,player.y,missile[i].x,missile[i].y)<10)
+			if(distance(player.x,player.y,missile[i].x,missile[i].y)<15)
 				return true;
 		}
 		return false;
