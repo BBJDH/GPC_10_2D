@@ -91,13 +91,11 @@ namespace Rendering
 		
 		if(!missilepos.empty())
 		{
-
 			for (size_t i = 0; i < missilepos.size(); i++)
 			{
 				drawbitmp_transparent(hvirtualdc, missilepos[i].x - (missile.bmWidth / 2),
 					missilepos[i].y - (missile.bmHeight / 2), missile, hmissilebit);
 			}
-
 		}
 		if(is_printover)
 		{

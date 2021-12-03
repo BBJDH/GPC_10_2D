@@ -59,8 +59,8 @@ namespace Missile
 	}
 	void setmissileang(LONG & x, LONG & y, double &angle, POINT const& player)
 	{
-		angle = atan2(player.y-y,
-			player.x-x);
+		angle = atan2(static_cast<double>(player.y)-y,
+			static_cast<double>(player.x)-x);
 	}
 	void push_missile(POINT const& player)
 	{

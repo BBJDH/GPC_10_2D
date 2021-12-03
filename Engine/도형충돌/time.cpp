@@ -12,6 +12,12 @@ namespace Time
 			std::chrono::steady_clock::now();
 		float Elapsed = float();
 		float Delta = float();
+
+		float interval = 0;
+		float const speed = 0.03f;
+
+		float rect_interval = 0;
+		float rect_regenspeed = 5.0f;
 	}
 
 	void Procedure
@@ -23,14 +29,34 @@ namespace Time
 			{
 				using namespace std::chrono;
 
-				 Elapsed = duration_cast<duration<float>>(steady_clock::now()-started).count();
+				 Elapsed = duration_cast<duration<float>>(steady_clock::now() - started).count();
 				 //count() ->나노 단위의 long long 값
-				 Delta   = duration_cast<duration<float>>(steady_clock::now() -updated).count();
+				 Delta   = duration_cast<duration<float>>(steady_clock::now() - updated).count();
 				 updated = std::chrono::steady_clock::now();
 				return;
 			}
 
 		}
+	}
+	bool isregentime()
+	{
+		rect_interval += Delta;
+		if (rect_interval > rect_regenspeed)
+		{
+			rect_interval = 0;
+			return true;
+		}
+		return false;
+	}
+	bool isinterval()
+	{
+		interval += Delta;
+		if (interval > speed)
+		{
+			interval = 0;
+			return true;
+		}
+		return false;
 	}
 
 }

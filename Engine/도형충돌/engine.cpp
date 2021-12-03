@@ -1,4 +1,6 @@
 #include<Windows.h>
+#include<vector>
+#include<time.h>
 //#include<cstdio>
 
 //Time, Input, Collision,Rendering, Sound
@@ -13,10 +15,25 @@ namespace Input
 }
 namespace Rendering
 {
-    void update(HWND const& hwindow, int const rec_x, int const rec_y, int const width, int const height);
+    void update(HWND const& hwindow, int const player_x, int const player_y,
+        std::vector<POINT> const& rectpos, std::vector<double> const& ang);
 }
+namespace Rect
+{
+    void push_rect(POINT const& player);
+    void move_rect();
+    std::vector<POINT> const vecpoint();
+    std::vector<double> const vecang();
+}
+namespace Time
+{
+    bool isinterval();
+    bool isregentime();
+}
+
 namespace Engine
 {
+    POINT player;
     LRESULT CALLBACK Procedure
     (HWND   const hWindow,UINT   const uMessage,WPARAM const wParameter,  LPARAM const lParameter )
     {
@@ -25,13 +42,25 @@ namespace Engine
         {
         case WM_CREATE:
         {
+            srand(static_cast<unsigned>(time(NULL)));
+            player.x = 400;
+            player.y = 300;
+            Rect::push_rect(player);
             return 0;
         }
         case WM_APP:
         {
             Time::Procedure(hWindow,uMessage,wParameter,lParameter);
-            Input::Procedure(hWindow, uMessage, wParameter, lParameter);
-            Rendering::update(hWindow, 350, 250, 100, 100);
+            Rendering::update(hWindow, player.x, player.y, Rect::vecpoint(),Rect::vecang());
+            if (Time::isinterval())
+            {
+                Rect::move_rect();
+            }
+            if (Time::isregentime())
+            {
+                Rect::push_rect(player);
+
+            }
 
             return 0;
         }
@@ -49,7 +78,6 @@ namespace Engine
         case WM_KEYDOWN:      case WM_MBUTTONDOWN: case WM_MBUTTONUP:
         case WM_KEYUP:        case WM_XBUTTONDOWN: case WM_XBUTTONUP:
         {
-            Input::Procedure(hWindow, uMessage, wParameter, lParameter);
 
             return 0;
         }
