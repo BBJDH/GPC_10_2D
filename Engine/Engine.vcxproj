@@ -26,7 +26,7 @@
     <ClCompile Include="도형충돌\Input.cpp" />
     <ClCompile Include="도형충돌\Rendering.cpp" />
     <ClCompile Include="도형충돌\time.cpp" />
-    <ClCompile Include="도형충돌\소스.cpp" />
+    <ClCompile Include="도형충돌\Entry.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

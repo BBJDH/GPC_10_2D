@@ -11,6 +11,10 @@ namespace Input
 {
     void Procedure(HWND   const hWindow, UINT   const uMessage, WPARAM const wParameter, LPARAM const lParameter);
 }
+namespace Rendering
+{
+    void update(HWND const& hwindow, int const rec_x, int const rec_y, int const width, int const height);
+}
 namespace Engine
 {
     LRESULT CALLBACK Procedure
@@ -27,6 +31,7 @@ namespace Engine
         {
             Time::Procedure(hWindow,uMessage,wParameter,lParameter);
             Input::Procedure(hWindow, uMessage, wParameter, lParameter);
+            Rendering::update(hWindow, 350, 250, 100, 100);
 
             return 0;
         }

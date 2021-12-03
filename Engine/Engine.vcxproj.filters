@@ -27,7 +27,7 @@
     <ClCompile Include="도형충돌\time.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="도형충돌\소스.cpp">
+    <ClCompile Include="도형충돌\Entry.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="도형충돌\Rendering.cpp">
