@@ -78,7 +78,7 @@ namespace Rendering
 	}
 
 	void update(HWND const& hwindow, int const player_x, int const player_y,
-		std::vector<POINT> const& missilepos, float const time, bool const is_printover )
+		std::vector<POINT> const& missilepos, float const time, bool const is_printover)
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
