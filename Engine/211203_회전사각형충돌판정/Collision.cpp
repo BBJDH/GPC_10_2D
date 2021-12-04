@@ -1,5 +1,6 @@
 #include "vector.h"
-
+#include <windef.h>
+#include <vector>
 
 struct  Rectangle
 {
@@ -35,8 +36,9 @@ bool Collide(Rectangle const& LHS, Rectangle const& RHS)
         {
             sum += abs(dot(axes[i], vectors[j]));
         }
-        if (sum < abs(dot(axes[i], distance)))
+        if (sum < abs(dot(axes[i], distance)))  //분리축이 있다!
             return false;
     }
     return true;
 }
+
