@@ -21,17 +21,11 @@ struct  Rectangle
     float     Angle = { 0 };
     vector<2> Location = {0,0};
 };
-bool Collide(Point const& dest, Circle const& src) 
+bool Collide(Point const& point, Circle const& circle) 
 {
-    float length_temp = length(dest.Location - src.Location);
-    float rad = (src.Diameter / 2);
-    if (length(dest.Location - src.Location) < (src.Diameter / 2))
-        return true;
-    return false;
-
-    //return length(dest.Location - src.Location) < (src.Diameter / 2);
+    return length(point.Location - circle.Location) < (circle.Diameter / 2);
 }
-bool Collide(Circle const& dest, Circle const& src)
+bool Collide(Circle const& dest_circle, Circle const& src_circle)
 {
     //Point dest_point;
     //Circle src_Circle;
@@ -39,22 +33,22 @@ bool Collide(Circle const& dest, Circle const& src)
     //src_Circle.Diameter = src.Diameter + dest.Diameter;
     //src_Circle.Location = src.Location;
     //return Collide(dest_point, src_Circle);  //위에 서술한 함수를 사용하는 방법
-    return length(dest.Location - src.Location) <= (dest.Diameter / 2 + src.Diameter / 2);
+    return length(dest_circle.Location - src_circle.Location) <= (dest_circle.Diameter / 2 + src_circle.Diameter / 2);
 }
-bool Collide(Point const& dest, Rectangle const& src)
+bool Collide(Point const& point, Rectangle const& rect)
 {
-    vector<2> const min = { src.Location[0] - src.Length[0],src.Location[1] - src.Length[1] };
-    vector<2> const max = { src.Location[0] + src.Length[0],src.Location[1] + src.Length[1] };
+    vector<2> const min = { rect.Location[0] - rect.Length[0],rect.Location[1] - rect.Length[1] };
+    vector<2> const max = { rect.Location[0] + rect.Length[0],rect.Location[1] + rect.Length[1] };
 
-    return (min[0] <= dest.Location[0]) && (dest.Location[0] <= max[0]) && ((min[1] <= dest.Location[1]) && (dest.Location[1] <= max[1]));
+    return (min[0] <= point.Location[0]) && (point.Location[0] <= max[0]) && ((min[1] <= point.Location[1]) && (point.Location[1] <= max[1]));
 }
-bool Collide(Rectangle const& dest, Rectangle const& src)
+bool Collide(Rectangle const& dest_rect, Rectangle const& src_rect)
 {
-    vector<2> const sum_length = { dest.Length[0] + src.Length[0],dest.Length[1] + src.Length[1] };
+    vector<2> const sum_length = { dest_rect.Length[0] + src_rect.Length[0],dest_rect.Length[1] + src_rect.Length[1] };
     //사각형의 너비 합과 높이 합보다 x간격과 y간격이 더 작으면 충돌
-    return (abs(dest.Location[0]-src.Location[0])<=sum_length[0])&& (abs(dest.Location[1] - src.Location[1]) <= sum_length[1]);
+    return (abs(dest_rect.Location[0]- src_rect.Location[0])<=sum_length[0])&& (abs(dest_rect.Location[1] - src_rect.Location[1]) <= sum_length[1]);
 }
-bool Collide(Rectangle const& dest, Circle const& src)
+bool Collide(Rectangle const& rect, Circle const& circle)
 {
     //사각형의 너비범위 혹은 높이 범위 안에 들어왔다면, 사각형너비 높이에 r만큼 더한 사각형과 원의 중점과의 충돌 판정
     //원의 중점이 사각형 중점의 x, y 좌표보다 작다면 왼쪽위 꼭지점과 원의 충돌 판정
@@ -62,49 +56,45 @@ bool Collide(Rectangle const& dest, Circle const& src)
     //원의 중점이 사각형 중점의 x좌표는 작고 y좌표는 크다면 왼쪽 아래 꼭지점과 원의 충돌판정
     //원의 중점이 사각형 중점의 x, y 좌표보다 크다면 오른쪽 아래 꼭지점과 원의 충돌 판정
 
-    bool isrange_x = ((dest.Location[0] - dest.Length[0]) < src.Location[0]) && (src.Location[0] < (dest.Location[0] + dest.Length[0]));
-    bool isrange_y = ((dest.Location[1] - dest.Length[1]) < src.Location[1]) && (src.Location[1] < (dest.Location[0] + dest.Length[0]));
+    bool isrange_x = ((rect.Location[0] - rect.Length[0]) < circle.Location[0]) && (circle.Location[0] < (rect.Location[0] + rect.Length[0]));
+    bool isrange_y = ((rect.Location[1] - rect.Length[1]) < circle.Location[1]) && (circle.Location[1] < (rect.Location[1] + rect.Length[1]));
 
     if (isrange_x || isrange_y)
     {
         //범위안이면 사각형 너비높이 +r 과 중점포인트와의 판정
-        Rectangle dest_rect;
-        Point src_point;
-        dest_rect.Angle = 0;
-        dest_rect.Location = dest.Location;
-        dest_rect.Length = { dest.Length[0] + (src.Diameter / 2),dest.Length[1] + (src.Diameter / 2) };
-        src_point.Location = src.Location;
-        return Collide( src_point, dest_rect );
+        Rectangle rect_plusrad;  
+        Point circle_center;
+        rect_plusrad.Angle = 0;
+        rect_plusrad.Location = rect.Location;
+        rect_plusrad.Length = { rect.Length[0] + (circle.Diameter / 2),rect.Length[1] + (circle.Diameter / 2) };
+        circle_center.Location = circle.Location;
+        return Collide( circle_center, rect_plusrad );
     }
-    else  if (src.Location[0] < dest.Location[0] && src.Location[1] < dest.Location[1])//왼쪽 위
+    else  if (circle.Location[0] < rect.Location[0] && circle.Location[1] < rect.Location[1])//왼쪽 위
     {
-        Point rect_leftup;
-        rect_leftup.Location = dest.Location - dest.Length;
-        //return Collide(rect_leftup,src);
-        return length(rect_leftup.Location - src.Location) < src.Diameter / 2;
+        Point point_leftup;
+        point_leftup.Location = rect.Location - rect.Length;
+        return Collide(point_leftup, circle);
     }
-    else  if ((src.Location[0] > dest.Location[0]) && (src.Location[1] < dest.Location[1]))//오른쪽 위
+    else  if ((circle.Location[0] > rect.Location[0]) && (circle.Location[1] < rect.Location[1]))//오른쪽 위
     {
-        Point rect_rightup;
-        rect_rightup.Location = { dest.Location[0] + dest.Length[0],dest.Location[1] - dest.Length[1] };
-        //return Collide(rect_rightup, src);
-        return length(rect_rightup.Location - src.Location) < src.Diameter / 2;
+        Point point_rightup;
+        point_rightup.Location = { rect.Location[0] + rect.Length[0],rect.Location[1] - rect.Length[1] };
+        return Collide(point_rightup, circle);
 
     }
-    else  if (src.Location[0] < dest.Location[0] && src.Location[1] > dest.Location[1])//왼쪽 아래
+    else  if (circle.Location[0] < rect.Location[0] && circle.Location[1] > rect.Location[1])//왼쪽 아래
     {
-        Point rect_leftdown;
-        rect_leftdown.Location = { dest.Location[0] - dest.Length[0],dest.Location[1] + dest.Length[1] };
-        //return Collide(rect_leftdown, src);
-        return length(rect_leftdown.Location - src.Location) < src.Diameter / 2;
+        Point point_leftdown;
+        point_leftdown.Location = { rect.Location[0] - rect.Length[0],rect.Location[1] + rect.Length[1] };
+        return Collide(point_leftdown, circle);
 
     }
-    else  if (src.Location[0] > dest.Location[0] && src.Location[1] > dest.Location[1])//오른쪽 아래
+    else  if (circle.Location[0] > rect.Location[0] && circle.Location[1] > rect.Location[1])//오른쪽 아래
     {
-        Point rect_rightdown;
-        rect_rightdown.Location = dest.Location + dest.Length;
-        return Collide(rect_rightdown, src);
-        //return length(rect_rightdown.Location - src.Location) < src.Diameter / 2;
+        Point point_rightdown;
+        point_rightdown.Location = rect.Location + rect.Length;
+        return Collide(point_rightdown, circle);
 
     }
     return false;
@@ -135,10 +125,9 @@ bool iscrash(int const& dest_x, int const& dest_y, int const dest_size,
                     Circle circle;
                     circle.Location = { shape_pos[i][2],shape_pos[i][3] };
                     circle.Diameter = static_cast<float>(shape_pos[i][4]) * 2;
-                    //return Collide(dest_rect, circle);
-                    //if (Collide(dest_rect, circle))
-                    //if(Collide(dest_point,circle))
-                    if(Collide(dest_circle,circle))
+                    //if (Collide(dest_rect, circle)) // 사각 - 원
+                    //if(Collide(dest_point,circle)) //점 - 원
+                    if(Collide(dest_circle,circle)) //원 - 원
                     {
                         shape_pos[i][0] = 1;
                         return true;
@@ -152,8 +141,8 @@ bool iscrash(int const& dest_x, int const& dest_y, int const dest_size,
                     rect.Angle = 0;
                     rect.Length = { shape_pos[i][4],shape_pos[i][5] };
                     //return Collide(dest_rect, rect);
-                    //if (Collide(dest_rect, rect))
-                    //if(Collide(dest_point,rect))
+                    //if (Collide(dest_rect, rect)) //사각 - 사각
+                    //if(Collide(dest_point,rect)) //점 - 사각
                     if(Collide(rect,dest_circle))
                     {
                         shape_pos[i][0] = 1;

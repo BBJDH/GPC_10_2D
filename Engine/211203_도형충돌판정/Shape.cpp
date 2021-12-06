@@ -68,7 +68,7 @@ namespace Shape
 		Shape_ang.push_back(new double[2]{});
 
 		{
-			Shape_pos[Shape_pos.size() - 1][1] = Shape_name::rect; // 1.원 2.사각형
+			Shape_pos[Shape_pos.size() - 1][1] = Shape_name::rect; // 어떤 도형이 날아오게 하는지 결정
 			Shape_pos[Shape_pos.size() - 1][4] = 50; //너비
 			Shape_pos[Shape_pos.size() - 1][5] = 50; //높이
 
