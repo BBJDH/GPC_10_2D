@@ -22,11 +22,16 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="211203_회전사각형충돌판정\Collision.cpp" />
+    <ClCompile Include="211203_도형충돌판정\Collision.cpp" />
+    <ClCompile Include="211203_도형충돌판정\engine.cpp" />
+    <ClCompile Include="211203_도형충돌판정\Entry.cpp" />
+    <ClCompile Include="211203_도형충돌판정\Rendering.cpp" />
+    <ClCompile Include="211203_도형충돌판정\Shape.cpp" />
+    <ClCompile Include="211203_도형충돌판정\time.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="211203_회전사각형충돌판정\matrix.h" />
-    <ClInclude Include="211203_회전사각형충돌판정\vector.h" />
+    <ClInclude Include="211203_도형충돌판정\matrix.h" />
+    <ClInclude Include="211203_도형충돌판정\vector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
