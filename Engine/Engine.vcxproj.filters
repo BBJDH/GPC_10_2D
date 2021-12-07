@@ -27,13 +27,13 @@
     <ClCompile Include="211203_도형충돌판정\Entry.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211203_도형충돌판정\time.cpp">
+    <ClCompile Include="211203_도형충돌판정\Rendering.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="211203_도형충돌판정\Shape.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211203_도형충돌판정\Rendering.cpp">
+    <ClCompile Include="211203_도형충돌판정\time.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

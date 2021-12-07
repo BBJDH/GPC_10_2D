@@ -21,8 +21,8 @@ namespace Rendering
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
 		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
 		SelectObject(hvirtualdc, hvirtualbit);
-		//Rectangle(hvirtualdc, player_x- player_size, player_y- player_size, player_x + player_size, player_y + player_size);
-		Ellipse(hvirtualdc, player_x - player_size, player_y - player_size, player_x + player_size, player_y + player_size);
+		Rectangle(hvirtualdc, player_x- player_size, player_y- player_size, player_x + player_size, player_y + player_size);
+		//Ellipse(hvirtualdc, player_x - player_size, player_y - player_size, player_x + player_size, player_y + player_size);
 		if (!Shapepos.empty())
 		{
 			for (size_t i = 0; i < Shapepos.size(); i++)
