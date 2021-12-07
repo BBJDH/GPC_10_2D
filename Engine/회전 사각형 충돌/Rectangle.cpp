@@ -11,14 +11,13 @@ namespace Rect
 			Top, Bottom, Left, Right
 		};
 		double const PI = 3.1415926;
-		double const degree = PI/180;
+		double const radian = PI/180;
 		std::vector<POINT*> rect_pos; //{중점}{왼쪽위}{오른쪽위}{왼쪽아래}{오른쪽아래점}
 		std::vector<double*> rect_ang; //{향하는각도}{회전하는각도}
 		//사각형은 가로세로 100으로
 		LONG halfwidth_size = 50; 
-		double const speed = 4; //중심좌표의 이동량과 회전각도
+		double const speed = 3; //중심좌표의 이동량과 회전각도
 	}
-
 
 	void setrectpos(LONG& x, LONG& y) //각 사이드별 랜덤 위치로 사각형의 중점을 할당
 	{
@@ -62,8 +61,6 @@ namespace Rect
 	{//사각형 생성
 		rect_pos.push_back(new POINT[5]{});
 		rect_ang.push_back(new double[2]{});
-	
-
 
 		//사각형의 중점 지정
 		setrectpos(rect_pos[rect_pos.size() - 1][0].x, rect_pos[rect_pos.size() - 1][0].y);
@@ -86,13 +83,13 @@ namespace Rect
 			rect_pos[i][0].y += movey;
 
 			//사각형 각도 회전
-			rect_ang[i][1]   += degree * speed;
+			rect_ang[i][1]   += speed ;
 
 			LONG centerx = rect_pos[i][0].x;
 			LONG centery = rect_pos[i][0].y;
 
-			float costheta = static_cast<float>(cos(rect_ang[i][1]));
-			float sintheta = static_cast<float>(sin(rect_ang[i][1]));
+			float costheta = static_cast<float>(cos(rect_ang[i][1] * radian));
+			float sintheta = static_cast<float>(sin(rect_ang[i][1] * radian));
 
 			//정사각형 rect의 각 꼭지점까지의 거리
 			LONG size = static_cast<long>(halfwidth_size * sqrt(2));

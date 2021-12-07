@@ -55,11 +55,11 @@ namespace Engine
             if (Time::isinterval())
             {
                 Rect::move_rect();
+                Rendering::update(hWindow, player.x, player.y, Rect::vecpoint(),Rect::vecang());
 
                 if(iscrash(player, 100, Rect::vecpoint(), Rect::vecang()))
                     MessageBox(hWindow, "crashed!", "crashed!", MB_OK);
             }
-            Rendering::update(hWindow, player.x, player.y, Rect::vecpoint(),Rect::vecang());
             if (Time::isregentime())
             {
                 Rect::push_rect(player);
