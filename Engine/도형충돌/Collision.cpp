@@ -13,12 +13,12 @@ bool Collide(struct_Rectangle const& LHS, struct_Rectangle const& RHS)
 {
     vector<2> const distance = LHS.Location - RHS.Location;
     float constexpr radian = 3.141592653f / 180.0f;
-    vector<2> const axes[4] //axis
+    vector<2> const axes[4] //axis¿« ∫πºˆ«¸ : ¡ﬂΩ…º±
     {
-        {cos(LHS.Angle * radian),sin(LHS.Angle * radian)},
-        {-sin(LHS.Angle * radian),cos(LHS.Angle * radian)},
-        {cos(LHS.Angle * radian),sin(LHS.Angle * radian)},
-        {-sin(LHS.Angle * radian),cos(LHS.Angle * radian)}
+        {cos(LHS.Angle * radian),sin(LHS.Angle * radian)}, //LHS¿« right∫§≈Õ
+        {-sin(LHS.Angle * radian),cos(LHS.Angle * radian)}, //LHS¿« Up ∫§≈Õ
+        {cos(RHS.Angle * radian),sin(RHS.Angle * radian)}, //RHS¿« right∫§≈Õ
+        {-sin(RHS.Angle * radian),cos(RHS.Angle * radian)}  //RHS¿« Up ∫§≈Õ
     };
 
     vector<2> const vectors[4]

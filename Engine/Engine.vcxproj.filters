@@ -18,30 +18,33 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="211203_도형충돌판정\Collision.cpp">
+    <ClCompile Include="도형충돌\Collision.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211203_도형충돌판정\engine.cpp">
+    <ClCompile Include="도형충돌\engine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211203_도형충돌판정\Entry.cpp">
+    <ClCompile Include="도형충돌\Entry.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211203_도형충돌판정\Rendering.cpp">
+    <ClCompile Include="도형충돌\Input.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211203_도형충돌판정\Shape.cpp">
+    <ClCompile Include="도형충돌\Rectangle.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="211203_도형충돌판정\time.cpp">
+    <ClCompile Include="도형충돌\Rendering.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="도형충돌\time.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="211203_도형충돌판정\matrix.h">
+    <ClInclude Include="도형충돌\matrix.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="211203_도형충돌판정\vector.h">
+    <ClInclude Include="도형충돌\vector.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

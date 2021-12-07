@@ -23,83 +23,83 @@ struct  Rectangle
 };
 
 #pragma region 평림씨
-//bool Collide(Point const& LHS, Circle const& RHS)
-//{
-//    return length(LHS.Location - RHS.Location) <= RHS.Diameter / 2;
-//}
-//
-//bool Collide(Point const& LHS, Rectangle const& RHS)
-//{
-//    return LHS.Location[1] <= (RHS.Location[1] - (RHS.Length[1] / 2))
-//        && LHS.Location[1] >= (RHS.Location[1] + (RHS.Length[1] / 2))
-//        && LHS.Location[0] >= (RHS.Location[0] - (RHS.Length[0] / 2))
-//        && LHS.Location[0] <= (RHS.Location[0] + (RHS.Length[0] / 2));
-//}
-//
-//bool Collide(Circle const& LHS, Circle const& RHS)
-//{
-//    return length(LHS.Location - RHS.Location) <= (LHS.Diameter / 2 + RHS.Diameter / 2);
-//}
-//
-//bool Collide(Circle const& LHS, Rectangle const& RHS)
-//{
-//
-//    Point pRHSLeftTop;
-//    Point pRHSRightTop;
-//    Point pRHSLeftBottom;
-//    Point pRHSRightBottom;
-//
-//    pRHSLeftTop.Location
-//        = { RHS.Location[0] - (RHS.Length[0] + LHS.Diameter) / 2	//좌
-//          , RHS.Location[1] - (RHS.Length[1] + LHS.Diameter) / 2 };	//상
-//    pRHSRightTop.Location
-//        = { RHS.Location[0] + (RHS.Length[0] + LHS.Diameter) / 2	//우
-//          , RHS.Location[1] - (RHS.Length[1] + LHS.Diameter) / 2 };	//상
-//    pRHSLeftBottom.Location
-//        = { RHS.Location[0] - (RHS.Length[0] + LHS.Diameter) / 2	//좌
-//          , RHS.Location[1] + (RHS.Length[1] + LHS.Diameter) / 2 };	//하
-//    pRHSRightBottom.Location
-//        = { RHS.Location[0] + (RHS.Length[0] + LHS.Diameter) / 2	//우
-//          , RHS.Location[1] + (RHS.Length[1] + LHS.Diameter) / 2 };	//하
-//
-//
-//    if (LHS.Location[0] >= pRHSLeftTop.Location[0]
-//        && LHS.Location[0] <= pRHSRightTop.Location[0])
-//    {
-//        return LHS.Location[1] >= pRHSLeftTop.Location[1]
-//            || LHS.Location[1] <= pRHSLeftBottom.Location[1];
-//    }
-//
-//    if (LHS.Location[1] >= pRHSLeftTop.Location[1]
-//        && LHS.Location[1] <= pRHSLeftBottom.Location[1])
-//    {
-//        return LHS.Location[0] >= pRHSLeftTop.Location[0]
-//            || LHS.Location[0] <= pRHSRightTop.Location[0];
-//    }
-//
-//    if (LHS.Location[0] < pRHSLeftTop.Location[0] && LHS.Location[1] < pRHSLeftTop.Location[1])
-//    {
-//
-//        return LHS.Location[0] == pRHSLeftTop.Location[0] && LHS.Location[1] == pRHSLeftTop.Location[1];
-//    }
-//
-//    if (LHS.Location[0] > pRHSRightTop.Location[0] && LHS.Location[1] < pRHSLeftTop.Location[1])
-//    {
-//        return LHS.Location[0] == pRHSRightTop.Location[0] && LHS.Location[1] == pRHSRightTop.Location[1];
-//    }
-//
-//    if (LHS.Location[0] < pRHSLeftTop.Location[0] && LHS.Location[1] > pRHSLeftBottom.Location[1])
-//    {
-//        return LHS.Location[0] == pRHSLeftTop.Location[0] && LHS.Location[1] == pRHSLeftBottom.Location[1];
-//    }
-//
-//    if (LHS.Location[0] > pRHSRightTop.Location[0] && LHS.Location[1] > pRHSLeftBottom.Location[1])
-//    {
-//        return LHS.Location[0] == pRHSRightTop.Location[0] && LHS.Location[1] == pRHSRightTop.Location[1];
-//    }
-//    return false;
-//}
-//
+bool Collide(Point const& LHS, Circle const& RHS)
+{
+    return length(LHS.Location - RHS.Location) <= RHS.Diameter / 2;
+}
+
+bool Collide(Point const& LHS, Rectangle const& RHS)
+{
+    return LHS.Location[1] <= (RHS.Location[1] - (RHS.Length[1] / 2))
+        && LHS.Location[1] >= (RHS.Location[1] + (RHS.Length[1] / 2))
+        && LHS.Location[0] >= (RHS.Location[0] - (RHS.Length[0] / 2))
+        && LHS.Location[0] <= (RHS.Location[0] + (RHS.Length[0] / 2));
+}
+
+bool Collide(Circle const& LHS, Circle const& RHS)
+{
+    return length(LHS.Location - RHS.Location) <= (LHS.Diameter / 2 + RHS.Diameter / 2);
+}
+
+bool Collide(Circle const& LHS, Rectangle const& RHS)
+{
+
+    Point pRHSLeftTop;
+    Point pRHSRightTop;
+    Point pRHSLeftBottom;
+    Point pRHSRightBottom;
+
+    pRHSLeftTop.Location
+        = { RHS.Location[0] - (RHS.Length[0] + LHS.Diameter) / 2	//좌
+          , RHS.Location[1] - (RHS.Length[1] + LHS.Diameter) / 2 };	//상
+    pRHSRightTop.Location
+        = { RHS.Location[0] + (RHS.Length[0] + LHS.Diameter) / 2	//우
+          , RHS.Location[1] - (RHS.Length[1] + LHS.Diameter) / 2 };	//상
+    pRHSLeftBottom.Location
+        = { RHS.Location[0] - (RHS.Length[0] + LHS.Diameter) / 2	//좌
+          , RHS.Location[1] + (RHS.Length[1] + LHS.Diameter) / 2 };	//하
+    pRHSRightBottom.Location
+        = { RHS.Location[0] + (RHS.Length[0] + LHS.Diameter) / 2	//우
+          , RHS.Location[1] + (RHS.Length[1] + LHS.Diameter) / 2 };	//하
+
+
+    if (LHS.Location[0] >= pRHSLeftTop.Location[0]
+        && LHS.Location[0] <= pRHSRightTop.Location[0])
+    {
+        return LHS.Location[1] >= pRHSLeftTop.Location[1]
+            || LHS.Location[1] <= pRHSLeftBottom.Location[1];
+    }
+
+    if (LHS.Location[1] >= pRHSLeftTop.Location[1]
+        && LHS.Location[1] <= pRHSLeftBottom.Location[1])
+    {
+        return LHS.Location[0] >= pRHSLeftTop.Location[0]
+            || LHS.Location[0] <= pRHSRightTop.Location[0];
+    }
+
+    if (LHS.Location[0] < pRHSLeftTop.Location[0] && LHS.Location[1] < pRHSLeftTop.Location[1])
+    {
+
+        return LHS.Location[0] == pRHSLeftTop.Location[0] && LHS.Location[1] == pRHSLeftTop.Location[1];
+    }
+
+    if (LHS.Location[0] > pRHSRightTop.Location[0] && LHS.Location[1] < pRHSLeftTop.Location[1])
+    {
+        return LHS.Location[0] == pRHSRightTop.Location[0] && LHS.Location[1] == pRHSRightTop.Location[1];
+    }
+
+    if (LHS.Location[0] < pRHSLeftTop.Location[0] && LHS.Location[1] > pRHSLeftBottom.Location[1])
+    {
+        return LHS.Location[0] == pRHSLeftTop.Location[0] && LHS.Location[1] == pRHSLeftBottom.Location[1];
+    }
+
+    if (LHS.Location[0] > pRHSRightTop.Location[0] && LHS.Location[1] > pRHSLeftBottom.Location[1])
+    {
+        return LHS.Location[0] == pRHSRightTop.Location[0] && LHS.Location[1] == pRHSRightTop.Location[1];
+    }
+    return false;
+}
+
 
 #pragma endregion
 #pragma region 민영
@@ -191,125 +191,6 @@ struct  Rectangle
 //    return true;
 //}  
 #pragma endregion
-bool Collide(Point const& LHS, Circle const& RHS)
-{
-    // 점의 중점과 원의 중점 사이의 거리가 원의 반지름보다 작거나 같을때 충돌
-    return length(LHS.Location - RHS.Location) <= RHS.Diameter / 2;
-}
-
-
-// 점과 사각형 충돌검사
-bool Collide(Point const& LHS, Rectangle const& RHS)
-{
-    vector<2> const point[5]
-    {
-        {RHS.Location[0] - RHS.Length[0] / 2 , RHS.Location[1] - RHS.Length[1] / 2}, // point[0] -> x : min,  y : min
-        {RHS.Location[0] - RHS.Length[0] / 2 , RHS.Location[1] + RHS.Length[1] / 2}, // point[1] -> x : min,  y : max
-        {RHS.Location[0] + RHS.Length[0] / 2 , RHS.Location[1] - RHS.Length[1] / 2}, // point[2] -> x : max, y : min
-        {RHS.Location[0] + RHS.Length[0] / 2 , RHS.Location[1] + RHS.Length[1] / 2}, // point[3] -> x : max, y : max
-        {LHS.Location[0]								 , LHS.Location[1]							     }  // point[4] -> Point(x,y)
-    };
-    // 실질적으로 axes[1] 과 axes[2]은 필요가 없음
-
-    if (point[4][0] >= point[0][0] && point[4][1] >= point[0][1] && point[4][0] <= point[3][0] && point[4][1] <= point[3][1])
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-// 원과 원 충돌검사
-bool Collide(Circle const& LHS, Circle const& RHS)
-{
-    return length(LHS.Location - RHS.Location) <= LHS.Diameter / 2 + RHS.Diameter / 2;
-
-    /* 원과 원 사이의 충돌 검사
-        circle1의 반지름 : Diameter/2 = r1,  circle2의 반지름 : Diameter/2 = r2
-        circle1과 circle 두 원 중점 사이의 거리 : length
-        lengh = circle1의 Location< , >에서 circle2의 Location < , >의 거리를 빼주면 length
-        sqrt((x1 - x2)^2) + ((y1- y2)^2) = length ^2
-    */
-}
-
-// 원과 사각형 충돌검사
-bool Collide(Circle const& LHS, Rectangle const& RHS)
-{
-    vector<2> const point[5]
-    {
-        {RHS.Location[0] - RHS.Length[0] / 2 , RHS.Location[1] - RHS.Length[1] / 2},  // point[0] -> x : min,  y : min
-        {RHS.Location[0] + RHS.Length[0] / 2 , RHS.Location[1] + RHS.Length[1] / 2},  // point[1] -> x : max, y : max
-        {LHS.Location[0] , LHS.Location[1]},  // point[2] -> Circle(x,y)
-        {RHS.Location[0] - RHS.Length[0] / 2 , RHS.Location[1] + RHS.Length[1] / 2},   // point[3] -> x : min,  y : max
-        {RHS.Location[0] + RHS.Length[0] / 2 , RHS.Location[1] - RHS.Length[1] / 2}    // point[4] -> x : max, y : min
-    };
-
-    if (point[0][0] <= point[2][0] && point[2][0] <= point[1][0]) // 사각형 x min < = 원의 x좌표 && 원의 x좌표<= 사각형 x의 max
-    {
-        if (point[2][1] + LHS.Diameter / 2 >= point[0][1] && point[2][1] <= point[1][1] + LHS.Diameter / 2) // 원의 y좌표에 + 원의 반지름 >= 사각형 y min && 원의 y좌표 <= 사각형 y의 max + 원의 반지름
-            return true;
-    }
-    else if (point[0][1] <= point[2][1] && point[2][1] <= point[1][1]) // 사각형 y min <= 원의 y 좌표 && 원의 y좌표 <= 사각형 y max
-    {
-        if (point[2][0] + LHS.Diameter / 2 >= point[0][0] && point[2][0] <= point[1][0] + LHS.Diameter / 2) // 원의 x 좌표 + 원의 반지름 >= 사각형 x min && 원의 x 좌표 <= 사각형 y의 max + 원의 반지름
-            return true;
-    }
-    else if (length(point[0] - LHS.Location) <= LHS.Diameter / 2)
-        return true;
-    else if (length(point[1] - LHS.Location) <= LHS.Diameter / 2)
-        return true;
-    else if (length(point[3] - LHS.Location) <= LHS.Diameter / 2)
-        return true;
-    else if (length(point[4] - LHS.Location) <= LHS.Diameter / 2)
-        return true;
-
-    //	// 점과 원 충돌검사
-    //	bool Collide(Point const& LHS, Circle const& RHS)
-    //{
-    //	// 점의 중점과 원의 중점 사이의 거리가 원의 반지름보다 작거나 같을때 충돌
-    //	return length(LHS.Location - RHS.Location) <= RHS.Diameter / 2;
-    //}
-}
-bool Collide(Rectangle const& LHS, Rectangle const& RHS)
-{
-    //float v[2];
-    //v[0] = 1;
-    //v[1] = 2;
-
-    vector<2> const distance = LHS.Location - RHS.Location;
-
-    float constexpr radian = 3.141592653f / 180.0f;
-
-    vector<2> const axes[4]			// axis 의 복수형
-    {
-        { cos(LHS.Angle * radian),		sin(LHS.Angle * radian) },
-        { -sin(LHS.Angle * radian),		cos(LHS.Angle * radian) },
-        { cos(RHS.Angle * radian),		sin(RHS.Angle * radian) },
-        { -sin(RHS.Angle * radian),		cos(RHS.Angle * radian) }
-    };
-
-    vector<2> const vectors[4]
-    {
-        axes[0] * (LHS.Length[0] / 2),
-        axes[1] * (LHS.Length[1] / 2),
-        axes[2] * (RHS.Length[0] / 2),
-        axes[3] * (RHS.Length[1] / 2),
-    };
-
-    for (int i = 0; i < 4; ++i)
-    {
-        float sum = 0;
-
-        for (int j = 0; j < 4; ++j)
-            sum += abs(dot(axes[i], vectors[j]));
-
-        if (sum < abs(dot(axes[i], distance)))
-            return false;
-    }
-    return true;
-}
 
 //출력해보고싶어서 만들었습니다
 bool iscrash(int const& dest_x, int const& dest_y, int const dest_size,
@@ -337,13 +218,13 @@ bool iscrash(int const& dest_x, int const& dest_y, int const dest_size,
                     Circle circle;
                     circle.Location = { shape_pos[i][2],shape_pos[i][3] };
                     circle.Diameter = static_cast<float>(shape_pos[i][4]) * 2;
-                    //if(Collide(dest_point,circle)) //점 - 원
-                    //if(Collide(dest_circle,circle)) //원 - 원
                     //if (Collide(dest_rect, circle)) // 사각 - 원
-                    //{
-                    //    shape_pos[i][0] = 1;
-                    //    return true;
-                    //}
+                    //if(Collide(dest_circle,circle)) //원 - 원
+                    if(Collide(dest_point,circle)) //점 - 원
+                    {
+                        shape_pos[i][0] = 1;
+                        return true;
+                    }
                     break;
                 }
                 case rect:
@@ -353,9 +234,9 @@ bool iscrash(int const& dest_x, int const& dest_y, int const dest_size,
                     rect.Angle = 0;
                     rect.Length = { shape_pos[i][4]*2,shape_pos[i][5]*2 };
                     //return Collide(dest_rect, rect);
-                    //if(Collide(dest_point,rect)) //점 - 사각
                     //if(Collide(rect,dest_circle)) //원 - 사각
-                    if (Collide(dest_rect, rect)) //사각 - 사각
+                    //if (Collide(dest_rect, rect)) //사각 - 사각
+                    if(Collide(dest_point,rect)) //점 - 사각
                     {
                         shape_pos[i][0] = 1;
                         return true;

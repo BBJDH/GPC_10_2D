@@ -57,6 +57,38 @@ bool Collide(Circle const& dest_circle, Circle const& src_circle)
 }
 bool Collide(Rectangle const& dest_rect, Rectangle const& src_rect)
 {
+    if ((dest_rect.Angle != 0) or (src_rect.Angle != 0))
+    {
+        vector<2> const distance = dest_rect.Location - src_rect.Location;
+        float constexpr radian = 3.141592653f / 180.0f;
+        vector<2> const axes[4] //axis : 중심선
+        {
+            {cos(dest_rect.Angle*radian),sin(dest_rect.Angle*radian)},
+            {-sin(dest_rect.Angle * radian),cos(dest_rect.Angle * radian)},
+            {cos(dest_rect.Angle * radian),sin(dest_rect.Angle * radian)},
+            {-sin(dest_rect.Angle * radian),cos(dest_rect.Angle * radian)}
+        };
+
+        vector<2> const vectors[4]
+        {
+            axes[0] * (dest_rect.Length[0] / 2),
+            axes[1] * (dest_rect.Length[1] / 2),
+            axes[2] * (src_rect.Length[0] / 2),
+            axes[3] * (src_rect.Length[1] / 2)
+        };
+
+        for (size_t i = 0; i < 4; ++i)
+        {
+            float sum = 0;
+            for (size_t j = 0; j < 4; ++j)
+            {
+                sum += abs(dot(axes[i], vectors[j]));
+            }
+            if (sum < abs(dot(axes[i], distance)))  //분리축이 있다!
+                return false;
+        }
+        return true;
+    }
     vector<2> const sum_length = dest_rect.Length / 2 + src_rect.Length / 2;
     //사각형의 너비 합과 높이 합보다 x간격과 y간격이 더 작으면 충돌
     return (abs(dest_rect.Location[0]- src_rect.Location[0])<=sum_length[0])&& (abs(dest_rect.Location[1] - src_rect.Location[1]) <= sum_length[1]);
@@ -88,9 +120,13 @@ bool Collide(Rectangle const& rect, Circle const& circle)
         return Collide
         (
             Point    { circle.Location },
-            Rectangle{ rect.Length + vector<2>(1,1) * circle.Diameter,
+            Rectangle
+            {
+                       rect.Length + vector<2>(1,1) * circle.Diameter,
                        rect.Angle,
-                       rect.Location });
+                       rect.Location 
+            }
+        );
     }
     else  if (circle.Location[0] < rect.Location[0] && circle.Location[1] < rect.Location[1])//왼쪽 위
     {
@@ -103,21 +139,18 @@ bool Collide(Rectangle const& rect, Circle const& circle)
         Point point_rightup;
         point_rightup.Location = { rect.Location[0] + rect.Length[0] / 2,rect.Location[1] - rect.Length[1] / 2 };
         return Collide(point_rightup, circle);
-
     }
     else  if (circle.Location[0] < rect.Location[0] && circle.Location[1] > rect.Location[1])//왼쪽 아래
     {
         Point point_leftdown;
         point_leftdown.Location = { rect.Location[0] - rect.Length[0] / 2,rect.Location[1] + rect.Length[1] / 2 };
         return Collide(point_leftdown, circle);
-
     }
     else  if (circle.Location[0] > rect.Location[0] && circle.Location[1] > rect.Location[1])//오른쪽 아래
     {
         Point point_rightdown;
         point_rightdown.Location = rect.Location + rect.Length / 2;
         return Collide(point_rightdown, circle);
-
     }
     return false;
 }
