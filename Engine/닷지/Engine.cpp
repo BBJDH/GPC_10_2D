@@ -13,12 +13,13 @@ namespace Rendering
 
 namespace Input
 {
-	//void Procedure
-	//(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, POINT& player);
+	bool Procedure
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, bool ispause);
 	void initplayerpos();
 	POINT const playerpos();
-	void input();
+	int input();
 	bool enter();
+
 }
 namespace Time
 {
@@ -26,8 +27,11 @@ namespace Time
 	(HWND const , UINT const , WPARAM const , LPARAM const );
 	bool isinterval();
 	bool isregentime();
-	bool isprinttime();
+	bool isprint_gameover();
 	float getdelta();
+	void gameover_timeinitialize();
+	void gameover();
+	bool ispauseinterval();
 }
 namespace Missile
 {
@@ -49,7 +53,7 @@ namespace Collision
 
 namespace Engine
 {
-	bool isalive;
+	bool isalive, ispaused;
 	float record_time;
 	LRESULT CALLBACK Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter)
@@ -61,38 +65,43 @@ namespace Engine
 				Rendering::initialize(hwindow);
 				Input::initplayerpos();
 				isalive =true;
+				ispaused = false;
 				record_time=0;
 				return 0;
 			}
 			case WM_APP:
 			{
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);
+
 				if(isalive)
 				{
 					
-					if(Time::isregentime())
-						Missile::push_missile(Input::playerpos());
-					if(Time::isinterval())
+					if (!ispaused)
 					{
-						Input::input();
-						Missile::move_missile();
-						Missile::delete_missile();
-						isalive = !Collision::iscrashed(Missile::vecpoint(),Input::playerpos());
+						if(Time::isregentime())
+							Missile::push_missile(Input::playerpos());
+						if(Time::isinterval())
+						{
+							Input::input();
+							Missile::move_missile();
+							Missile::delete_missile();
+							isalive = !Collision::iscrashed(Missile::vecpoint(),Input::playerpos());
+						}
+						record_time+=Time::getdelta();
+ 						Rendering::update(hwindow, Input::playerpos().x, Input::playerpos().y,
+							Missile::vecpoint(), record_time, false);
 					}
-					record_time+=Time::getdelta();
-					Rendering::update(hwindow, Input::playerpos().x, Input::playerpos().y,
-						Missile::vecpoint(), record_time, false);
 				}
 				else
 				{
-					if(Time::isprinttime())
-						Rendering::update(hwindow, Input::playerpos().x, Input::playerpos().y,
-							Missile::vecpoint(),record_time,true);
-					else
-						Rendering::update(hwindow, Input::playerpos().x, Input::playerpos().y,
-							Missile::vecpoint(), record_time, false);
+					Time::gameover();
+
+					Rendering::update(hwindow, Input::playerpos().x, Input::playerpos().y,
+						Missile::vecpoint(),record_time, Time::isprint_gameover());
+
 					if (Input::enter())
 					{
+						Time::gameover_timeinitialize();
 						Missile::initialize();
 						Input::initplayerpos();
 						isalive = true;
@@ -114,7 +123,11 @@ namespace Engine
 			//	(hwindow, umessage, wparameter, lparameter, player_pos);
 			//	return 0;
 			//}
-
+			case WM_KEYDOWN:
+			{
+				ispaused = Input::Procedure(hwindow, umessage, wparameter, lparameter, ispaused);
+				return 0;
+			}
 			case WM_DESTROY:
 			{
 				Rendering::destroy();

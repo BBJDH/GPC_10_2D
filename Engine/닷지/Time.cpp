@@ -18,8 +18,12 @@ namespace Time
 		float missile_interval = 0;
 		float missile_regenspeed = 0.1f;
 
+		float pause_interval = 0;
+		float const pause_speed = 0.05f;
+
 		float gameover_interval = 0;
-		float gameover_printspeed = 1;
+		bool  isfirstprint = true;
+
 	}
 
 	void Procedure
@@ -38,7 +42,19 @@ namespace Time
 			}
 		}
 	}
-	bool isprinttime()
+	void gameover_timeinitialize()
+	{
+		isfirstprint = true;
+	}
+	void gameover()
+	{
+		if (isfirstprint)
+		{
+			gameover_interval = 0;
+			isfirstprint = false;
+		}
+	}
+	bool isprint_gameover()
 	{
 		gameover_interval += Delta;
 		if (static_cast<int>(gameover_interval) %2)
@@ -63,6 +79,16 @@ namespace Time
 		if (interval > speed)
 		{
 			interval = 0;
+			return true;
+		}
+		return false;
+	}
+	bool ispauseinterval()
+	{
+		pause_interval += Delta;
+		if (pause_interval > pause_speed)
+		{
+			pause_interval = 0;
 			return true;
 		}
 		return false;

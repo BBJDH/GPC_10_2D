@@ -17,32 +17,4 @@
   <ItemGroup>
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="211208_도형충돌판정\Collision.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="211208_도형충돌판정\engine.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="211208_도형충돌판정\Entry.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="211208_도형충돌판정\Rendering.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="211208_도형충돌판정\Shape.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="211208_도형충돌판정\time.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="211208_도형충돌판정\matrix.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="211208_도형충돌판정\vector.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

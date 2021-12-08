@@ -5,6 +5,7 @@ namespace Input
 	{
 		POINT player;
 		int const speed =8;
+		
 	}
 	void initplayerpos()
 	{
@@ -17,9 +18,9 @@ namespace Input
 		return player;
 	}
 
-	void input()
+	int input()
 	{
-		
+		unsigned keycode = 0;
 		if ((GetAsyncKeyState(VK_LEFT) & 0x8000) and (player.x > 0))
 			player.x -= speed;
 		if ((GetAsyncKeyState(VK_RIGHT) & 0x8000) and (player.x < 800))
@@ -28,6 +29,8 @@ namespace Input
 			player.y -= speed;
 		if ((GetAsyncKeyState(VK_DOWN) & 0x8000) and (player.y < 600))
 			player.y += speed;
+
+		return 0;
 	}
 	bool enter()
 	{
@@ -35,38 +38,28 @@ namespace Input
 			return true;
 		return false;
 	}
-	//void Procedure
-	//(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter,POINT & player)
-	//{
-	//	switch (umessage)
-	//	{
-	//		case WM_KEYDOWN:
-	//		{
-	//			switch (wparameter)
-	//			{
-	//				case VK_LEFT:
-	//				{
-	//					player.x -= 8;
-	//					return ;
-	//				}
-	//				case VK_RIGHT:
-	//				{
-	//					player.x += 8;
-	//					return ;
-	//				}
-	//				case VK_UP:
-	//				{
-	//					player.y -= 8;
-	//					return ;
-	//				}
-	//				case VK_DOWN:
-	//				{
-	//					player.y += 8;
-	//					return ;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
 
+	bool Procedure
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, bool ispause)
+	{
+		switch (umessage)
+		{
+		case WM_KEYDOWN:
+		{
+			switch (wparameter)
+			{
+				case 'P':
+				{
+					if (!ispause)
+						return true;
+					return false;
+					if (ispause)
+						return true;
+					return false;
+				}
+			}
+		}
+		}
+		return false;
+	}
 }
