@@ -18,33 +18,30 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="회전 사각형 충돌\Collision.cpp">
+    <ClCompile Include="211208_도형충돌판정\Collision.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="회전 사각형 충돌\engine.cpp">
+    <ClCompile Include="211208_도형충돌판정\engine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="회전 사각형 충돌\Entry.cpp">
+    <ClCompile Include="211208_도형충돌판정\Entry.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="회전 사각형 충돌\Input.cpp">
+    <ClCompile Include="211208_도형충돌판정\Rendering.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="회전 사각형 충돌\Rectangle.cpp">
+    <ClCompile Include="211208_도형충돌판정\Shape.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="회전 사각형 충돌\Rendering.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="회전 사각형 충돌\time.cpp">
+    <ClCompile Include="211208_도형충돌판정\time.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="회전 사각형 충돌\matrix.h">
+    <ClInclude Include="211208_도형충돌판정\matrix.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="회전 사각형 충돌\vector.h">
+    <ClInclude Include="211208_도형충돌판정\vector.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
