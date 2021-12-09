@@ -23,7 +23,7 @@ namespace Rect
     void push_rect(POINT const& player);
     void move_rect();
     std::vector<POINT*> const vecpoint();
-    std::vector<double*> const vecang();
+    std::vector<double*>  vecang();
 }
 namespace Time
 {
@@ -31,7 +31,7 @@ namespace Time
     bool isregentime();
 }
 bool iscrash(POINT const& dest, int const size,
-    std::vector<POINT*> const& rect, std::vector<double*> const& angle);
+    std::vector<POINT*> const& rect, std::vector<double*>  angle);
 namespace Engine
 {
     POINT player;
@@ -57,8 +57,8 @@ namespace Engine
                 Rect::move_rect();
                 Rendering::update(hWindow, player.x, player.y, Rect::vecpoint(),Rect::vecang());
 
-                if(iscrash(player, 100, Rect::vecpoint(), Rect::vecang()))
-                    MessageBox(hWindow, "crashed!", "crashed!", MB_OK);
+                iscrash(player, 100, Rect::vecpoint(), Rect::vecang());
+
             }
             if (Time::isregentime())
             {

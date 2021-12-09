@@ -42,7 +42,7 @@ bool Collide(struct_Rectangle const& LHS, struct_Rectangle const& RHS)
     return true;
 }
 bool iscrash(POINT const& dest, int const size,
-    std::vector<POINT*> const& rect, std::vector<double*> const& angle)
+    std::vector<POINT*> const& rect, std::vector<double*>  angle)
 {
     struct_Rectangle player_rect, enemy_rect;
     player_rect.Angle = 0;
@@ -57,7 +57,10 @@ bool iscrash(POINT const& dest, int const size,
             enemy_rect.Location = { rect[i][0].x,rect[i][0].y };
 
             if (Collide(player_rect, enemy_rect))
-                return true;
+            {
+                angle[i][2] = 1;
+
+            }
         }
     }
     return false;

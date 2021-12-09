@@ -17,7 +17,7 @@ namespace Time
 		float const speed = 0.03f;
 
 		float rect_interval = 0;
-		float rect_regenspeed = 5.0f;
+		float rect_regenspeed = 3.0f;
 	}
 
 	void Procedure

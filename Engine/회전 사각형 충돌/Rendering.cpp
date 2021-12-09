@@ -24,10 +24,10 @@ namespace Rendering
 			{
 				POINT rect[5] = 
 				{	
-					{rectpos[i][1].x,rectpos[i][1].y}, //왼쪽위점  
-					{rectpos[i][2].x,rectpos[i][2].y}, //오른쪽위점
-					{rectpos[i][4].x,rectpos[i][4].y}, //오른쪽아래점
+					{rectpos[i][1].x,rectpos[i][1].y}, //오른쪽위
+					{rectpos[i][2].x,rectpos[i][2].y}, //왼쪽위점
 					{rectpos[i][3].x,rectpos[i][3].y}, //왼쪽아래점
+					{rectpos[i][4].x,rectpos[i][4].y}, //오른쪽아래점
 					{rectpos[i][1].x,rectpos[i][1].y}  //왼쪽위점
 				};
 				Polygon(hvirtualdc, rect,5 );

@@ -23,7 +23,7 @@ struct  Rectangle
 };
 bool Collide(Point const& point, Circle const& circle) 
 {
-    return length(point.Location - circle.Location) < (circle.Diameter / 2);
+    return length(point.Location - circle.Location) <= (circle.Diameter / 2);
 }
 bool Collide(Point const& point, Rectangle const& rect)
 {
