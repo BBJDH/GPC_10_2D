@@ -53,13 +53,12 @@ namespace Input
 					if (!ispause)
 						return true;
 					return false;
-					if (ispause)
-						return true;
-					return false;
 				}
 			}
 		}
 		}
+		if (ispause)
+			return true;
 		return false;
 	}
 }

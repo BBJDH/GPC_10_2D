@@ -21,6 +21,15 @@
   <ItemGroup>
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="닷지\Collision.cpp" />
+    <ClCompile Include="닷지\Engine.cpp" />
+    <ClCompile Include="닷지\Entry.cpp" />
+    <ClCompile Include="닷지\Input.cpp" />
+    <ClCompile Include="닷지\Missile.cpp" />
+    <ClCompile Include="닷지\Rendering.cpp" />
+    <ClCompile Include="닷지\Time.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

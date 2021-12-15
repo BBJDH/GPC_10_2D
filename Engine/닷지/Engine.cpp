@@ -75,7 +75,6 @@ namespace Engine
 
 				if(isalive)
 				{
-					
 					if (!ispaused)
 					{
 						if(Time::isregentime())
@@ -107,10 +106,8 @@ namespace Engine
 						isalive = true;
 						record_time = 0;
 					}
-
 				}
 	
-
 				return 0;
 			}
 			//case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
@@ -125,7 +122,8 @@ namespace Engine
 			//}
 			case WM_KEYDOWN:
 			{
-				ispaused = Input::Procedure(hwindow, umessage, wparameter, lparameter, ispaused);
+				if(isalive)
+					ispaused = Input::Procedure(hwindow, umessage, wparameter, lparameter, ispaused);
 				return 0;
 			}
 			case WM_DESTROY:

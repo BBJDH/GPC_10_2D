@@ -85,11 +85,11 @@ namespace Rendering
 		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
 		SelectObject(hvirtualdc, hvirtualbit);
 
-		drawbitmp(hvirtualdc,0,0,800,600,hmapbit);
+		drawbitmp(hvirtualdc,0,0,800,600,hmapbit);			//맵 파일 그리기
 		drawbitmp_transparent(hvirtualdc,player_x - (fighter.bmWidth/2),
-			player_y - (fighter.bmHeight/2),fighter,hfighterbit);
+			player_y - (fighter.bmHeight/2),fighter,hfighterbit);	//비행기 그리기
 		
-		if(!missilepos.empty())
+		if(!missilepos.empty())								//미사일 그리기(개수만큼)
 		{
 			for (size_t i = 0; i < missilepos.size(); i++)
 			{
@@ -97,52 +97,25 @@ namespace Rendering
 					missilepos[i].y - (missile.bmHeight / 2), missile, hmissilebit);
 			}
 		}
-		if(is_printover)
+		if(is_printover)			//게임오버 메세지 그리기
 		{
 			drawbitmp_transparent(hvirtualdc, (800 - over.bmWidth) / 2, (600 - over.bmHeight) / 2, over, hgameoverbit);
 		}
-		SetBkMode(hvirtualdc, TRANSPARENT);
+		SetBkMode(hvirtualdc, TRANSPARENT);					
 		SetTextColor(hvirtualdc,RGB(255,255,255));
-		std::string temp = "Missile :" + std::to_string(missilepos.size());
+		std::string temp = "Missile :" + std::to_string(missilepos.size());		//미사일개수 텍스트
 		TextOut(hvirtualdc,0,0, temp.c_str(), static_cast<int>(temp.size()));
 		
-	    temp = "Time :" + std::to_string(time);
+	    temp = "Time :" + std::to_string(time);									//버틴시간 텍스트
 		TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
 
-		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);
+		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);					//다그린그림 옮겨그리기
+
 		DeleteDC(hvirtualdc);
 		DeleteObject(hvirtualbit);
 		ReleaseDC(hwindow, hdc);
 	}
-	/*void gameover(HWND const& hwindow, int const player_x, int const player_y,
-		std::vector<POINT> const& missilepos)
-	{
-		HDC hdc = GetDC(hwindow);
-		HDC hvirtualdc = CreateCompatibleDC(hdc);
-		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
-		SelectObject(hvirtualdc, hvirtualbit);
 
-		drawbitmp(hvirtualdc, 0, 0, 800, 600, hmapbit);
-		drawbitmp_transparent(hvirtualdc, player_x - (fighter.bmWidth / 2),
-			player_y - (fighter.bmHeight / 2), fighter, hfighterbit);
-
-		if (!missilepos.empty())
-		{
-
-			for (size_t i = 0; i < missilepos.size(); i++)
-			{
-				drawbitmp_transparent(hvirtualdc, missilepos[i].x - (missile.bmWidth / 2),
-					missilepos[i].y - (missile.bmHeight / 2), missile, hmissilebit);
-			}
-
-		}
-
-		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);
-		DeleteDC(hvirtualdc);
-		DeleteObject(hvirtualbit);
-		ReleaseDC(hwindow, hdc);
-		
-	}*/
 	void destroy()
 	{
 		DeleteObject(hmapbit);
