@@ -22,6 +22,7 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="포트리스테스트\Object.cpp" />
     <ClCompile Include="포트리스테스트\Missile.cpp" />
     <ClCompile Include="포트리스테스트\Character.cpp" />
     <ClCompile Include="포트리스테스트\Collision.cpp" />
@@ -32,6 +33,7 @@
     <ClCompile Include="포트리스테스트\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="포트리스테스트\Object.h" />
     <ClInclude Include="포트리스테스트\Missile.h" />
     <ClInclude Include="포트리스테스트\Character.h" />
     <ClInclude Include="포트리스테스트\stdafx.h" />

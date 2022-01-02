@@ -1,23 +1,21 @@
 #pragma once
-#include"stdafx.h"
-class Character
+#include"Object.h"
+class Character : public Object
 {
 private:
-	Position	   pos;
 	unsigned	   hp;
-	unsigned const width;
-	unsigned const height;
 	unsigned const move_speed;
 	float		   fall_speed;
 	float          stand_angle;
 
 public:
-	Position getpos() const;
+	Character();
 	unsigned gethp() const;
 	unsigned getwidth() const;
 	unsigned getheight() const;
 	void calc_move();
-
+	void move();
+	
 	
 	
 

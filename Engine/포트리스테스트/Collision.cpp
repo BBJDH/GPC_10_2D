@@ -1,5 +1,6 @@
 #include<Windows.h>
 #include<vector>
+#include"Object.h"
 
 
 namespace Collision
@@ -37,8 +38,10 @@ namespace Collision
 		}
 				return false;
 	}
-	//충돌판정 로직
-	//점대점
-	//플레이어 - 미사일 간격이 15px 이하면 충돌
+	bool Collide(HDC const hdc,int const x, int const y)
+	{
+		COLORREF color = GetPixel(hdc, x, y);
+		return false;
+	}
 
 }

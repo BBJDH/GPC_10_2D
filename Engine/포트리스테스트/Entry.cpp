@@ -40,7 +40,7 @@ int WINAPI WinMain
 	dodgewindow.cx        = 800;
 	dodgewindow.cy        = 600;
 	dodgewindow.lpszClass = "basic";
-	dodgewindow.lpszName  = "Dodge This!";
+	dodgewindow.lpszName  = "Fortress";
 	dodgewindow.style     = WS_OVERLAPPED | \
 							WS_CAPTION | \
 							WS_MINIMIZEBOX | \

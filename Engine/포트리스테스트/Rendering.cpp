@@ -26,7 +26,7 @@ namespace Rendering
 		hfighterbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/spaceshipset32x32/player_ship.bmp"),
+			TEXT("./소스파일/포트리스/캐논_오른쪽.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -77,36 +77,24 @@ namespace Rendering
 		DeleteDC(hbufferdc);
 	}
 
-	void update(HWND const& hwindow, int const player_x, int const player_y,
-		std::vector<POINT> const& missilepos, float const time, bool const is_printover)
+	void update(HWND const& hwindow, float const player_x, float const player_y,
+		 float const time)
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
 		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
 		SelectObject(hvirtualdc, hvirtualbit);
 
-		drawbitmp(hvirtualdc,0,0,800,600,hmapbit);			//맵 파일 그리기
-		drawbitmp_transparent(hvirtualdc,player_x - (fighter.bmWidth/2),
-			player_y - (fighter.bmHeight/2),fighter,hfighterbit);	//비행기 그리기
+		//drawbitmp(hvirtualdc,0,0,800,600,hmapbit);			//맵 파일 그리기
+		Rectangle(hvirtualdc,0,500,800,600);
+		drawbitmp_transparent(hvirtualdc, static_cast<const int>(player_x) - (fighter.bmWidth/2),
+			static_cast<const int>(player_y) - (fighter.bmHeight/2),fighter,hfighterbit);	//비행기 그리기
 		
-		if(!missilepos.empty())								//미사일 그리기(개수만큼)
-		{
-			for (size_t i = 0; i < missilepos.size(); i++)
-			{
-				drawbitmp_transparent(hvirtualdc, missilepos[i].x - (missile.bmWidth / 2),
-					missilepos[i].y - (missile.bmHeight / 2), missile, hmissilebit);
-			}
-		}
-		if(is_printover)			//게임오버 메세지 그리기
-		{
-			drawbitmp_transparent(hvirtualdc, (800 - over.bmWidth) / 2, (600 - over.bmHeight) / 2, over, hgameoverbit);
-		}
+
 		SetBkMode(hvirtualdc, TRANSPARENT);					
 		SetTextColor(hvirtualdc,RGB(255,255,255));
-		std::string temp = "Missile :" + std::to_string(missilepos.size());		//미사일개수 텍스트
-		TextOut(hvirtualdc,0,0, temp.c_str(), static_cast<int>(temp.size()));
+		std::string temp = "Time :" + std::to_string(time);		//운동시간 텍스트
 		
-	    temp = "Time :" + std::to_string(time);									//버틴시간 텍스트
 		TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
 
 		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);					//다그린그림 옮겨그리기
