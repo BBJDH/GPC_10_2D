@@ -47,7 +47,7 @@ namespace Engine
 			case WM_CREATE:
 			{
 				Rendering::initialize(hwindow);
-				tank.ballistics_initialize(0, {0,0});
+				tank.ballistics_initialize(1, 100);
 				
 				return 0;
 			}
