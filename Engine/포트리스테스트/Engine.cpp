@@ -6,16 +6,16 @@
 namespace Rendering
 {
 	void initialize(HWND const& hwindow);
-	void update(HWND const& hwindow, float const player_x, float const player_y,
-		 float const time);
-
+	void update(HWND const& hwindow, std::vector<Object> const& obj);
+	BITMAP const getbitmap();
 	void destroy();
+	HDC getdc();
 }
 
 namespace Input
 {
-	bool Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, bool ispause);
+	void Procedure
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object>& obj);
 
 
 }
@@ -23,22 +23,26 @@ namespace Time
 {
 	void Procedure
 	(HWND const , UINT const , WPARAM const , LPARAM const );
-	float getdelta();
+	float const getdelta();
 }
 namespace Missile
 {
 
 }
-namespace Collision
+namespace Physics
 {
-
+	void Collide_objects(HWND const& hwindow, std::vector<Object>& obj);
+	void Move(std::vector<Object>& obj, float const delta);
 }
 
 namespace Engine
 {
 	bool isalive, ispaused;
 	float record_time;
-	Object tank = Object();
+
+	std::vector<Object> tank;
+	std::vector<Object> missile;
+	
 	LRESULT CALLBACK Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter)
 	{
@@ -47,32 +51,35 @@ namespace Engine
 			case WM_CREATE:
 			{
 				Rendering::initialize(hwindow);
-				tank.ballistics_initialize(1, 100);
+				//tank.push_back(Object
+				//(
+				//	{ 400, 0 },
+				//	Rendering::getbitmap().bmWidth / 2,
+				//	Rendering::getbitmap().bmHeight / 2
+				//));
+				//tank[0].ballistics_initialize(0, 0);
 				
 				return 0;
 			}
 			case WM_APP:
 			{
-				Rendering::update(hwindow, tank.getpos().x, tank.getpos().y, tank.gettime());
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);
-				tank.ballistics_equation(Time::getdelta());
+				Rendering::update(hwindow, tank);
+				Physics::Move(tank,Time::getdelta());
+				Physics::Collide_objects(hwindow , tank);
 				return 0;
 			}
-			//case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
-			//case WM_SYSKEYDOWN:   case WM_LBUTTONDOWN: case WM_LBUTTONUP:
-			//case WM_SYSKEYUP:     case WM_RBUTTONDOWN: case WM_RBUTTONUP:
-			//case WM_KEYDOWN:      case WM_MBUTTONDOWN: case WM_MBUTTONUP:
-			//case WM_KEYUP:        case WM_XBUTTONDOWN: case WM_XBUTTONUP:
-			//{
-			//	Input::Procedure
-			//	(hwindow, umessage, wparameter, lparameter, player_pos);
-			//	return 0;
-			//}
-			case WM_KEYDOWN:
+			case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
+			case WM_SYSKEYDOWN:   case WM_LBUTTONDOWN: case WM_LBUTTONUP:
+			case WM_SYSKEYUP:     case WM_RBUTTONDOWN: case WM_RBUTTONUP:
+			case WM_KEYDOWN:      case WM_MBUTTONDOWN: case WM_MBUTTONUP:
+			case WM_KEYUP:        case WM_XBUTTONDOWN: case WM_XBUTTONUP:
 			{
-
+				Input::Procedure
+				(hwindow, umessage, wparameter, lparameter, tank);
 				return 0;
 			}
+
 			case WM_DESTROY:
 			{
 				ExitProcess(0);

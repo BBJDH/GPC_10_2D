@@ -97,7 +97,7 @@ namespace Time
 	{
 		return Elapsed;
 	}
-	float getdelta()
+	float const getdelta()
 	{
 		return Delta;
 	}

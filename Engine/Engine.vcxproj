@@ -25,7 +25,7 @@
     <ClCompile Include="포트리스테스트\Object.cpp" />
     <ClCompile Include="포트리스테스트\Missile.cpp" />
     <ClCompile Include="포트리스테스트\Character.cpp" />
-    <ClCompile Include="포트리스테스트\Collision.cpp" />
+    <ClCompile Include="포트리스테스트\Physics.cpp" />
     <ClCompile Include="포트리스테스트\Engine.cpp" />
     <ClCompile Include="포트리스테스트\Entry.cpp" />
     <ClCompile Include="포트리스테스트\Input.cpp" />

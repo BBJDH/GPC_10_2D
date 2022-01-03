@@ -1,64 +1,46 @@
 #include<Windows.h>
+#include<vector>
+#include"Object.h"
 namespace Input
 {
 	namespace
 	{
-		POINT player;
 		int const speed =8;
-		
-	}
-	void initplayerpos()
-	{
-		player.x = 400;
-		player.y = 300;
-
-	}
-	POINT const playerpos()
-	{
-		return player;
 	}
 
-	int input()
-	{
-		unsigned keycode = 0;
-		if ((GetAsyncKeyState(VK_LEFT) & 0x8000) and (player.x > 0))
-			player.x -= speed;
-		if ((GetAsyncKeyState(VK_RIGHT) & 0x8000) and (player.x < 800))
-			player.x += speed;
-		if ((GetAsyncKeyState(VK_UP) & 0x8000) and (player.y > 0))
-			player.y -= speed;
-		if ((GetAsyncKeyState(VK_DOWN) & 0x8000) and (player.y < 600))
-			player.y += speed;
-
-		return 0;
-	}
-	bool enter()
-	{
-		if(GetAsyncKeyState(VK_RETURN) & 0x8000)
-			return true;
-		return false;
-	}
-
-	bool Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, bool ispause)
+	void Procedure
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object> & obj)
 	{
 		switch (umessage)
 		{
-		case WM_KEYDOWN:
-		{
-			switch (wparameter)
+			case WM_LBUTTONDOWN:
 			{
-				case 'P':
-				{
-					if (!ispause)
-						return true;
-					return false;
-				}
+				obj.push_back
+				(
+					Object
+					(
+						{
+							static_cast<float>(LOWORD(lparameter)),
+							static_cast<float>(HIWORD(lparameter))
+						},
+						24,
+						21
+					)
+				);
+				obj.back().ballistics_initialize(0, 0);
+				return;
 			}
+			case WM_RBUTTONDOWN:
+			{
+				unsigned x = LOWORD(lparameter);
+				unsigned y = HIWORD(lparameter);
+				return;
+			}
+			return;
+
 		}
-		}
-		if (ispause)
-			return true;
-		return false;
+
+
 	}
+
 }

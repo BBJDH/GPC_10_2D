@@ -4,11 +4,6 @@ namespace Engine{
 	LRESULT CALLBACK Procedure
 	(HWND , UINT , WPARAM , LPARAM );
 }
-struct Pos
-{
-	int x;
-	int y;
-};
 
 int WINAPI WinMain
 (
@@ -28,7 +23,7 @@ int WINAPI WinMain
 	basic.hInstance      = hInstance;
 	basic.hIcon          = LoadIcon(hInstance,IDI_APPLICATION);
 	basic.hCursor        = LoadCursor(hInstance,IDC_HAND);
-	basic.hbrBackground  = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+	basic.hbrBackground  = static_cast<HBRUSH>(GetStockObject(GRAY_BRUSH));
 	basic.lpszClassName  = "basic";
 	basic.hIconSm        = LoadIcon(hInstance,IDI_APPLICATION);
 

@@ -1,6 +1,7 @@
 #include<Windows.h>
 #include<vector>
 #include<string>
+#include"Object.h"
 
 namespace Rendering
 {
@@ -8,12 +9,31 @@ namespace Rendering
 	{
 		HBITMAP hmapbit, hfighterbit, hmissilebit,hgameoverbit;
 		BITMAP fighter, missile, over;
+		HDC hmapdc;
 	}
+
+	BITMAP const getbitmap()
+	{
+		return fighter;
+	}
+
 	void initialize(HWND const&  hwindow)
 	{
 		HDC hdc = GetDC(hwindow);
 		hmapbit = CreateCompatibleBitmap(hdc, 800, 600);
 		hfighterbit = CreateCompatibleBitmap(hdc, 50, 50);
+		
+		//
+		//hmapdc = CreateCompatibleDC(hdc);
+		//HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(255, 0, 255));
+		//HBRUSH oldBrush = (HBRUSH)SelectObject(hmapdc, myBrush);
+
+		//HBITMAP hvirtualbit = CreateCompatibleBitmap(hmapdc, 800, 600);
+		//SelectObject(hmapdc, hvirtualbit);
+
+		//Rectangle(hmapdc, 0, 0, 800, 600);
+
+
 		hmapbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
@@ -26,7 +46,7 @@ namespace Rendering
 		hfighterbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/포트리스/캐논_오른쪽.bmp"),
+			TEXT("./소스파일/포트리스/Asset/뉴포트리스/탱크3 2픽셀.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -53,6 +73,10 @@ namespace Rendering
 			LR_LOADFROMFILE | LR_DEFAULTSIZE
 		));
 		GetObject(hgameoverbit, sizeof(BITMAP), &over);
+
+		//DeleteObject(hvirtualbit);
+		//SelectObject(hmapdc, oldBrush);
+		//DeleteObject(myBrush);
 		ReleaseDC(hwindow, hdc);
 
 	}
@@ -77,8 +101,7 @@ namespace Rendering
 		DeleteDC(hbufferdc);
 	}
 
-	void update(HWND const& hwindow, float const player_x, float const player_y,
-		 float const time)
+	void update(HWND const& hwindow, std::vector<Object> const & obj)
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
@@ -86,18 +109,21 @@ namespace Rendering
 		SelectObject(hvirtualdc, hvirtualbit);
 
 		//drawbitmp(hvirtualdc,0,0,800,600,hmapbit);			//맵 파일 그리기
-		Rectangle(hvirtualdc,0,500,800,600);
-		drawbitmp_transparent(hvirtualdc, static_cast<const int>(player_x) - (fighter.bmWidth/2),
-			static_cast<const int>(player_y) - (fighter.bmHeight/2),fighter,hfighterbit);	//비행기 그리기
-		
-
-		SetBkMode(hvirtualdc, TRANSPARENT);					
-		SetTextColor(hvirtualdc,RGB(255,255,255));
-		std::string temp = "Time :" + std::to_string(time);		//운동시간 텍스트
-		
-		TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
-
+		//Rectangle(hvirtualdc,0,500,800,600);
+		Ellipse(hvirtualdc, 0, 500, 250, 600);
+		Ellipse(hvirtualdc, 250, 500, 500, 600);
+		Ellipse(hvirtualdc, 500, 500, 800, 600);
+		if (!obj.empty())								//미사일 그리기(개수만큼)
+		{
+			for (size_t i = 0; i < obj.size(); i++)
+			{
+				drawbitmp_transparent(hvirtualdc, static_cast<const int>(obj[i].getpos().x) - (fighter.bmWidth / 2),
+					static_cast<const int>(obj[i].getpos().y) - (fighter.bmHeight / 2), fighter, hfighterbit);	//비행기 그리기
+			}
+		}
 		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);					//다그린그림 옮겨그리기
+
+
 
 		DeleteDC(hvirtualdc);
 		DeleteObject(hvirtualbit);
@@ -110,6 +136,10 @@ namespace Rendering
 		DeleteObject(hfighterbit);
 		DeleteObject(hmissilebit);
 		DeleteObject(hgameoverbit);
+	}
+	HDC getdc()
+	{
+		return hmapdc;
 	}
 
 }
