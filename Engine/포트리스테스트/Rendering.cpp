@@ -46,7 +46,7 @@ namespace Rendering
 		hfighterbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/포트리스/Asset/뉴포트리스/탱크3 2픽셀.bmp"),
+			TEXT("./소스파일/포트리스/Asset/뉴포트리스/M_Canon_Tank_Left.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -86,7 +86,8 @@ namespace Rendering
 		HDC hmemdc = CreateCompatibleDC(hdc_dest);
 		HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc,hbitmp));
 
-		TransparentBlt(hdc_dest,x,y,bit_src.bmWidth,bit_src.bmHeight, hmemdc,0,0, bit_src.bmWidth, bit_src.bmHeight,RGB(255,255,255));
+		TransparentBlt(hdc_dest,x,y,bit_src.bmWidth,bit_src.bmHeight, hmemdc,
+			0,0, bit_src.bmWidth, bit_src.bmHeight,RGB(255,0,255));
 		SelectObject(hmemdc,oldbit);
 		DeleteDC(hmemdc);
 

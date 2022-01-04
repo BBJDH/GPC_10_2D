@@ -14,8 +14,6 @@ private:
 	unsigned damage;
 	float    move_angle;
 	float    move_speed;
-
-
 };
 //
 //미사일 클래스

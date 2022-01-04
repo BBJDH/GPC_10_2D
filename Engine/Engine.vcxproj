@@ -22,16 +22,21 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="211208_도형충돌판정_합본\Collision.cpp" />
-    <ClCompile Include="211208_도형충돌판정_합본\engine.cpp" />
-    <ClCompile Include="211208_도형충돌판정_합본\Entry.cpp" />
-    <ClCompile Include="211208_도형충돌판정_합본\Rendering.cpp" />
-    <ClCompile Include="211208_도형충돌판정_합본\Shape.cpp" />
-    <ClCompile Include="211208_도형충돌판정_합본\time.cpp" />
+    <ClCompile Include="포트리스테스트\Character.cpp" />
+    <ClCompile Include="포트리스테스트\Engine.cpp" />
+    <ClCompile Include="포트리스테스트\Entry.cpp" />
+    <ClCompile Include="포트리스테스트\Input.cpp" />
+    <ClCompile Include="포트리스테스트\Missile.cpp" />
+    <ClCompile Include="포트리스테스트\Object.cpp" />
+    <ClCompile Include="포트리스테스트\Physics.cpp" />
+    <ClCompile Include="포트리스테스트\Rendering.cpp" />
+    <ClCompile Include="포트리스테스트\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="211208_도형충돌판정_합본\matrix.h" />
-    <ClInclude Include="211208_도형충돌판정_합본\vector.h" />
+    <ClInclude Include="포트리스테스트\Character.h" />
+    <ClInclude Include="포트리스테스트\Missile.h" />
+    <ClInclude Include="포트리스테스트\Object.h" />
+    <ClInclude Include="포트리스테스트\stdafx.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

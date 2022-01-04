@@ -53,12 +53,13 @@ namespace Physics
 	void Collide_object(HWND const& hwindow, Object & obj)
 	{
 		HDC hdc = GetDC(hwindow);
-		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x-1);
-		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight()-4);
+		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x-1);//이미지 x가운데에서 1만큼왼쪽
+		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight());
+		//이미지 맨아래 y좌표
 
-		for (unsigned i = start_y; i < start_y + 3; ++i)
+		for (unsigned i = start_y; i < start_y + 4; ++i) 
 		{
-			for (unsigned  j = start_x; j < start_x + 4; ++j)
+			for (unsigned  j = start_x; j < start_x + 3; ++j) //중점에서 
 			{
 				if(Collide(hdc, j, i))
 				{
