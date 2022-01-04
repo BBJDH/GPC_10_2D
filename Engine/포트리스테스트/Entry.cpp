@@ -23,7 +23,7 @@ int WINAPI WinMain
 	basic.hInstance      = hInstance;
 	basic.hIcon          = LoadIcon(hInstance,IDI_APPLICATION);
 	basic.hCursor        = LoadCursor(hInstance,IDC_HAND);
-	basic.hbrBackground  = static_cast<HBRUSH>(GetStockObject(GRAY_BRUSH));
+	basic.hbrBackground  = static_cast<HBRUSH>(GetStockObject(RGB(255,0,255)));
 	basic.lpszClassName  = "basic";
 	basic.hIconSm        = LoadIcon(hInstance,IDI_APPLICATION);
 

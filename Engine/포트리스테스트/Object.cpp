@@ -5,12 +5,12 @@ velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, is
 {
 }
 
-Object::Object(Position const pos, unsigned const width, unsigned const height) : pos{ pos }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ width }, height{ height },
+Object::Object(Position const & pos, unsigned const width, unsigned const height) : pos{ pos }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ width }, height{ height },
 velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, is_stand{ true }
 {
 }
 
-void Object::moveto(Position pos)
+void Object::moveto(Position const & pos)
 {
 	this->pos.x = pos.x;
 	this->pos.y = pos.y;
@@ -48,9 +48,10 @@ unsigned const Object::getheight() const
 void Object::stop_move()
 {
 	this->is_stand = true;
+	this->move_time = 0.0f;
 }
 
-void Object::ballistics_equation(float delta)
+void Object::ballistics_equation(float const delta)
 {
 	if (!is_stand)
 	{

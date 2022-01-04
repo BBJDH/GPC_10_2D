@@ -5,6 +5,8 @@
 #define Radian (PI/180.0f)
 #define SPEED 6
 
+
+
 struct Position
 {
 	float x;

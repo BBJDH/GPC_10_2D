@@ -9,7 +9,7 @@ namespace Input
 	}
 
 	void Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object> & obj)
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object> & obj, HDC const& hmapdc)
 	{
 		switch (umessage)
 		{
@@ -34,6 +34,12 @@ namespace Input
 			{
 				unsigned x = LOWORD(lparameter);
 				unsigned y = HIWORD(lparameter);
+
+				HBRUSH hNewBrush = CreateSolidBrush(RGB(0,0,0));
+				SelectObject(hmapdc, hNewBrush);
+
+				Ellipse(hmapdc, x-20, y-20, x+20, y+20);
+
 				return;
 			}
 			return;

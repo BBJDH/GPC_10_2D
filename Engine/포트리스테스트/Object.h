@@ -18,13 +18,13 @@ private:
 
 public:
 	Object();
-	Object(Position const pos, unsigned const width, unsigned const height);
+	Object(Position const & pos, unsigned const width, unsigned const height);
 	Position const getpos() const;
 	float const gettime() const;
 	unsigned const getwidth() const;
 	unsigned const getheight() const;
-	void moveto(Position pos);
-	void ballistics_equation(float move_time);
+	void moveto(Position const & pos);
+	void ballistics_equation(float const move_time);
 	void ballistics_initialize(float const move_angle, float const velocity);
 	void stop_move();
 };

@@ -40,46 +40,55 @@ namespace Physics
 	}
 	bool Collide(HDC const hdc,int const x, int const y)
 	{
+		//pipeline -> 스왑체인 텍스쳐2d를 gdi로 가져와서 getpixel
+
 		COLORREF const color = GetPixel(hdc, x, y);
 		int const r = GetRValue(color);
 		int const g = GetRValue(color);
 		int const b = GetRValue(color);
+
+
+		//if (y > 510)
+		//	int i = 0;
 
 		//if(!(r==255 and g ==0 and b == 255))
 		if(r==255 and g ==255 and b == 255)
 			return true;
 		return false;
 	}
-	void Collide_object(HWND const& hwindow, Object & obj)
+	void Collide_object(HWND const& hwindow, Object & obj, HDC const& hmapdc)
 	{
-		HDC hdc = GetDC(hwindow);
-		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x-1);//이미지 x가운데에서 1만큼왼쪽
+		//HDC hdc = GetDC(hwindow);
+		//HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmapdc, hmapdc));
+
+		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x-2);//이미지 x가운데에서 2만큼왼쪽
 		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight());
 		//이미지 맨아래 y좌표
 
 		for (unsigned i = start_y; i < start_y + 4; ++i) 
 		{
-			for (unsigned  j = start_x; j < start_x + 3; ++j) //중점에서 
+			for (unsigned  j = start_x; j < start_x + 4; ++j) //중점에서 
 			{
-				if(Collide(hdc, j, i))
+				if(Collide(hmapdc, j, i))
 				{
 					obj.moveto({obj.getpos().x,static_cast<float>(i- obj.getheight())});
 					obj.stop_move();
-					ReleaseDC(hwindow, hdc);
+					//ReleaseDC(hwindow, hdc);
 					return;
 				}
 			}
 		}
-		ReleaseDC(hwindow, hdc);
+		//SelectObject(hdc, oldbit);
+		//ReleaseDC(hwindow, hdc);
 
 	}
-	void Collide_objects(HWND const& hwindow, std::vector<Object> & obj)
+	void Collide_objects(HWND const& hwindow, std::vector<Object> & obj, HDC const & hmapdc)
 	{
 		if (!obj.empty())
 		{
 			for (size_t i = 0; i < obj.size(); i++)
 			{
-				Collide_object(hwindow,obj[i]);
+				Collide_object(hwindow,obj[i], hmapdc);
 			}
 		}
 	}

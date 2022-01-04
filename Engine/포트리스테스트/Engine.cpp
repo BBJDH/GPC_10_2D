@@ -9,14 +9,14 @@ namespace Rendering
 	void update(HWND const& hwindow, std::vector<Object> const& obj);
 	BITMAP const getbitmap();
 	void destroy();
-	HDC getdc();
+	HDC getmapdc();
+	HBITMAP getmapbit();
 }
 
 namespace Input
 {
 	void Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object>& obj);
-
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object>& obj, HDC const& hmapdc);
 
 }
 namespace Time
@@ -31,7 +31,7 @@ namespace Missile
 }
 namespace Physics
 {
-	void Collide_objects(HWND const& hwindow, std::vector<Object>& obj);
+	void Collide_objects(HWND const& hwindow, std::vector<Object>& obj, HDC const& hmapdc);
 	void Move(std::vector<Object>& obj, float const delta);
 }
 
@@ -51,13 +51,7 @@ namespace Engine
 			case WM_CREATE:
 			{
 				Rendering::initialize(hwindow);
-				//tank.push_back(Object
-				//(
-				//	{ 400, 0 },
-				//	Rendering::getbitmap().bmWidth / 2,
-				//	Rendering::getbitmap().bmHeight / 2
-				//));
-				//tank[0].ballistics_initialize(0, 0);
+
 				
 				return 0;
 			}
@@ -66,7 +60,7 @@ namespace Engine
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);
 				Rendering::update(hwindow, tank);
 				Physics::Move(tank,Time::getdelta());
-				Physics::Collide_objects(hwindow , tank);
+				Physics::Collide_objects(hwindow , tank, Rendering::getmapdc());
 				return 0;
 			}
 			case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
@@ -76,7 +70,7 @@ namespace Engine
 			case WM_KEYUP:        case WM_XBUTTONDOWN: case WM_XBUTTONUP:
 			{
 				Input::Procedure
-				(hwindow, umessage, wparameter, lparameter, tank);
+				(hwindow, umessage, wparameter, lparameter, tank, Rendering::getmapdc());
 				return 0;
 			}
 

@@ -7,7 +7,7 @@ namespace Rendering
 {
 	namespace
 	{
-		HBITMAP hmapbit, hfighterbit, hmissilebit,hgameoverbit;
+		HBITMAP hmapbit, hfighterbit, hmissilebit,hgameoverbit,hmagentabit;
 		BITMAP fighter, missile, over;
 		HDC hmapdc;
 	}
@@ -19,20 +19,20 @@ namespace Rendering
 
 	void initialize(HWND const&  hwindow)
 	{
+		//HBRUSH hbrush = CreateSolidBrush(RGB(255, 0, 255));
+
 		HDC hdc = GetDC(hwindow);
 		hmapbit = CreateCompatibleBitmap(hdc, 800, 600);
+		hmagentabit = CreateCompatibleBitmap(hdc, 800, 600);
 		hfighterbit = CreateCompatibleBitmap(hdc, 50, 50);
-		
-		//
-		//hmapdc = CreateCompatibleDC(hdc);
-		//HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(255, 0, 255));
-		//HBRUSH oldBrush = (HBRUSH)SelectObject(hmapdc, myBrush);
+		hmapdc = CreateCompatibleDC(hdc);
+		SelectObject(hmapdc, hmagentabit);
 
-		//HBITMAP hvirtualbit = CreateCompatibleBitmap(hmapdc, 800, 600);
-		//SelectObject(hmapdc, hvirtualbit);
 
-		//Rectangle(hmapdc, 0, 0, 800, 600);
-
+		//Rectangle(hmapdc,0,0,800,600);
+		Ellipse(hmapdc, 0, 500, 250, 600);			//맵불러오기 (흰색)
+		Ellipse(hmapdc, 250, 500, 500, 600);
+		Ellipse(hmapdc, 500, 500, 800, 600);
 
 		hmapbit = static_cast<HBITMAP>(LoadImage
 		(
@@ -74,9 +74,7 @@ namespace Rendering
 		));
 		GetObject(hgameoverbit, sizeof(BITMAP), &over);
 
-		//DeleteObject(hvirtualbit);
-		//SelectObject(hmapdc, oldBrush);
-		//DeleteObject(myBrush);
+
 		ReleaseDC(hwindow, hdc);
 
 	}
@@ -109,12 +107,14 @@ namespace Rendering
 		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
 		SelectObject(hvirtualdc, hvirtualbit);
 
+
+		BitBlt(hvirtualdc, 0, 0, 800, 600, hmapdc, 0, 0, SRCCOPY);					//다그린그림 옮겨그리기
+
+
 		//drawbitmp(hvirtualdc,0,0,800,600,hmapbit);			//맵 파일 그리기
 		//Rectangle(hvirtualdc,0,500,800,600);
-		Ellipse(hvirtualdc, 0, 500, 250, 600);
-		Ellipse(hvirtualdc, 250, 500, 500, 600);
-		Ellipse(hvirtualdc, 500, 500, 800, 600);
-		if (!obj.empty())								//미사일 그리기(개수만큼)
+
+		if (!obj.empty())								//오브젝트 그리기(개수만큼)
 		{
 			for (size_t i = 0; i < obj.size(); i++)
 			{
@@ -133,14 +133,20 @@ namespace Rendering
 
 	void destroy()
 	{
+		DeleteObject(hmagentabit);
 		DeleteObject(hmapbit);
 		DeleteObject(hfighterbit);
 		DeleteObject(hmissilebit);
 		DeleteObject(hgameoverbit);
 	}
-	HDC getdc()
+
+	HDC  getmapdc()
 	{
 		return hmapdc;
+	}
+	HBITMAP getmapbit()
+	{
+		return hmagentabit;
 	}
 
 }
