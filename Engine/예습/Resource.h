@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Resource
+namespace Engine::Resource
 {
-	void Import(std::string const directory, void (* const function)(std::string const & file));
+    void Import(std::string const directory, void (* const function)(std::string const & file));
 }

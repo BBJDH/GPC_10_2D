@@ -1,36 +1,48 @@
 #include <Windows.h>
 
-#include "Game.h"
+#include "Point.h"
+#include "Circle.h"
+#include "Quadrangle.h"
 
-namespace Input     { void Procedure(HWND const, UINT const, WPARAM const, LPARAM const); }
-namespace Rendering { void Procedure(HWND const, UINT const, WPARAM const, LPARAM const); }
-namespace Time      { void Procedure(HWND const, UINT const, WPARAM const, LPARAM const); }
+#include "Input.h"
+#include "Physics.h"
+#include "Rendering.h"
+#include "Time.h"
+
+#include "Game.h"
+#include "Initialize.h"
 
 namespace Engine
 {
-    namespace { Game * Portfolio; }
+    namespace Input     { void Procedure(HWND const, UINT const, WPARAM const, LPARAM const); }
+    namespace Time      { void Procedure(HWND const, UINT const, WPARAM const, LPARAM const); }
+    namespace Rendering { void Procedure(HWND const, UINT const, WPARAM const, LPARAM const); }
+
+    namespace
+    {
+        Game * const Portfolio = Initialize();
+    }
 
     LRESULT CALLBACK Procedure(HWND const hWindow, UINT const uMessage, WPARAM const wParameter, LPARAM const lParameter)
     {
-        switch (uMessage)
+        switch(uMessage)
         {
             case WM_CREATE:
             {
                 Rendering::Procedure(hWindow, uMessage, wParameter, lParameter);
 
-                (Portfolio = Initialize())->Start();
+                Portfolio->Start();
 
                 return 0;
             }
             case WM_APP:
             {
-                if(Portfolio->Update())
-                    CloseWindow(hWindow);
+                Portfolio->Update();
 
                     Input::Procedure(hWindow, uMessage, wParameter, lParameter);
-                Rendering::Procedure(hWindow, uMessage, wParameter, lParameter);
                      Time::Procedure(hWindow, uMessage, wParameter, lParameter);
-                
+                Rendering::Procedure(hWindow, uMessage, wParameter, lParameter);
+
                 return 0;
             }
             case WM_DESTROY:
@@ -40,7 +52,7 @@ namespace Engine
                 delete Portfolio;
 
                 Rendering::Procedure(hWindow, uMessage, wParameter, lParameter);
-                
+
                 PostQuitMessage(0);
 
                 return 0;
@@ -58,7 +70,7 @@ namespace Engine
             case WM_SIZE:
             {
                 Rendering::Procedure(hWindow, uMessage, wParameter, lParameter);
-                
+
                 return 0;
             }
             default:

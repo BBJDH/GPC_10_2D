@@ -1,7 +1,6 @@
 #include <Windows.h>
 
-#define _USE_MATH_DEFINES
-
+#include <cmath>
 #include <map>
 #include <string>
 
@@ -12,28 +11,28 @@
 #include "FreeImage.h"
 #include "Rendering.h"
 
-namespace Rendering
+namespace Engine::Rendering
 {
     namespace Pipeline { void Procedure(HWND const, UINT const, WPARAM const, LPARAM const); }
 
     namespace
     {
-        inline matrix<4, 4> Scale(vector<2> const & length)
+        inline Matrix<4, 4> Translation(Vector<2> const & location)
         {
-            return matrix<4, 4>
+            return Matrix<4, 4>
             {
-                length[0], 0,         0, 0,
-                0,         length[1], 0, 0,
-                0,         0,         1, 0,
-                0,         0,         0, 1
+                1, 0, 0, location[0],
+                0, 1, 0, location[1],
+                0, 0, 1, 0,
+                0, 0, 0, 1
             };
         }
 
-        inline matrix<4, 4> Rotation(float const & angle)
+        inline Matrix<4, 4> Rotation(float const & angle)
         {
-            float const radian = static_cast<float>(M_PI) / 180.0f * angle;
+            float const radian = angle * (3.14159265f / 180.0f);
 
-            return matrix<4, 4>
+            return Matrix<4, 4>
             {
                 cos(radian), -sin(radian), 0, 0,
                 sin(radian),  cos(radian), 0, 0,
@@ -42,14 +41,14 @@ namespace Rendering
             };
         }
 
-        inline matrix<4, 4> Translation(vector<2> const & location)
+        inline Matrix<4, 4> Scale(Vector<2> const & length)
         {
-            return matrix<4, 4>
+            return Matrix<4, 4>
             {
-                1, 0, 0, location[0],
-                0, 1, 0, location[1],
-                0, 0, 1, 0,
-                0, 0, 0, 1
+                length[0], 0,         0, 0,
+                0,         length[1], 0, 0,
+                0,         0,         1, 0,
+                0,         0,         0, 1
             };
         }
     }
@@ -57,187 +56,316 @@ namespace Rendering
     void Camera::Set() const
     {
         using namespace Pipeline;
+        {
+            Matrix<4, 4> const view = Rotation(-Angle) * Translation(-Location);
 
-        matrix<4, 4> const projection = Scale(vector<2>(2 / Length[0], 2 / Length[1]));
-        matrix<4, 4> const view       = Rotation(-Angle) * Translation(-Location);
-        matrix<4, 4> const latter     = projection * view;
+            Transform::Update<Transform::Type::View>
+            (
+                reinterpret_cast<Transform::Matrix const &>(view)
+            );
 
-        Transform::Update<Transform::Type::Latter>(reinterpret_cast<Transform::Matrix const &>(latter));
+            Matrix<4, 4> const projection
+            {
+                2 / Sight[0], 0,            0, 0,
+                0,            2 / Sight[1], 0, 0,
+                0,            0,            1, 0,
+                0,            0,            0, 1
+            };
+
+            Transform::Update<Transform::Type::Projection>
+            (
+                reinterpret_cast<Transform::Matrix const &>(projection)
+            );
+        }
     }
 
     namespace Text
     {
         void Import(std::string const & file)
         {
-            AddFontResourceEx(file.data(), FR_PRIVATE | FR_NOT_ENUM, nullptr);
+             AddFontResourceEx(file.data(), FR_PRIVATE | FR_NOT_ENUM, nullptr);
         }
 
-        void Component::Draw()
+        void Component::Render()
         {
-            LOGFONT descriptor = LOGFONT();
+            LOGFONT font = LOGFONT();
 
-            descriptor.lfHeight    = Font.Size;
-            descriptor.lfWeight    = Font.Bold ? FW_BOLD : FW_NORMAL;
-            descriptor.lfItalic    = Font.Italic;
-            descriptor.lfUnderline = Font.Underlined;
-            descriptor.lfStrikeOut = Font.Struckthrough;
-            descriptor.lfCharSet   = DEFAULT_CHARSET;
+            font.lfHeight    = Font.Size;
+            font.lfWeight    = Font.Bold == false ? FW_NORMAL : FW_BOLD;
+            font.lfItalic    = Font.Italic;
+            font.lfUnderline = Font.Underlined;
+            font.lfStrikeOut = Font.StructOut;
+            font.lfCharSet   = DEFAULT_CHARSET;
 
-            strcpy_s(descriptor.lfFaceName, LF_FACESIZE, Font.Name);
+            strcpy_s(font.lfFaceName, LF_FACESIZE, Font.Name);
 
-            HFONT const font = CreateFontIndirect(&descriptor);
+            HFONT const hFont = CreateFontIndirect(&font);
 
-            SIZE  const area   { static_cast<LONG>(  Length[0]), static_cast<LONG>(  Length[1]) };
-            POINT const center { static_cast<LONG>(Location[0]), static_cast<LONG>(Location[1]) };
+            COLORREF const color = RGB(Color.Red, Color.Green, Color.Blue);
 
-            Pipeline::String::Render(font, Content, RGB(Color.Red, Color.Green, Color.Blue), area, center);
+            SIZE const size
+            {
+                static_cast<LONG>(Length[0]),
+                static_cast<LONG>(Length[1])
+            };
 
-            DeleteObject(font);
+            POINT const center
+            {
+                static_cast<LONG>(Location[0]),
+                static_cast<LONG>(Location[1])
+            };
+
+            Pipeline::String::Render(hFont, Text, color, size, center);
+
+            DeleteObject(hFont);
         }
     }
 
     namespace Image
     {
-        struct Descriptor final
+        namespace
         {
-        public:
-            Pipeline::Texture::Handle * Handle = nullptr;
-
-        public:
-            SIZE Size = SIZE();
-        };
-
-        std::map<std::string, Descriptor> Storage;
-
-        void Import(std::string const & file)
-        {
-            FIBITMAP * bitmap = FreeImage_Load(FreeImage_GetFileType(file.data()), file.data());
+            class Descriptor final
             {
-                FreeImage_FlipVertical(bitmap);
+            public:
+                Pipeline::Texture::Handle * const Handle;
 
-                if(FreeImage_GetBPP(bitmap) != 32)
-                {
-                    FIBITMAP * const previous = bitmap;
+            public:
+                SIZE const Size;
+            };
 
-                    bitmap = FreeImage_ConvertTo32Bits(bitmap);
+            std::map<std::string const, Descriptor const> Storage;
 
-                    FreeImage_Unload(previous);
-                }
-            }
+            void Import(std::string const & file)
             {
-                Image::Descriptor descriptor = Image::Descriptor();
+                FIBITMAP * bitmap = FreeImage_Load(FreeImage_GetFileType(file.data()), file.data());
                 {
-                    descriptor.Size.cx = FreeImage_GetWidth(bitmap);
-                    descriptor.Size.cy = FreeImage_GetHeight(bitmap);
+                    if(FreeImage_GetBPP(bitmap) != 32)
+                    {
+                        FIBITMAP * const previous = bitmap;
 
-                    Pipeline::Texture::Create(descriptor.Handle, descriptor.Size, FreeImage_GetBits(bitmap));
+                        bitmap = FreeImage_ConvertTo32Bits(bitmap);
+
+                        FreeImage_Unload(previous);
+                    }
+
+                    FreeImage_FlipVertical(bitmap);
                 }
                 {
-                    size_t const x = file.find_first_of('/') + sizeof(char);
-                    size_t const y = file.find_last_of('.');
+                    Pipeline::Texture::Handle * handle = nullptr;
+                    {
+                        SIZE const size
+                        {
+                            static_cast<LONG>(FreeImage_GetWidth(bitmap)),
+                            static_cast<LONG>(FreeImage_GetHeight(bitmap))
+                        };
 
-                    Image::Storage.try_emplace(file.substr(x, y - x), descriptor);
+                        BYTE const * const data = FreeImage_GetBits(bitmap);
+
+                        Pipeline::Texture::Create(handle, size, data);
+                    }
+                    {
+                        UINT const top = static_cast<UINT>(file.find_first_of('/') + sizeof(char));
+                        UINT const bot = static_cast<UINT>(file.find_last_of('.'));
+
+                        SIZE const size
+                        {
+                            static_cast<LONG>(FreeImage_GetWidth(bitmap)),
+                            static_cast<LONG>(FreeImage_GetHeight(bitmap))
+                        };
+
+                        Descriptor const descriptor
+                        {
+                            handle,
+                            size
+                        };
+
+                        Storage.try_emplace(file.substr(top, bot - top), descriptor);
+                    }
                 }
+                FreeImage_Unload(bitmap);
             }
-            FreeImage_Unload(bitmap);
         }
 
-        void Component::Draw()
+        void Component::Render()
         {
             using namespace Pipeline;
             {
-                matrix<4, 4> const world = Translation(Location) * Rotation(Angle) * Scale(Length);
+                Matrix<4, 4> const world = Translation(Location) * Rotation(Angle) * Scale(Length);
 
-                Transform::Update<Transform::Type::Former>(reinterpret_cast<Transform::Matrix const &>(world));
+                Transform::Update<Transform::Type::World>
+                (
+                    reinterpret_cast<Transform::Matrix const &>(world)
+                );
             }
             {
-                Descriptor const & image = Storage.at(Content);
+                Descriptor const & descriptor = Storage.at(Name);
 
-                Texture::Render(image.Handle, { 0, 0, image.Size.cx, image.Size.cy });
+                RECT const area
+                {
+                    descriptor.Size.cx * 0, descriptor.Size.cy * 0,
+                    descriptor.Size.cx * 1, descriptor.Size.cy * 1
+                };
+
+                Pipeline::Texture::Render(descriptor.Handle, area);
+            }
+        }
+
+        void Test::Render()
+        {
+            using namespace Pipeline;
+            {
+                Vector<2> const location = Vector<2>(Location[0], -Location[1]);
+
+                Matrix<4, 4> const world = Translation(location) * Rotation(Angle) * Scale(Length);
+
+                Transform::Update<Transform::Type::World>
+                (
+                    reinterpret_cast<Transform::Matrix const &>(world)
+                );
+            }
+            {
+                Matrix<4, 4> const view
+                {
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                };
+
+                Transform::Update<Transform::Type::View>
+                (
+                    reinterpret_cast<Transform::Matrix const &>(view)
+                );
+
+                Matrix<4, 4> const projection
+                {
+                    2 / 1280.0f, 0,          0, -1,
+                    0,           2 / 720.0f, 0,  1,
+                    0,           0,          1,  0,
+                    0,           0,          0,  1
+                };
+
+                Transform::Update<Transform::Type::Projection>
+                (
+                    reinterpret_cast<Transform::Matrix const &>(projection)
+                );
+            }
+            {
+                Descriptor const & descriptor = Storage.at(Name);
+
+                RECT const area
+                {
+                    descriptor.Size.cx * 0, descriptor.Size.cy * 0,
+                    descriptor.Size.cx * 1, descriptor.Size.cy * 1
+                };
+
+                Pipeline::Texture::Render(descriptor.Handle, area);
             }
         }
     }
 
     namespace Animation
     {
-        struct Descriptor final
+        namespace
         {
-        public:
-            Pipeline::Texture::Handle * Handle = nullptr;
-
-        public:
-            UINT Motion = UINT();
-            SIZE Frame  = SIZE();
-        };
-
-        std::map<std::string, Descriptor> Storage;
-
-        void Import(std::string const & file)
-        {
-            FIBITMAP * bitmap = FreeImage_Load(FreeImage_GetFileType(file.data()), file.data());
+            class Descriptor final
             {
-                FreeImage_FlipVertical(bitmap);
+            public:
+                Pipeline::Texture::Handle * const Handle;
 
-                if(FreeImage_GetBPP(bitmap) != 32)
-                {
-                    FIBITMAP * const previous = bitmap;
+            public:
+                UINT const Motion;
+                SIZE const Frame;
+            };
 
-                    bitmap = FreeImage_ConvertTo32Bits(bitmap);
+            std::map<std::string const, Descriptor const> Storage;
 
-                    FreeImage_Unload(previous);
-                }
-            }
+            void Import(std::string const & file)
             {
-                Animation::Descriptor descriptor = Animation::Descriptor();
+                FIBITMAP * bitmap = FreeImage_Load(FreeImage_GetFileType(file.data()), file.data());
                 {
-                    descriptor.Frame.cx = FreeImage_GetWidth(bitmap);
-                    descriptor.Frame.cy = FreeImage_GetHeight(bitmap);
+                    if(FreeImage_GetBPP(bitmap) != 32)
+                    {
+                        FIBITMAP * const previous = bitmap;
 
-                    Pipeline::Texture::Create(descriptor.Handle, descriptor.Frame, FreeImage_GetBits(bitmap));
+                        bitmap = FreeImage_ConvertTo32Bits(bitmap);
+
+                        FreeImage_Unload(previous);
+                    }
+
+                    FreeImage_FlipVertical(bitmap);
                 }
                 {
-                    size_t const x = file.find_first_of('/') + sizeof(char);
-                    size_t const y = file.find_last_of('[');
-                    size_t const z = file.find_last_of(']');
+                    Pipeline::Texture::Handle * handle = nullptr;
+                    {
+                        SIZE const size
+                        {
+                            static_cast<LONG>(FreeImage_GetWidth(bitmap)),
+                            static_cast<LONG>(FreeImage_GetHeight(bitmap))
+                        };
 
-                    descriptor.Motion    = atoi(file.substr(y + sizeof(char), z - (y + sizeof(char))).data());
-                    descriptor.Frame.cx /= descriptor.Motion;
+                        BYTE const * const data = FreeImage_GetBits(bitmap);
 
-                    Animation::Storage.try_emplace(file.substr(x, y - x), descriptor);
+                        Pipeline::Texture::Create(handle, size, data);
+                    }
+                    {
+                        UINT const top = static_cast<UINT>(file.find_first_of('/') + sizeof(char));
+                        UINT const mid = static_cast<UINT>(file.find_last_of('['));
+                        UINT const bot = static_cast<UINT>(file.find_last_of(']'));
+
+                        UINT const motion = std::atoi(file.substr(mid + sizeof(char), bot).data());
+
+                        SIZE const frame
+                        {
+                            static_cast<LONG>(FreeImage_GetWidth(bitmap) / motion),
+                            static_cast<LONG>(FreeImage_GetHeight(bitmap))
+                        };
+
+                        Descriptor const descriptor
+                        {
+                            handle,
+                            motion,
+                            frame
+                        };
+
+                        Storage.try_emplace(file.substr(top, mid - top), descriptor);
+                    }
                 }
+                FreeImage_Unload(bitmap);
             }
-            FreeImage_Unload(bitmap);
         }
 
-        void Component::Draw()
+        void Component::Render()
         {
             using namespace Pipeline;
             {
-                matrix<4, 4> const world = Translation(Location) * Rotation(Angle) * Scale(Length);
-
-                Transform::Update<Transform::Type::Former>(reinterpret_cast<Transform::Matrix const &>(world));
+                Matrix<4, 4> const world = Translation(Location) * Rotation(Angle) * Scale(Length);
+                
+                Transform::Update<Transform::Type::World>
+                (
+                    reinterpret_cast<Transform::Matrix const &>(world)
+                );
             }
             {
-                Descriptor const & descriptor = Storage.at(Content);
+                Descriptor const & descriptor = Storage.at(Name);
 
                 LONG const progress = static_cast<LONG>((Playback / Duration) * descriptor.Motion);
 
                 RECT const area
                 {
-                    descriptor.Frame.cx * (progress +  Flipped.x), descriptor.Frame.cy *  Flipped.y,
-                    descriptor.Frame.cx * (progress + !Flipped.x), descriptor.Frame.cy * !Flipped.y
+                    descriptor.Frame.cx * (progress +  Flipped), descriptor.Frame.cy * 0,
+                    descriptor.Frame.cx * (progress + !Flipped), descriptor.Frame.cy * 1
                 };
 
-                Texture::Render(descriptor.Handle, area);
+                Pipeline::Texture::Render(descriptor.Handle, area);
 
-                float const delta = Time::Get::Delta();
-
-                Playback += delta;
+                Playback += Time::Get::Delta();
 
                 if(Duration <= Playback)
                 {
-                    if(Repeatable) Playback  = fmod(Playback, Duration);
-                    else           Playback -= delta;
+                    if(Repeatable == true) Playback = fmod(Playback, Duration);
+//                  else
                 }
             }
         }
@@ -245,18 +373,18 @@ namespace Rendering
 
     void Procedure(HWND const hWindow, UINT const uMessage, WPARAM const wParameter, LPARAM const lParameter)
     {
-        switch (uMessage)
+        switch(uMessage)
         {
             case WM_CREATE:
             {
                 Pipeline::Procedure(hWindow, uMessage, wParameter, lParameter);
 
-                Resource::Import("Font", Text::Import);
-                
+                Resource::Import("Asset/Font", Text::Import);
+
                 FreeImage_Initialise();
                 {
-                    Resource::Import(    "Image",     Image::Import);
-                    Resource::Import("Animation", Animation::Import);
+                    Resource::Import("Asset/Image",         Image::Import);
+                    Resource::Import("Asset/Animation", Animation::Import);
                 }
                 FreeImage_DeInitialise();
 
@@ -270,11 +398,7 @@ namespace Rendering
             }
             case WM_DESTROY:
             {
-                for(std::pair<std::string, Animation::Descriptor> const & pair : Animation::Storage)
-                    Pipeline::Texture::Delete(pair.second.Handle);
-
-                for(std::pair<std::string, Image::Descriptor> const & pair : Image::Storage)
-                    Pipeline::Texture::Delete(pair.second.Handle);
+                //Pipeline::Texture::Delete(handle);
 
                 Pipeline::Procedure(hWindow, uMessage, wParameter, lParameter);
 

@@ -13,9 +13,11 @@ public:
     matrix(type const &... elements) : elements{ static_cast<float const>(elements)... }
     {
         static_assert(not (m == 1 and n == 1), "matrix<1, 1> cannot be created.");
+        //컴파일 타임에 체크(런타임)
     }
 
     auto const operator *(float const& c) const
+        //행렬과 상수의 곱
     {
         matrix<m, n> product = *this;
 

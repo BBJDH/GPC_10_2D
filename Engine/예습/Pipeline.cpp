@@ -9,7 +9,7 @@
 #define MUST(Expression) (assert(SUCCEEDED(Expression)))
 #endif
 
-namespace Rendering::Pipeline
+namespace Engine::Rendering::Pipeline
 {
     namespace
     {
@@ -21,19 +21,7 @@ namespace Rendering::Pipeline
         namespace Buffer
         {
             ID3D11Buffer * Vertex;
-            ID3D11Buffer * Constant[2];
-
-            template<typename Data>
-            void Update(ID3D11Buffer * const buffer, Data const & data)
-            {
-                D3D11_MAPPED_SUBRESOURCE Subresource = D3D11_MAPPED_SUBRESOURCE();
-
-                MUST(DeviceContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Subresource));
-                {
-                    memcpy_s(Subresource.pData, Subresource.RowPitch, data, sizeof(data));
-                }
-                DeviceContext->Unmap(buffer, 0);
-            };
+            ID3D11Buffer * Constant[3];
         }
 
         ID3D11RenderTargetView * RenderTargetView;
@@ -41,7 +29,7 @@ namespace Rendering::Pipeline
 
     namespace String
     {
-        void Render(HFONT const hFont, LPCSTR const string, COLORREF const color, SIZE const size, POINT const center)
+        void Render(HFONT const hFont, LPCSTR const string, COLORREF const color, SIZE const & size, POINT const & center)
         {
             IDXGISurface1 * Surface = nullptr;
 
@@ -51,20 +39,20 @@ namespace Rendering::Pipeline
 
                 MUST(Surface->GetDC(false, &hDC));
                 {
-                    if(hFont != HFONT())
-                        SelectObject(hDC, hFont);
+                    SelectObject(hDC, hFont);
 
                     SetTextColor(hDC, color);
 
-                    RECT area
-                    {
-                        center.x - size.cx / 2,
-                        center.y - size.cy / 2,
-                        center.x + size.cx / 2,
-                        center.y + size.cy / 2
-                    };
+                    RECT Area = RECT();
 
-                    DrawText(hDC, string, ~'\0', &area, 0);
+                    Area.left   = center.x - size.cx / 2;
+                    Area.top    = center.y - size.cy / 2;
+                    Area.right  = center.x + size.cx / 2;
+                    Area.bottom = center.y + size.cy / 2;
+
+                    UINT const Format = DT_WORDBREAK | DT_NOPREFIX | DT_EDITCONTROL | DT_NOFULLWIDTHCHARBREAK;
+
+                    DrawText(hDC, string, ~'\0', &Area, Format);
                 }
                 MUST(Surface->ReleaseDC(nullptr));
             }
@@ -78,10 +66,11 @@ namespace Rendering::Pipeline
     {
         struct Handle final
         {
-            ID3D11ShaderResourceView * ShaderResourceView = nullptr;
+            ID3D11Texture2D          * const Texture2D;
+            ID3D11ShaderResourceView * const ShaderResourceView;
         };
 
-        void Create(Handle *& handle, SIZE const size, BYTE const * const data)
+        void Create(Handle *& handle, SIZE const & size, BYTE const * const data)
         {
             D3D11_TEXTURE2D_DESC const Descriptor
             {
@@ -96,7 +85,7 @@ namespace Rendering::Pipeline
                 D3D11_BIND_SHADER_RESOURCE
             };
 
-            UINT constexpr BPP = 32;
+            UINT const BPP = 32;
 
             D3D11_SUBRESOURCE_DATA const Subresource
             {
@@ -105,34 +94,47 @@ namespace Rendering::Pipeline
             };
 
             ID3D11Texture2D * Texture2D = nullptr;
-
+            
             MUST(Device->CreateTexture2D(&Descriptor, &Subresource, &Texture2D));
+
+            ID3D11ShaderResourceView * ShaderResourceView = nullptr;
+
+            MUST(Device->CreateShaderResourceView(Texture2D, nullptr, &ShaderResourceView));
+
+            handle = new Handle
             {
-                MUST(Device->CreateShaderResourceView(Texture2D, nullptr, &(handle = new Handle)->ShaderResourceView));
-            }
-            Texture2D->Release();
+                Texture2D,
+                ShaderResourceView
+            };
         }
 
-        void Render(Handle const * const & handle, RECT const area)
+        void Render(Handle const * const & handle, RECT const & area)
         {
             DeviceContext->PSSetShaderResources(0, 1, &handle->ShaderResourceView);
             {
-                float const Coordinates[4][2]
-                {
-                    { static_cast<float>(area.left),  static_cast<float>(area.top)    },
-                    { static_cast<float>(area.right), static_cast<float>(area.top)    },
-                    { static_cast<float>(area.left),  static_cast<float>(area.bottom) },
-                    { static_cast<float>(area.right), static_cast<float>(area.bottom) }
-                };
+                D3D11_MAPPED_SUBRESOURCE Subresource = D3D11_MAPPED_SUBRESOURCE();
 
-                Buffer::Update(Buffer::Vertex, Coordinates);
+                MUST(DeviceContext->Map(Buffer::Vertex, 0, D3D11_MAP_WRITE_DISCARD, 0, &Subresource));
+                {
+                    float const Coordinates[4][2]
+                    {
+                        { static_cast<float>(area.left),  static_cast<float>(area.top)    },
+                        { static_cast<float>(area.right), static_cast<float>(area.top)    },
+                        { static_cast<float>(area.left),  static_cast<float>(area.bottom) },
+                        { static_cast<float>(area.right), static_cast<float>(area.bottom) }
+                    };
+
+                    memcpy_s(Subresource.pData, Subresource.RowPitch, Coordinates, sizeof(Coordinates));
+                }
+                DeviceContext->Unmap(Buffer::Vertex, 0);
             }
             DeviceContext->Draw(4, 0);
         }
 
-        void Delete(Handle const * const & handle)
+        void Delete(Handle * const & handle)
         {
             handle->ShaderResourceView->Release();
+            handle->Texture2D->Release();
 
             delete handle;
         }
@@ -143,11 +145,20 @@ namespace Rendering::Pipeline
         template<Type type>
         void Update(Matrix const & matrix)
         {
-            Buffer::Update(Buffer::Constant[static_cast<UINT>(type)], matrix);
+            UINT const index = static_cast<UINT>(type);
+
+            D3D11_MAPPED_SUBRESOURCE Subresource = D3D11_MAPPED_SUBRESOURCE();
+
+            MUST(DeviceContext->Map(Buffer::Constant[index], 0, D3D11_MAP_WRITE_DISCARD, 0, &Subresource));
+            {
+                memcpy_s(Subresource.pData, Subresource.RowPitch, matrix, sizeof(matrix));
+            }
+            DeviceContext->Unmap(Buffer::Constant[index], 0);
         }
 
-        template void Update<Type::Former>(Matrix const & matrix);
-        template void Update<Type::Latter>(Matrix const & matrix);
+        template void Update<Type::World>      (Matrix const &);
+        template void Update<Type::View>       (Matrix const &);
+        template void Update<Type::Projection> (Matrix const &);
     }
 
     void Procedure(HWND const hWindow, UINT const uMessage, WPARAM const wParameter, LPARAM const lParameter)
@@ -158,7 +169,7 @@ namespace Rendering::Pipeline
             {
                 {
                     DXGI_SWAP_CHAIN_DESC Descriptor = DXGI_SWAP_CHAIN_DESC();
-
+                    
                     Descriptor.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
                     Descriptor.SampleDesc.Count  = 1;
                     Descriptor.BufferUsage       = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -172,7 +183,7 @@ namespace Rendering::Pipeline
                         nullptr,
                         D3D_DRIVER_TYPE_HARDWARE,
                         nullptr,
-                        0,
+                        D3D11_CREATE_DEVICE_SINGLETHREADED,
                         nullptr,
                         0,
                         D3D11_SDK_VERSION,
@@ -210,7 +221,13 @@ namespace Rendering::Pipeline
                     {
                         ID3D11VertexShader * VertexShader = nullptr;
 
-                        MUST(Device->CreateVertexShader(Bytecode, sizeof(Bytecode), nullptr, &VertexShader));
+                        MUST(Device->CreateVertexShader
+                        (
+                            Bytecode,
+                            sizeof(Bytecode),
+                            nullptr,
+                            &VertexShader
+                        ));
 
                         DeviceContext->VSSetShader(VertexShader, nullptr, 0);
 
@@ -222,7 +239,13 @@ namespace Rendering::Pipeline
                     {
                         ID3D11PixelShader * PixelShader = nullptr;
 
-                        MUST(Device->CreatePixelShader(Bytecode, sizeof(Bytecode), nullptr, &PixelShader));
+                        MUST(Device->CreatePixelShader
+                        (
+                            Bytecode,
+                            sizeof(Bytecode),
+                            nullptr,
+                            &PixelShader
+                        ));
 
                         DeviceContext->PSSetShader(PixelShader, nullptr, 0);
 
@@ -235,10 +258,8 @@ namespace Rendering::Pipeline
                 {
                     float const Coordinates[4][2]
                     {
-                        { -0.5f, +0.5f },
-                        { +0.5f, +0.5f },
-                        { -0.5f, -0.5f },
-                        { +0.5f, -0.5f }
+                        { -0.5f, +0.5f }, { +0.5f, +0.5f },
+                        { -0.5f, -0.5f }, { +0.5f, -0.5f }
                     };
 
                     D3D11_BUFFER_DESC const Descriptor
@@ -290,30 +311,10 @@ namespace Rendering::Pipeline
                         D3D11_CPU_ACCESS_WRITE
                     };
 
-                    for(UINT u = 0; u < 2; ++u)
+                    for(UINT u = 0; u < 3; ++u)
                         MUST(Device->CreateBuffer(&Descriptor, nullptr, &Buffer::Constant[u]));
 
-                    DeviceContext->VSSetConstantBuffers(0, 2, Buffer::Constant);
-                }
-                {
-                    D3D11_BLEND_DESC Descriptor = D3D11_BLEND_DESC();
-
-                    Descriptor.RenderTarget->BlendEnable           = true;
-                    Descriptor.RenderTarget->SrcBlend              = D3D11_BLEND_SRC_ALPHA;
-                    Descriptor.RenderTarget->DestBlend             = D3D11_BLEND_INV_SRC_ALPHA;
-                    Descriptor.RenderTarget->BlendOp               = D3D11_BLEND_OP_ADD;
-                    Descriptor.RenderTarget->SrcBlendAlpha         = D3D11_BLEND_ZERO;
-                    Descriptor.RenderTarget->DestBlendAlpha        = D3D11_BLEND_ONE;
-                    Descriptor.RenderTarget->BlendOpAlpha          = D3D11_BLEND_OP_ADD;
-                    Descriptor.RenderTarget->RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-                    ID3D11BlendState * BlendState = nullptr;
-
-                    MUST(Device->CreateBlendState(&Descriptor, &BlendState));
-
-                    DeviceContext->OMSetBlendState(BlendState, nullptr, D3D11_DEFAULT_SAMPLE_MASK);
-
-                    BlendState->Release();
+                    DeviceContext->VSSetConstantBuffers(0, 3, Buffer::Constant);
                 }
 
                 return;
@@ -334,7 +335,7 @@ namespace Rendering::Pipeline
 
                 RenderTargetView->Release();
 
-                for(UINT u = 0; u < 2; ++u)
+                for(UINT u = 0; u < 3; ++u)
                     Buffer::Constant[u]->Release();
 
                 Buffer::Vertex->Release();
@@ -349,10 +350,13 @@ namespace Rendering::Pipeline
             case WM_SIZE:
             {
                 {
-                    D3D11_VIEWPORT Viewport = D3D11_VIEWPORT();
-
-                    Viewport.Width  = LOWORD(lParameter);
-                    Viewport.Height = HIWORD(lParameter);
+                    D3D11_VIEWPORT const Viewport
+                    {
+                        0.0f,
+                        0.0f,
+                        static_cast<float>(LOWORD(lParameter)),
+                        static_cast<float>(HIWORD(lParameter))
+                    };
 
                     DeviceContext->RSSetViewports(1, &Viewport);
                 }
@@ -388,13 +392,12 @@ namespace Rendering::Pipeline
                                 MUST(Surface->ReleaseDC(nullptr));
                             }
                             Surface->Release();
-                        }
-                        {
-                            MUST(Device->CreateRenderTargetView(Texture2D, nullptr, &RenderTargetView));
 
-                            DeviceContext->OMSetRenderTargets(1, &RenderTargetView, nullptr);
+                            MUST(Device->CreateRenderTargetView(Texture2D, nullptr, &RenderTargetView));
                         }
                         Texture2D->Release();
+
+                        DeviceContext->OMSetRenderTargets(1, &RenderTargetView, nullptr);
                     }
                 }
 
