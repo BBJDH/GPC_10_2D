@@ -34,9 +34,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="포트리스테스트\Character.h" />
+    <ClInclude Include="포트리스테스트\matrix.h" />
     <ClInclude Include="포트리스테스트\Missile.h" />
     <ClInclude Include="포트리스테스트\Object.h" />
     <ClInclude Include="포트리스테스트\stdafx.h" />
+    <ClInclude Include="포트리스테스트\vector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

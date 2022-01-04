@@ -22,17 +22,41 @@ namespace Rendering
 		//HBRUSH hbrush = CreateSolidBrush(RGB(255, 0, 255));
 
 		HDC hdc = GetDC(hwindow);
+		hmapdc = CreateCompatibleDC(hdc);
 		hmapbit = CreateCompatibleBitmap(hdc, 800, 600);
 		hmagentabit = CreateCompatibleBitmap(hdc, 800, 600);
 		hfighterbit = CreateCompatibleBitmap(hdc, 50, 50);
-		hmapdc = CreateCompatibleDC(hdc);
+
+
 		SelectObject(hmapdc, hmagentabit);
 
+		//HDC hmemdc = CreateCompatibleDC(hmapdc);
 
+		//HBRUSH MyBrush = CreateSolidBrush(RGB(255, 0, 255));
+		//HBRUSH hbrold = static_cast<HBRUSH>(SelectObject
+		//												(
+		//													hmapdc,
+		//													MyBrush
+		//												)
+		//								    );
 		//Rectangle(hmapdc,0,0,800,600);
+
+		COLORREF const color = GetPixel(hmapdc, 50, 50);//50 50 , 400 550
+		int const r = GetRValue(color);
+		int const g = GetRValue(color);
+		int const b = GetRValue(color);
+		int i = 0;
+
+		//SelectObject(hmapdc, hbrold);
+
+		//SelectObject(hmapdc, hmagentabit);
+
 		Ellipse(hmapdc, 0, 500, 250, 600);			//맵불러오기 (흰색)
 		Ellipse(hmapdc, 250, 500, 500, 600);
 		Ellipse(hmapdc, 500, 500, 800, 600);
+
+
+
 
 		hmapbit = static_cast<HBITMAP>(LoadImage
 		(
@@ -46,7 +70,7 @@ namespace Rendering
 		hfighterbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/포트리스/Asset/뉴포트리스/M_Canon_Tank_Left.bmp"),
+			TEXT("./소스파일/포트리스/뉴포트리스/캐논/M_Canon_Tank_Right.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -85,7 +109,7 @@ namespace Rendering
 		HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc,hbitmp));
 
 		TransparentBlt(hdc_dest,x,y,bit_src.bmWidth,bit_src.bmHeight, hmemdc,
-			0,0, bit_src.bmWidth, bit_src.bmHeight,RGB(255,0,255));
+			0,0, bit_src.bmWidth, bit_src.bmHeight,RGB(0,0,0));
 		SelectObject(hmemdc,oldbit);
 		DeleteDC(hmemdc);
 
@@ -107,10 +131,11 @@ namespace Rendering
 		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, 800, 600);
 		SelectObject(hvirtualdc, hvirtualbit);
 
+		drawbitmp(hvirtualdc, 0, 0, 800, 600, hmapbit);			//맵 파일 그리기
+		//BitBlt(hvirtualdc, 0, 0, 800, 600, hmapdc, 0, 0, SRCCOPY);					//다그린그림 옮겨그리기
 
-		BitBlt(hvirtualdc, 0, 0, 800, 600, hmapdc, 0, 0, SRCCOPY);					//다그린그림 옮겨그리기
-
-
+		TransparentBlt(hvirtualdc, 0, 0, 800, 600, hmapdc,
+			0, 0, 800, 600, RGB(0, 0, 0));
 		//drawbitmp(hvirtualdc,0,0,800,600,hmapbit);			//맵 파일 그리기
 		//Rectangle(hvirtualdc,0,500,800,600);
 
@@ -119,7 +144,7 @@ namespace Rendering
 			for (size_t i = 0; i < obj.size(); i++)
 			{
 				drawbitmp_transparent(hvirtualdc, static_cast<const int>(obj[i].getpos().x) - (fighter.bmWidth / 2),
-					static_cast<const int>(obj[i].getpos().y) - (fighter.bmHeight / 2), fighter, hfighterbit);	//비행기 그리기
+					static_cast<const int>(obj[i].getpos().y) - (fighter.bmHeight / 2), fighter, hfighterbit);	
 			}
 		}
 		BitBlt(hdc, 0, 0, 800, 600, hvirtualdc, 0, 0, SRCCOPY);					//다그린그림 옮겨그리기

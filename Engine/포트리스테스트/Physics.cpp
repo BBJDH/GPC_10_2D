@@ -73,7 +73,6 @@ namespace Physics
 				{
 					obj.moveto({obj.getpos().x,static_cast<float>(i- obj.getheight())});
 					obj.stop_move();
-					//ReleaseDC(hwindow, hdc);
 					return;
 				}
 			}

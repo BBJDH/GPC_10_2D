@@ -39,6 +39,7 @@ namespace Input
 				SelectObject(hmapdc, hNewBrush);
 
 				Ellipse(hmapdc, x-20, y-20, x+20, y+20);
+				//obj.front().ballistics_initialize(0, 0);
 
 				return;
 			}

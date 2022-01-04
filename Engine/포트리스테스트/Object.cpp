@@ -48,7 +48,6 @@ unsigned const Object::getheight() const
 void Object::stop_move()
 {
 	this->is_stand = true;
-	this->move_time = 0.0f;
 }
 
 void Object::ballistics_equation(float const delta)
