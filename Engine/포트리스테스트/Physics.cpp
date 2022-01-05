@@ -1,7 +1,22 @@
 #include<Windows.h>
 #include<vector>
 #include"Object.h"
-
+#include"vector.h"
+struct tyCircle final
+{
+	float Diameter = { 0 };
+	vector<2> Location = { 0,0 };
+};
+struct  tyRectangle
+{
+	vector<2> Length = { 0,0 };
+	float     Angle = { 0 };
+	vector<2> Location = { 0,0 };
+};
+struct tyPoint final
+{
+	vector<2> Location = { 0,0 };
+};
 
 namespace Physics
 {
@@ -38,42 +53,129 @@ namespace Physics
 		}
 				return false;
 	}
+	bool Collide(tyPoint const& point, tyCircle const& circle)
+	{
+		return length(point.Location - circle.Location) <= (circle.Diameter / 2);
+	}
+	bool Collide(tyPoint const& point, tyRectangle const& rect)
+	{
+
+		if (rect.Angle != 0)
+		{
+			return false;
+		}
+		else
+		{
+			vector<2> const distance = point.Location - rect.Location;
+			return abs(distance[0]) <= rect.Length[0] / 2 and abs(distance[1]) <= rect.Length[1] / 2;
+		}
+
+
+	}
+	bool Collide(tyRectangle const& rect, tyCircle const& circle)
+	{
+		//사각형의 너비범위 혹은 높이 범위 안에 들어왔다면, 사각형너비 높이에 r만큼 더한 사각형과 원의 중점과의 충돌 판정
+		//원의 중점이 사각형 중점의 x, y 좌표보다 작다면 왼쪽위 꼭지점과 원의 충돌 판정
+		//원의 중점이 사각형 중점의 x좌표는 크고 y좌표는 작다면 오른쪽 꼭지점과 충돌 판정
+		//원의 중점이 사각형 중점의 x좌표는 작고 y좌표는 크다면 왼쪽 아래 꼭지점과 원의 충돌판정
+		//원의 중점이 사각형 중점의 x, y 좌표보다 크다면 오른쪽 아래 꼭지점과 원의 충돌 판정
+
+		vector<2> const min = rect.Location - rect.Length / 2;
+		vector<2> const max = rect.Location + rect.Length / 2;
+
+		bool isrange_x = ((rect.Location[0] - rect.Length[0] / 2) < circle.Location[0]) && (circle.Location[0] < (rect.Location[0] + rect.Length[0] / 2));
+		bool isrange_y = ((rect.Location[1] - rect.Length[1] / 2) < circle.Location[1]) && (circle.Location[1] < (rect.Location[1] + rect.Length[1] / 2));
+
+
+
+		if (rect.Angle != 0)
+		{
+			return false;
+		}
+		else if (isrange_x || isrange_y)
+		{
+			//범위안이면 사각형 너비높이 +r 과 중점포인트와의 판정
+
+			return Collide
+			(
+				tyPoint{ circle.Location },
+				tyRectangle
+				{
+						   rect.Length + vector<2>(circle.Diameter,circle.Diameter),
+						   rect.Angle,
+						   rect.Location
+				}
+			);
+		}
+		else
+		{
+			if (rect.Location[0] < circle.Location[0])
+			{
+				if (rect.Location[1] < circle.Location[1])return Collide(tyPoint{ vector<2>(max[0],max[1]) }, circle);  //오른쪽 위
+				if (circle.Location[1] < rect.Location[1])return Collide(tyPoint{ vector<2>(max[0],min[1]) }, circle); //오른쪽 아래
+			}
+			else
+			{
+				if (rect.Location[1] < circle.Location[1])return Collide(tyPoint{ vector<2>(min[0],max[1]) }, circle); //왼쪽 위
+				if (circle.Location[1] < rect.Location[1])return Collide(tyPoint{ vector<2>(min[0],min[1]) }, circle); //왼쪽 아래
+			}
+		}
+
+		return false;
+	}
 	bool Collide(HDC const hdc,int const x, int const y)
 	{
 		//pipeline -> 스왑체인 텍스쳐2d를 gdi로 가져와서 getpixel
 
 		COLORREF const color = GetPixel(hdc, x, y);
 		int const r = GetRValue(color);
-		int const g = GetRValue(color);
-		int const b = GetRValue(color);
+		int const g = GetGValue(color);
+		int const b = GetBValue(color);
 
-
-		//if (y > 510)
-		//	int i = 0;
-
-		//if(!(r==255 and g ==0 and b == 255))
-		if(r==255 and g ==255 and b == 255)
+		if(!(r==255 and g ==0 and b == 255))
 			return true;
 		return false;
 	}
-	void Collide_object(HWND const& hwindow, Object & obj, HDC const& hmapdc)
+	Position find_secondpixel(unsigned const start_x, unsigned const selected_x, unsigned const selected_y, HDC const& hmapdc)
 	{
-		//HDC hdc = GetDC(hwindow);
-		//HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmapdc, hmapdc));
+		for (unsigned j = selected_y; j < selected_y + 2; ++j)
+		{
+			for (unsigned i = start_x; i < start_x + 4; ++i)
+			{
+				if ((i <= selected_x and j == selected_y) or  //이미 검사한부분 제외
+					(i == selected_x))			//처음 충돌한 픽셀의 y축은 다시검사할 필요 없음
+					break;
+				if (Collide(hmapdc, i, j))
+				{
+					return Position{ static_cast<float>(i), static_cast<float>(j) };
+				}
+			}
+		}
+		return Position();
+	}
+	void Collide_object(Object & obj, HDC const& hmapdc)
+	{
+
 
 		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x-2);//이미지 x가운데에서 2만큼왼쪽
 		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight());
 		//이미지 맨아래 y좌표
+		Position first_point{}, second_point{};
+		
 
-		for (unsigned i = start_y; i < start_y + 4; ++i) 
+		for (unsigned j = start_y; j < start_y + 4; ++j) 
 		{
-			for (unsigned  j = start_x; j < start_x + 4; ++j) //중점에서 
+			for (unsigned  i = start_x; i < start_x + 4; ++i) //중점에서 
 			{
-				if(Collide(hmapdc, j, i))
+				if(Collide(hmapdc, i, j))
 				{
-					obj.moveto({obj.getpos().x,static_cast<float>(i- obj.getheight())});
+					first_point = { static_cast<float>(i),static_cast<float>(j) };
+
+					second_point = find_secondpixel(start_x, i, j, hmapdc);
+					obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight())});
 					obj.stop_move();
 					return;
+
 				}
 			}
 		}
@@ -81,13 +183,14 @@ namespace Physics
 		//ReleaseDC(hwindow, hdc);
 
 	}
-	void Collide_objects(HWND const& hwindow, std::vector<Object> & obj, HDC const & hmapdc)
+	void Collide_objects(std::vector<Object> & obj, HDC const & hmapdc)
 	{
 		if (!obj.empty())
 		{
 			for (size_t i = 0; i < obj.size(); i++)
 			{
-				Collide_object(hwindow,obj[i], hmapdc);
+				if(!obj[i].is_stand())
+					Collide_object(obj[i], hmapdc);
 			}
 		}
 	}

@@ -14,7 +14,7 @@ private:
 	float		   move_time;
 	float          move_angle;
 	float		   image_angle;
-	bool		   is_stand;
+	bool		   stand;
 
 public:
 	Object();
@@ -23,9 +23,11 @@ public:
 	float const gettime() const;
 	unsigned const getwidth() const;
 	unsigned const getheight() const;
+	bool is_stand();
 	void moveto(Position const & pos);
 	void ballistics_equation(float const move_time);
 	void ballistics_initialize(float const move_angle, float const velocity);
 	void stop_move();
+
 };
 
