@@ -2,6 +2,7 @@
 #include<vector>
 #include"Object.h"
 #include"vector.h"
+
 struct tyCircle final
 {
 	float Diameter = { 0 };
@@ -196,6 +197,7 @@ namespace Physics
 	}
 	void Move(std::vector<Object>& obj,float const delta)
 	{
+
 		if (!obj.empty())
 		{
 			for (size_t i = 0; i < obj.size(); i++)

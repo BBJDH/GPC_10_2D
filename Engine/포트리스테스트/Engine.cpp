@@ -17,7 +17,6 @@ namespace Input
 {
 	void Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object>& obj, HDC const& hmapdc, bool& magenta_switch);
-
 }
 namespace Time
 {

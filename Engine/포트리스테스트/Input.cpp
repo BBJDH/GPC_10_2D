@@ -32,21 +32,21 @@ namespace Input
 			}
 			case WM_RBUTTONDOWN:
 			{
-				//unsigned x = LOWORD(lparameter);
-				//unsigned y = HIWORD(lparameter);
+				unsigned x = LOWORD(lparameter);
+				unsigned y = HIWORD(lparameter);
 
-				//HBRUSH hNewBrush = CreateSolidBrush(RGB(255,0,255));
-				//HPEN hNewPen = CreatePen(PS_SOLID, 2, 0xff00ff);
-				//SelectObject(hmapdc, hNewBrush);
-				//SelectObject(hmapdc, hNewPen);
+				HBRUSH hNewBrush = CreateSolidBrush(RGB(255,0,255));
+				HPEN hNewPen = CreatePen(PS_SOLID, 2, 0xff00ff);
+				SelectObject(hmapdc, hNewBrush);
+				SelectObject(hmapdc, hNewPen);
 
-				//Ellipse(hmapdc, x-20, y-20, x+20, y+20);
-				if (magenta_switch)
-				{
-					magenta_switch = false;
-					return;
-				}
-				magenta_switch = true;
+				Ellipse(hmapdc, x-20, y-20, x+20, y+20);
+				//if (magenta_switch)
+				//{
+				//	magenta_switch = false;
+				//	return;
+				//}
+				//magenta_switch = true;
 				return;
 			}
 
