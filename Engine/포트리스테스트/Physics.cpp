@@ -173,8 +173,11 @@ namespace Physics
 					first_point = { static_cast<float>(i),static_cast<float>(j) };
 
 					second_point = find_secondpixel(start_x, i, j, hmapdc);
+					float const thetha = static_cast<const float>(atan2(
+						static_cast<long double>( first_point.x - second_point.x),
+						static_cast<long double>(first_point.y - second_point.y)));
 					obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight())});
-					obj.stop_move();
+					obj.stop_move(thetha);
 					return;
 
 				}

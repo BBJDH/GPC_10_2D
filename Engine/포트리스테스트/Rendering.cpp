@@ -97,6 +97,8 @@ namespace Rendering
 
 	}
 
+
+
 	void update(HWND const& hwindow, std::vector<Object> const & obj,bool const magenta_switch)
 	{
 		HDC hdc = GetDC(hwindow);

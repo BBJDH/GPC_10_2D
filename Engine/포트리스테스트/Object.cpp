@@ -50,8 +50,9 @@ bool Object::is_stand()
 	return stand;
 }
 
-void Object::stop_move()
+void Object::stop_move(float const thetha)
 {
+	this->move_angle = thetha;
 	this->stand = true;
 }
 

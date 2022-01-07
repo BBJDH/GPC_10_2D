@@ -27,7 +27,7 @@ public:
 	void moveto(Position const & pos);
 	void ballistics_equation(float const move_time);
 	void ballistics_initialize(float const move_angle, float const velocity);
-	void stop_move();
+	void stop_move(float const thetha);
 
 };
 
