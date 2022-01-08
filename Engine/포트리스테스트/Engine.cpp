@@ -56,7 +56,7 @@ namespace Engine
 			case WM_APP:
 			{
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);
-				Rendering::update(hwindow, tank,magenta_switch);
+				Rendering::update(hwindow, tank,/*true*/magenta_switch);
 				Physics::Move(tank,Time::getdelta());
 				Physics::Collide_objects(tank, Rendering::getmapdc());
 				return 0;

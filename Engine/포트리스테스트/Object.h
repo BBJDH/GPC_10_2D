@@ -23,6 +23,7 @@ public:
 	float const gettime() const;
 	unsigned const getwidth() const;
 	unsigned const getheight() const;
+	float const getimage_angle()const;
 	bool is_stand();
 	void moveto(Position const & pos);
 	void ballistics_equation(float const move_time);

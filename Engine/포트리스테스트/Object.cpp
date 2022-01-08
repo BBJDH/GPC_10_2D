@@ -24,7 +24,7 @@ void Object::ballistics_initialize(float const move_angle, float const velocity)
 	this->pos0 = pos;
 	this->stand = false;
 }
-
+//OOP
 Position const Object::getpos() const
 {
 	return this->pos;
@@ -45,6 +45,11 @@ unsigned const Object::getheight() const
 	return this->height;
 }
 
+float const Object::getimage_angle() const
+{
+	return image_angle;
+}
+
 bool Object::is_stand()
 {
 	return stand;
@@ -52,7 +57,7 @@ bool Object::is_stand()
 
 void Object::stop_move(float const thetha)
 {
-	this->move_angle = thetha;
+	this->image_angle = thetha;
 	this->stand = true;
 }
 

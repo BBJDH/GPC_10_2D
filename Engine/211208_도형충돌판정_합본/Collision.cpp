@@ -80,7 +80,7 @@ bool Collide(Rectangle const& dest_rect, Rectangle const& src_rect)
         vector<2> const axes[4] //axis : 중심선
         {
             {cos(dest_rect.Angle*radian),sin(dest_rect.Angle*radian)},
-            {-sin(dest_rect.Angle * radian),cos(dest_rect.Angle * radian)},
+            {-sin(dest_rect.Angle * radian),cos(dest_rect.Angle * radian)}, //회전한 사각형의 오른쪽 벡터와 위쪽벡터
             {cos(dest_rect.Angle * radian),sin(dest_rect.Angle * radian)},
             {-sin(dest_rect.Angle * radian),cos(dest_rect.Angle * radian)}
         };

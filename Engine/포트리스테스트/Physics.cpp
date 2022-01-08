@@ -139,7 +139,7 @@ namespace Physics
 	}
 	Position find_secondpixel(unsigned const start_x, unsigned const selected_x, unsigned const selected_y, HDC const& hmapdc)
 	{
-		for (unsigned j = selected_y; j < selected_y + 2; ++j)
+		for (unsigned j = selected_y; j < selected_y + 4; ++j)
 		{
 			for (unsigned i = start_x; i < start_x + 4; ++i)
 			{
@@ -152,7 +152,7 @@ namespace Physics
 				}
 			}
 		}
-		return Position();
+		return Position({ static_cast<float>(selected_x), static_cast<float>(selected_y)	});
 	}
 	void Collide_object(Object & obj, HDC const& hmapdc)
 	{
@@ -173,11 +173,19 @@ namespace Physics
 					first_point = { static_cast<float>(i),static_cast<float>(j) };
 
 					second_point = find_secondpixel(start_x, i, j, hmapdc);
+					if (first_point.x > second_point.x)
+					{
+						Position temp = first_point;
+						first_point = second_point;
+						second_point = temp;
+					}
+
 					float const thetha = static_cast<const float>(atan2(
-						static_cast<long double>( first_point.x - second_point.x),
-						static_cast<long double>(first_point.y - second_point.y)));
+						static_cast<long double>(second_point.y - first_point.y),
+						static_cast<long double>(second_point.x - first_point.x)));
 					obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight())});
-					obj.stop_move(thetha);
+					obj.stop_move(thetha/Radian);
+					float c = thetha / Radian;
 					return;
 
 				}
@@ -211,3 +219,15 @@ namespace Physics
 	}
 
 }
+
+///
+//
+//    ----
+//          -
+//    ---- -
+//      ----
+// 
+// 
+// 
+// 
+//
