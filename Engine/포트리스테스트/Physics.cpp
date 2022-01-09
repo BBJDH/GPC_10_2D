@@ -173,12 +173,19 @@ namespace Physics
 					first_point = { static_cast<float>(i),static_cast<float>(j) };
 
 					second_point = find_secondpixel(start_x, i, j, hmapdc);
+					obj.setsup_pos(second_point);
 					if (first_point.x > second_point.x)
 					{
 						Position temp = first_point;
 						first_point = second_point;
 						second_point = temp;
 					}
+					//unsigned fx = static_cast<unsigned>(first_point.x);
+					//unsigned fy = static_cast<unsigned>(first_point.y);
+					//unsigned sx = static_cast<unsigned>(second_point.x);
+					//unsigned sy = static_cast<unsigned>(second_point.y);
+					//Ellipse(hmapdc, fx - 20, fy - 20, fx + 20, fy + 20);
+					//Ellipse(hmapdc, sx - 20, sy - 20, sx + 20, sy + 20);
 
 					float const thetha = static_cast<const float>(atan2(
 						static_cast<long double>(second_point.y - first_point.y),

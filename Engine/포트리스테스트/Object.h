@@ -16,6 +16,10 @@ private:
 	float		   image_angle;
 	bool		   stand;
 
+	//for test
+	Position	   support_point;
+
+
 public:
 	Object();
 	Object(Position const & pos, unsigned const width, unsigned const height);
@@ -29,6 +33,10 @@ public:
 	void ballistics_equation(float const move_time);
 	void ballistics_initialize(float const move_angle, float const velocity);
 	void stop_move(float const thetha);
+
+	//for test
+	Position const getsup_pos() const;
+	void setsup_pos(Position const& pos);
 
 };
 

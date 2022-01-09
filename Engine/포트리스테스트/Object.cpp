@@ -1,12 +1,14 @@
 #include "Object.h"
 
 Object::Object() :pos{ 400.0f,0.0f }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ 0 }, height{ 0 },
-velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, stand{true}
+velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, stand{true},
+/*test*/ support_point{0.0f,0.0f}
 {
 }
 
 Object::Object(Position const & pos, unsigned const width, unsigned const height) : pos{ pos }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ width }, height{ height },
-velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, stand{ true }
+velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, stand{ true },
+/*test*/ support_point{ 0.0f,0.0f }
 {
 }
 
@@ -59,6 +61,16 @@ void Object::stop_move(float const thetha)
 {
 	this->image_angle = thetha;
 	this->stand = true;
+}
+
+Position const Object::getsup_pos() const
+{
+	return support_point;
+}
+
+void Object::setsup_pos(Position const& pos)
+{
+	this->support_point = pos;
 }
 
 void Object::ballistics_equation(float const delta)

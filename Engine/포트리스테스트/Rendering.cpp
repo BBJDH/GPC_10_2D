@@ -165,6 +165,17 @@ namespace Rendering
 				RotateSizingImage(hvirtualdc,htank_bit,obj[i].getimage_angle(),fighter.bmWidth/2,fighter.bmHeight/2,
 					static_cast<const int>(obj[i].getpos().x),
 					static_cast<const int>(obj[i].getpos().y),1);
+				Ellipse(hvirtualdc, 
+					static_cast<const int>(obj[i].getpos().x - 2),
+					static_cast<const int>(obj[i].getpos().y+ fighter.bmHeight / 2 - 2),
+					static_cast<const int>(obj[i].getpos().x + 2),
+					static_cast<const int>(obj[i].getpos().y+ fighter.bmHeight / 2 + 2));
+				Ellipse(hvirtualdc,
+					static_cast<const int>(obj[i].getsup_pos().x - 2),
+					static_cast<const int>(obj[i].getsup_pos().y - 2),
+					static_cast<const int>(obj[i].getsup_pos().x + 2),
+					static_cast<const int>(obj[i].getsup_pos().y + 2));
+
 			}
 		}
 		if (!obj.empty())								//오브젝트 그리기(개수만큼)
@@ -179,7 +190,6 @@ namespace Rendering
 			temp = "angle :" + std::to_string(obj.back().getimage_angle());									//버틴시간 텍스트
 			TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
 		}
-
 
 		if(magenta_switch)
 			BitBlt(hdc, 0, 0, 800, 600, hmapdc, 0, 0, SRCCOPY);					
