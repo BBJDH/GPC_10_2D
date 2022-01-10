@@ -37,10 +37,14 @@ namespace Input
 
 				HBRUSH hNewBrush = CreateSolidBrush(RGB(255,0,255));
 				HPEN hNewPen = CreatePen(PS_SOLID, 2, 0xff00ff);
-				SelectObject(hmapdc, hNewBrush);
+				HBITMAP hOldBmp = static_cast<HBITMAP>(SelectObject(hmapdc, hNewBrush));
 				SelectObject(hmapdc, hNewPen);
 
 				Ellipse(hmapdc, x-20, y-20, x+20, y+20);
+				SelectObject(hmapdc, hOldBmp);
+				DeleteObject(hNewBrush);
+				DeleteObject(hNewPen);
+
 				//if (magenta_switch)
 				//{
 				//	magenta_switch = false;

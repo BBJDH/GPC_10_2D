@@ -187,7 +187,6 @@ namespace Physics
 					float c = calc_landing_angle(i,j,hmapdc) / Radian;
 					obj.stop_move(-calc_landing_angle(i,j,hmapdc)/Radian);
 					return;
-
 				}
 			}
 		}

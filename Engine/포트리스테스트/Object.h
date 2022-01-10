@@ -4,7 +4,7 @@
 
 class Object 
 {
-private:
+protected:
 	Position	   pos;
 	Position	   pos0;
 	Position	   velocity0;

@@ -8,7 +8,7 @@ namespace Rendering
 {
 	namespace
 	{
-		HBITMAP hmapbit, htank_bit, hmissilebit,hbackground_bit,hmagentabit,htank_mask_bit;
+		HBITMAP hmapbit, htank_bit, hmissilebit,hbackground_bit,hmagentabit;
 		BITMAP fighter, missile, over;
 		HDC hmapdc;
 	}
@@ -57,15 +57,6 @@ namespace Rendering
 			0,
 			LR_LOADFROMFILE | LR_DEFAULTSIZE
 		));
-		htank_mask_bit = static_cast<HBITMAP>(LoadImage
-		(
-			NULL,
-			TEXT("./소스파일/포트리스/뉴포트리스/캐논/M_Canon_Tank_Right_Maskb.bmp"),
-			IMAGE_BITMAP,
-			0,
-			0,
-			LR_LOADFROMFILE | LR_DEFAULTSIZE
-		));
 		GetObject(htank_bit, sizeof(BITMAP), &fighter);
 		hmissilebit = static_cast<HBITMAP>(LoadImage
 		(
@@ -109,8 +100,7 @@ namespace Rendering
 	BOOL RotateSizingImage(HDC const hdc, HBITMAP const hBmp,
 		double const dblAngle,
 		int    const ixRotateAxis, int const iyRotateAxis,
-		int    const ixDisplay,    int const iyDisplay,
-		int    const ixMask = 0,   int const iyMask = 0)
+		int    const ixDisplay,    int const iyDisplay)
 	{
 		BITMAP    bitmap;
 		POINT     vertex[3]    = { 0 };
@@ -133,21 +123,35 @@ namespace Rendering
 			dest_x = dblx * cosVal - dbly * sinVal;
 			dest_y = dblx * sinVal + dbly * cosVal;
 			dest_x += ixRotate, dest_y += iyRotate;
-			vertex[i].x = ixDisplay - static_cast<long>(ixRotate) + static_cast<long>(dest_x);
-			vertex[i].y = iyDisplay - static_cast<long>(iyRotate) + static_cast<long>(dest_y);
+			vertex[i].x = 50 - static_cast<long>(ixRotate) + static_cast<long>(dest_x);
+			vertex[i].y = 50 - static_cast<long>(iyRotate) + static_cast<long>(dest_y);
 		}
-		//HBITMAP const hMaskBmp = CreateBitmap(bitmap.bmWidth,bitmap.bmHeight,1,1,nullptr);
+
 		HDC hMemdc;
-		//HDC hRotDC,hResetDC;
-		HBITMAP hOldBmp;
+		HDC himagedc;
+		HBITMAP hOldBmp,tempbmp;
 		hMemdc = CreateCompatibleDC(hdc);
-		//hRotDC = CreateCompatibleDC(hdc);
-		//hResetDC = CreateCompatibleDC(hdc);
-		hOldBmp = (HBITMAP)SelectObject(hMemdc, hBmp);
-		BOOL result = PlgBlt(hdc, vertex, hMemdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, nullptr, ixMask, iyMask);
-		//GdiTransparentBlt(hdc, _x, _y, 100, 100, hRotDC, 0, 0, 100, 100, RGB(255, 0, 255)); 
+		himagedc = CreateCompatibleDC(hdc);
+		tempbmp = CreateCompatibleBitmap(hdc, 100, 100);
+		SelectObject(hMemdc, tempbmp);
+
+		HBRUSH brush = CreateSolidBrush(RGB(255, 0, 255));
+		hOldBmp = static_cast<HBITMAP>(SelectObject(hMemdc, brush));
+		PatBlt(hMemdc, 0, 0, 100 , 100 , PATCOPY);
 		SelectObject(hMemdc, hOldBmp);
+		DeleteObject(brush);
+
+
+		hOldBmp = static_cast<HBITMAP>(SelectObject(himagedc, hBmp));
+		BOOL result = PlgBlt(hMemdc, vertex, himagedc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, 0, 0, 0);
+		GdiTransparentBlt(hdc, ixDisplay- bitmap.bmWidth, iyDisplay- bitmap.bmHeight, 100, 100,
+			hMemdc, 0, 0, 100, 100,  RGB(255, 0, 255));
+
+		SelectObject(himagedc, hOldBmp);
+		DeleteObject(tempbmp);
+		DeleteObject(hOldBmp);
 		DeleteDC(hMemdc);
+		DeleteDC(himagedc);
 		return result;
 	}
 
