@@ -23,8 +23,8 @@ namespace Input
 							static_cast<float>(LOWORD(lparameter)),
 							static_cast<float>(HIWORD(lparameter))
 						},
-						24,
-						21
+						49,
+						42
 					)
 				);
 				obj.back().ballistics_initialize(0, 0);

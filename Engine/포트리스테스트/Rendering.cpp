@@ -8,7 +8,7 @@ namespace Rendering
 {
 	namespace
 	{
-		HBITMAP hmapbit, htank_bit, hmissilebit,hbackground_bit,hmagentabit;
+		HBITMAP hmapbit, htank_bit, hmissilebit,hbackground_bit,hmagentabit,htank_mask_bit;
 		BITMAP fighter, missile, over;
 		HDC hmapdc;
 	}
@@ -57,6 +57,15 @@ namespace Rendering
 			0,
 			LR_LOADFROMFILE | LR_DEFAULTSIZE
 		));
+		htank_mask_bit = static_cast<HBITMAP>(LoadImage
+		(
+			NULL,
+			TEXT("./소스파일/포트리스/뉴포트리스/캐논/M_Canon_Tank_Right_Maskb.bmp"),
+			IMAGE_BITMAP,
+			0,
+			0,
+			LR_LOADFROMFILE | LR_DEFAULTSIZE
+		));
 		GetObject(htank_bit, sizeof(BITMAP), &fighter);
 		hmissilebit = static_cast<HBITMAP>(LoadImage
 		(
@@ -97,50 +106,49 @@ namespace Rendering
 		DeleteDC(hmemdc);
 	}
 
-	BOOL RotateSizingImage(HDC hdc, HBITMAP hBmp,
-		double dblAngle,
-		int    ixRotateAxis, int iyRotateAxis,
-		int    ixDisplay,    int iyDisplay,
-		double dblSizeRatio = 1,
-		HBITMAP hMaskBmp    = NULL, int ixMask = 0, int iyMask = 0)
+	BOOL RotateSizingImage(HDC const hdc, HBITMAP const hBmp,
+		double const dblAngle,
+		int    const ixRotateAxis, int const iyRotateAxis,
+		int    const ixDisplay,    int const iyDisplay,
+		int    const ixMask = 0,   int const iyMask = 0)
 	{
-		int       i;
-		BITMAP    bm;
-		GetObject(hBmp, sizeof(BITMAP), &bm);
-		POINT     apt[3]    = { 0 };
-		double	  dblWidth  = (double)bm.bmWidth * dblSizeRatio;
-		double	  dblHeight = (double)bm.bmHeight * dblSizeRatio;
-		double	  ixRotate  = (int)((double)ixRotateAxis * dblSizeRatio); // 크기가 변하는 것 고려
-		double	  iyRotate  = (int)((double)iyRotateAxis * dblSizeRatio);
-
-
-		double dblx, dbly, dblxDest, dblyDest, cosVal, sinVal;
-		cosVal = cos(dblAngle), sinVal = sin(dblAngle);
+		BITMAP    bitmap;
+		POINT     vertex[3]    = { 0 };
+		GetObject(hBmp, sizeof(BITMAP), &bitmap);
+		double	  bmpwidth  = static_cast<double>(bitmap.bmWidth);
+		double	  bmpheight = static_cast<double>(bitmap.bmHeight);
+		double	  ixRotate  = static_cast<double>(ixRotateAxis);
+		double	  iyRotate  = static_cast<double>(iyRotateAxis);
+		double dblx, dbly, dest_x, dest_y, cosVal, sinVal;
+		cosVal = cos(-dblAngle*Radian), sinVal = sin(-dblAngle*Radian);
 
 		// 1. 회전축을 기준으로 상대좌표를 구하고
 		// 2. 회전후 위치좌표(상대좌표)를 얻은 후
 		// 3. 얻은 값을 원래의 좌표에 적용.
- 		for (i = 0; i < 3; i++)
+ 		for (size_t i = 0; i < 3; i++)
 		{
 			if (i == 0) { dblx = -ixRotate, dbly = -iyRotate; }    // left up  꼭지점 부분
-			else if (i == 1) { dblx = dblWidth - ixRotate, dbly = -iyRotate; }  // right up 꼭지점 부분
-			else if (i == 2) { dblx = -ixRotate, dbly = dblHeight - iyRotate; } // left low 꼭지점 부분
-			dblxDest = dblx * cosVal - dbly * sinVal;
-			dblyDest = dblx * sinVal + dbly * cosVal;
-			dblxDest += ixRotate, dblyDest += iyRotate;
-			apt[i].x = ixDisplay - (long)ixRotate + (long)dblxDest;
-			apt[i].y = iyDisplay - (long)iyRotate + (long)dblyDest;
+			else if (i == 1) { dblx = bmpwidth - ixRotate, dbly = -iyRotate; }  // right up 꼭지점 부분
+			else if (i == 2) { dblx = -ixRotate, dbly = bmpheight - iyRotate; } // left low 꼭지점 부분
+			dest_x = dblx * cosVal - dbly * sinVal;
+			dest_y = dblx * sinVal + dbly * cosVal;
+			dest_x += ixRotate, dest_y += iyRotate;
+			vertex[i].x = ixDisplay - static_cast<long>(ixRotate) + static_cast<long>(dest_x);
+			vertex[i].y = iyDisplay - static_cast<long>(iyRotate) + static_cast<long>(dest_y);
 		}
-
+		//HBITMAP const hMaskBmp = CreateBitmap(bitmap.bmWidth,bitmap.bmHeight,1,1,nullptr);
 		HDC hMemdc;
+		//HDC hRotDC,hResetDC;
 		HBITMAP hOldBmp;
 		hMemdc = CreateCompatibleDC(hdc);
+		//hRotDC = CreateCompatibleDC(hdc);
+		//hResetDC = CreateCompatibleDC(hdc);
 		hOldBmp = (HBITMAP)SelectObject(hMemdc, hBmp);
-		BOOL iRes = PlgBlt(hdc, apt, hMemdc, 0, 0, bm.bmWidth, bm.bmHeight, hMaskBmp, ixMask, iyMask);
+		BOOL result = PlgBlt(hdc, vertex, hMemdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, nullptr, ixMask, iyMask);
+		//GdiTransparentBlt(hdc, _x, _y, 100, 100, hRotDC, 0, 0, 100, 100, RGB(255, 0, 255)); 
 		SelectObject(hMemdc, hOldBmp);
 		DeleteDC(hMemdc);
-		return iRes;
-
+		return result;
 	}
 
 	void update(HWND const& hwindow, std::vector<Object> const & obj,bool const magenta_switch)
@@ -164,18 +172,12 @@ namespace Rendering
 				//	static_cast<const int>(obj[i].getpos().y) - (fighter.bmHeight / 2), fighter, htank_bit);	
 				RotateSizingImage(hvirtualdc,htank_bit,obj[i].getimage_angle(),fighter.bmWidth/2,fighter.bmHeight/2,
 					static_cast<const int>(obj[i].getpos().x),
-					static_cast<const int>(obj[i].getpos().y),1);
+					static_cast<const int>(obj[i].getpos().y));
 				Ellipse(hvirtualdc, 
 					static_cast<const int>(obj[i].getpos().x - 2),
 					static_cast<const int>(obj[i].getpos().y+ fighter.bmHeight / 2 - 2),
 					static_cast<const int>(obj[i].getpos().x + 2),
 					static_cast<const int>(obj[i].getpos().y+ fighter.bmHeight / 2 + 2));
-				Ellipse(hvirtualdc,
-					static_cast<const int>(obj[i].getsup_pos().x - 2),
-					static_cast<const int>(obj[i].getsup_pos().y - 2),
-					static_cast<const int>(obj[i].getsup_pos().x + 2),
-					static_cast<const int>(obj[i].getsup_pos().y + 2));
-
 			}
 		}
 		if (!obj.empty())								//오브젝트 그리기(개수만큼)
@@ -222,5 +224,6 @@ namespace Rendering
 
 
 
+	//https://doggyfoot.tistory.com/52
 
 }

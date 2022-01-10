@@ -137,32 +137,45 @@ namespace Physics
 			return true;
 		return false;
 	}
-	Position find_secondpixel(unsigned const start_x, unsigned const selected_x, unsigned const selected_y, HDC const& hmapdc)
+	float const calc_landing_angle(unsigned const start_x, unsigned const selected_y, HDC const& hmapdc)
 	{
-		for (unsigned j = selected_y; j < selected_y + 4; ++j)
+		long double leftpoint_x =start_x;
+		long double leftpoint_y =0;
+		long double rightpoint_x =start_x+3;
+		long double rightpoint_y =0;
+		bool letfpoint_isfound = false;
+		bool rightpoint_isfound = false;
+
+		for (unsigned j = selected_y-2; j < selected_y + 6; ++j)
 		{
-			for (unsigned i = start_x; i < start_x + 4; ++i)
+			if(!letfpoint_isfound)
 			{
-				if ((i <= selected_x and j == selected_y) or  //이미 검사한부분 제외
-					(i == selected_x))			//처음 충돌한 픽셀의 y축은 다시검사할 필요 없음
-					break;
-				if (Collide(hmapdc, i, j))
+				if(Collide(hmapdc,static_cast<unsigned>(leftpoint_x),j))
 				{
-					return Position{ static_cast<float>(i), static_cast<float>(j) };
+					leftpoint_y = j;
+					letfpoint_isfound =true;
+				}
+			}
+			if(!rightpoint_isfound)
+			{
+				if(Collide(hmapdc,static_cast<unsigned>(rightpoint_x),j))
+				{
+					rightpoint_y = j;
+					rightpoint_isfound = true;
 				}
 			}
 		}
-		return Position({ static_cast<float>(selected_x), static_cast<float>(selected_y)	});
+		if(letfpoint_isfound and rightpoint_isfound)
+		{
+			return static_cast<float>( atan2(rightpoint_y-leftpoint_y,rightpoint_x-leftpoint_x));
+		}
+		return 0.0f;
+
 	}
 	void Collide_object(Object & obj, HDC const& hmapdc)
 	{
-
-
 		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x-2);//이미지 x가운데에서 2만큼왼쪽
-		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight());
-		//이미지 맨아래 y좌표
-		Position first_point{}, second_point{};
-		
+		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight()/2);
 
 		for (unsigned j = start_y; j < start_y + 4; ++j) 
 		{
@@ -170,37 +183,14 @@ namespace Physics
 			{
 				if(Collide(hmapdc, i, j))
 				{
-					first_point = { static_cast<float>(i),static_cast<float>(j) };
-
-					second_point = find_secondpixel(start_x, i, j, hmapdc);
-					obj.setsup_pos(second_point);
-					if (first_point.x > second_point.x)
-					{
-						Position temp = first_point;
-						first_point = second_point;
-						second_point = temp;
-					}
-					//unsigned fx = static_cast<unsigned>(first_point.x);
-					//unsigned fy = static_cast<unsigned>(first_point.y);
-					//unsigned sx = static_cast<unsigned>(second_point.x);
-					//unsigned sy = static_cast<unsigned>(second_point.y);
-					//Ellipse(hmapdc, fx - 20, fy - 20, fx + 20, fy + 20);
-					//Ellipse(hmapdc, sx - 20, sy - 20, sx + 20, sy + 20);
-
-					float const thetha = static_cast<const float>(atan2(
-						static_cast<long double>(second_point.y - first_point.y),
-						static_cast<long double>(second_point.x - first_point.x)));
-					obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight())});
-					obj.stop_move(thetha/Radian);
-					float c = thetha / Radian;
+					obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight()/2)});
+					float c = calc_landing_angle(i,j,hmapdc) / Radian;
+					obj.stop_move(-calc_landing_angle(i,j,hmapdc)/Radian);
 					return;
 
 				}
 			}
 		}
-		//SelectObject(hdc, oldbit);
-		//ReleaseDC(hwindow, hdc);
-
 	}
 	void Collide_objects(std::vector<Object> & obj, HDC const & hmapdc)
 	{
