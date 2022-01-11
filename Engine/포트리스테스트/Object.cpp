@@ -1,13 +1,13 @@
 #include "Object.h"
 
 Object::Object() :pos{ 400.0f,0.0f }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ 0 }, height{ 0 },
-velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, stand{true},
+velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, falling{true},
 /*test*/ support_point{0.0f,0.0f}
 {
 }
 
 Object::Object(Position const & pos, unsigned const width, unsigned const height) : pos{ pos }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ width }, height{ height },
-velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, stand{ true },
+velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, falling{ true },
 /*test*/ support_point{ 0.0f,0.0f }
 {
 }
@@ -24,7 +24,7 @@ void Object::ballistics_initialize(float const moving_angle, float const velocit
 	this->velocity0.x = velocity*static_cast<float>(cos(this->moving_angle));
 	this->velocity0.y = velocity*static_cast<float>(sin(this->moving_angle));
 	this->pos0 = pos;
-	this->stand = false;
+	this->falling = true;
 }
 //OOP
 Position const Object::getpos() const
@@ -52,15 +52,15 @@ float const Object::getimage_angle() const
 	return image_angle;
 }
 
-bool Object::is_stand()
+bool Object::is_falling()
 {
-	return stand;
+	return falling;
 }
 
 void Object::stop_move(float const thetha)
 {
 	this->image_angle = thetha;
-	this->stand = false;
+	this->falling = false;
 	this->moving_time = 0.0f;
 	this->pos0 = this->pos;
 }
@@ -77,7 +77,7 @@ void Object::setsup_pos(Position const& pos)
 
 void Object::ballistics_equation(float const delta)
 {
-	if (!stand)
+	if (falling)
 	{
 		this->moving_time += delta* SPEED;
 		this->pos.x = this->pos0.x + velocity0.x * moving_time;

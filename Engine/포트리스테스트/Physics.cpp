@@ -4,6 +4,7 @@
 #include"vector.h"
 #include"Tank.h"
 
+
 struct tyCircle final
 {
 	float Diameter = { 0 };
@@ -22,7 +23,7 @@ struct tyPoint final
 
 namespace Physics
 {
-
+	//영역 지정
 	float distance(long const dest_x, long const dest_y, long const src_x, long const src_y)
 	{
 		return static_cast<float>(sqrt(pow(static_cast<double>(dest_x)- static_cast<double>(src_x),2)+pow(static_cast<double>(dest_y)- static_cast<double>(src_y),2)));
@@ -61,7 +62,6 @@ namespace Physics
 	}
 	bool Collide(tyPoint const& point, tyRectangle const& rect)
 	{
-
 		if (rect.Angle != 0)
 		{
 			return false;
@@ -134,7 +134,7 @@ namespace Physics
 		int const g = GetGValue(color);
 		int const b = GetBValue(color);
 
-		if(!(r==255 and g ==0 and b == 255))
+		if(!(r==255 and g ==0 and b == 255) and y <600 and x>0 and x<800)
 			return true;
 		return false;
 	}
@@ -196,7 +196,7 @@ namespace Physics
 		{
 			for (size_t i = 0; i < obj.size(); i++)
 			{
-				if (!obj[i].is_stand())
+				if (obj[i].is_falling())
 					Collide_object(obj[i], hmapdc);
 			}
 		}
@@ -207,14 +207,13 @@ namespace Physics
 		{
 			for (size_t i = 0; i < tank.size(); i++)
 			{
-				if (!tank[i].is_stand())
+				if (tank[i].is_falling())
 					Collide_object(tank[i], hmapdc);
 			}
 		}
 	}
 	void ballistics(std::vector<Tank>& tank,float const delta)
 	{
-
 		if (!tank.empty())
 		{
 			for (size_t i = 0; i < tank.size(); i++)
@@ -222,6 +221,44 @@ namespace Physics
 				tank[i].ballistics_equation(delta);
 			}
 		}
+	}
+	void find_nextstep(HDC const& hmapdc,  Tank & tank,  bool const isright)
+	{
+		if (!tank.is_falling())
+		{
+			unsigned	   stepx = static_cast<unsigned>(tank.getpos().x - 1); //기본 왼쪽일때 시작할 점
+			unsigned const stepy = static_cast<unsigned>(tank.getpos().y+tank.getheight()/2 - 3); 
+			if (isright)
+				stepx = static_cast<unsigned>(tank.getpos().x+1);
+
+			//왼쪽/오른쪽 바로앞 위로 3번째 점부터 검사
+			//위에 세번째점에서 충돌이면 이동불가
+			//이후 아래 두번째점까지 충돌지점을 찾아 옮김
+			//충돌지점이 하나도 없다면 오른쪽으로 한칸이동 후 낙하
+			for (unsigned i = stepy; i < stepy+7; i++)
+			{
+				if ( i == stepy)
+				{
+					if (Collide(hmapdc, stepx, i))
+					{
+						tank.setstate(Tank::State::Stop_right);
+						return;
+					}
+				}
+				if (Collide(hmapdc, stepx, i))
+				{
+					tank.moveto({ static_cast<float>(stepx) ,static_cast<float>(i-tank.getheight()/2)});
+					tank.stop_move(-calc_landing_angle(stepx, i, hmapdc) / Radian);
+					return;
+				}
+			}
+			tank.moveto({ static_cast<float>(stepx) ,tank.getpos().y });
+			tank.ballistics_initialize(0,0);
+			return;
+		}
+		
+
+		
 	}
 
 }

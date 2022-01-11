@@ -18,9 +18,6 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="포트리스테스트\Tank.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="포트리스테스트\Engine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -42,14 +39,14 @@
     <ClCompile Include="포트리스테스트\Rendering.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="포트리스테스트\Tank.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="포트리스테스트\Time.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="포트리스테스트\Tank.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="포트리스테스트\matrix.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -60,6 +57,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="포트리스테스트\stdafx.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="포트리스테스트\Tank.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="포트리스테스트\vector.h">

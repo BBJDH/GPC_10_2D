@@ -1,6 +1,12 @@
 #include<Windows.h>
 #include<vector>
 #include"Tank.h"
+
+namespace Physics
+{
+	void find_nextstep(HDC const& hmapdc, Tank& tank, bool const isright);
+}
+
 namespace Input
 {
 	void Procedure
@@ -10,19 +16,19 @@ namespace Input
 		{
 			case WM_LBUTTONDOWN:
 			{
-				//obj.push_back
-				//(
-				//	Tank
-				//	(
-				//		{
-				//			static_cast<float>(LOWORD(lparameter)),
-				//			static_cast<float>(HIWORD(lparameter))
-				//		},
-				//		49,
-				//		42
-				//	)
-				//);
-				//obj.back().ballistics_initialize(0, 0);
+				tank.push_back
+				(
+					Tank
+					(
+						{
+							static_cast<float>(LOWORD(lparameter)),
+							static_cast<float>(HIWORD(lparameter))
+						},
+						49,
+						42
+					)
+				);
+				tank.back().ballistics_initialize(0, 0);
 				return;
 			}
 			case WM_RBUTTONDOWN:
@@ -48,7 +54,25 @@ namespace Input
 				//magenta_switch = true;
 				return;
 			}
-			case WM_KEYDOWN: { tank.front().input_key(wparameter); return; }
+			case WM_KEYDOWN: 
+			{
+				switch (wparameter)
+				{
+				case VK_LEFT:
+				{
+					Physics::find_nextstep(hmapdc, tank.front(), false);
+					//tank.front().input_key(wparameter); 
+					return; 
+				}
+				case VK_RIGHT:
+				{
+					Physics::find_nextstep(hmapdc, tank.front(), true);
+					//tank.front().input_key(wparameter);
+					return;
+				}
+					
+				}
+			}
 
 			return;
 

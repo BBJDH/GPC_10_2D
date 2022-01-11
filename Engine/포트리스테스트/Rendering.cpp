@@ -12,7 +12,7 @@ namespace Rendering
 		HBITMAP hmapbit, htank_bit, hmissilebit,hbackground_bit,hmagentabit;
 		BITMAP fighter, missile, over;
 		HDC hmapdc;
-	}
+	}//싱글톤으로 생성하여 외부 접근 못하게
 
 	BITMAP const getbitmap()
 	{

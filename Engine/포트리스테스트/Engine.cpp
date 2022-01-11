@@ -2,8 +2,8 @@
 #include<vector>
 #include"Object.h"
 #include"Tank.h"
-
 #pragma comment(lib, "msimg32.lib")
+
 namespace Rendering
 {
 	void initialize(HWND const& hwindow);
