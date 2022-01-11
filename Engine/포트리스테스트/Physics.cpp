@@ -2,6 +2,7 @@
 #include<vector>
 #include"Object.h"
 #include"vector.h"
+#include"Tank.h"
 
 struct tyCircle final
 {
@@ -174,56 +175,53 @@ namespace Physics
 	}
 	void Collide_object(Object & obj, HDC const& hmapdc)
 	{
-		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x-2);//이미지 x가운데에서 2만큼왼쪽
+		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x);//이미지 가운데 x좌표
 		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight()/2);
 
 		for (unsigned j = start_y; j < start_y + 4; ++j) 
 		{
-			for (unsigned  i = start_x; i < start_x + 4; ++i) //중점에서 
+
+			if(Collide(hmapdc, start_x, j))
 			{
-				if(Collide(hmapdc, i, j))
-				{
-					obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight()/2)});
-					float c = calc_landing_angle(i,j,hmapdc) / Radian;
-					obj.stop_move(-calc_landing_angle(i,j,hmapdc)/Radian);
-					return;
-				}
+				obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight()/2)});
+				obj.stop_move(-calc_landing_angle(start_x,j,hmapdc)/Radian);
+				return;
 			}
+			
 		}
 	}
-	void Collide_objects(std::vector<Object> & obj, HDC const & hmapdc)
+	void Collide_objects(std::vector<Object>& obj, HDC const& hmapdc)
 	{
 		if (!obj.empty())
 		{
 			for (size_t i = 0; i < obj.size(); i++)
 			{
-				if(!obj[i].is_stand())
+				if (!obj[i].is_stand())
 					Collide_object(obj[i], hmapdc);
 			}
 		}
 	}
-	void Move(std::vector<Object>& obj,float const delta)
+	void Collide_objects(std::vector<Tank>& tank, HDC const& hmapdc)
+	{
+		if (!tank.empty())
+		{
+			for (size_t i = 0; i < tank.size(); i++)
+			{
+				if (!tank[i].is_stand())
+					Collide_object(tank[i], hmapdc);
+			}
+		}
+	}
+	void ballistics(std::vector<Tank>& tank,float const delta)
 	{
 
-		if (!obj.empty())
+		if (!tank.empty())
 		{
-			for (size_t i = 0; i < obj.size(); i++)
+			for (size_t i = 0; i < tank.size(); i++)
 			{
-				obj[i].ballistics_equation(delta);
+				tank[i].ballistics_equation(delta);
 			}
 		}
 	}
 
 }
-
-///
-//
-//    ----
-//          -
-//    ---- -
-//      ----
-// 
-// 
-// 
-// 
-//

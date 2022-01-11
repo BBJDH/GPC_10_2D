@@ -11,8 +11,8 @@ protected:
 	unsigned const width;
 	unsigned const height;
 	float		   velocity;
-	float		   move_time;
-	float          move_angle;
+	float		   moving_time;
+	float          moving_angle;
 	float		   image_angle;
 	bool		   stand;
 
@@ -30,8 +30,8 @@ public:
 	float const getimage_angle()const;
 	bool is_stand();
 	void moveto(Position const & pos);
-	void ballistics_equation(float const move_time);
-	void ballistics_initialize(float const move_angle, float const velocity);
+	void ballistics_equation(float const moving_time);
+	void ballistics_initialize(float const moving_angle, float const velocity);
 	void stop_move(float const thetha);
 
 	//for test

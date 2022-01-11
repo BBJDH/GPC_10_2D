@@ -2,6 +2,7 @@
 #include<vector>
 #include<string>
 #include"Object.h"
+#include"Tank.h"
 #include"stdafx.h"
 
 namespace Rendering
@@ -155,7 +156,7 @@ namespace Rendering
 		return result;
 	}
 
-	void update(HWND const& hwindow, std::vector<Object> const & obj,bool const magenta_switch)
+	void update(HWND const& hwindow, std::vector<Tank> const & obj,bool const magenta_switch)
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);

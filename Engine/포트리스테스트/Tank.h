@@ -1,24 +1,26 @@
 #pragma once
 #include"Object.h"
-class Character : public Object
+#include<iostream>
+#include"stdafx.h"
+#include<Windows.h>
+
+
+
+class Tank : public Object
 {
 private:
 	unsigned	   hp;
-	unsigned const move_speed;
-	float		   fall_speed;
-	float          stand_angle;
+	float		   fire_angle;
+	float		   fire_velocity;
+
 
 public:
-	Character();
-	unsigned gethp() const;
-	unsigned getwidth() const;
-	unsigned getheight() const;
-	void calc_move();
-	void move();
-	
-	
-	
+	Tank(Position const& pos, unsigned const width, unsigned const height);
+	unsigned const gethp() const;
+	void take_damage(unsigned const damage);
+	void input_key(WPARAM const wparam);
 
+	
 };
 
 

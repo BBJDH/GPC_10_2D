@@ -1,12 +1,13 @@
 #include<Windows.h>
 #include<vector>
 #include"Object.h"
+#include"Tank.h"
 
 #pragma comment(lib, "msimg32.lib")
 namespace Rendering
 {
 	void initialize(HWND const& hwindow);
-	void update(HWND const& hwindow, std::vector<Object> const& obj, bool const magenta_switch);
+	void update(HWND const& hwindow, std::vector<Tank> const& obj, bool const magenta_switch);
 	BITMAP const getbitmap();
 	void destroy();
 	HDC getmapdc();
@@ -16,7 +17,7 @@ namespace Rendering
 namespace Input
 {
 	void Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object>& obj, HDC const& hmapdc, bool& magenta_switch);
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Tank>& obj, HDC const& hmapdc, bool& magenta_switch);
 }
 namespace Time
 {
@@ -24,22 +25,19 @@ namespace Time
 	(HWND const , UINT const , WPARAM const , LPARAM const );
 	float const getdelta();
 }
-namespace Missile
-{
 
-}
 namespace Physics
 {
-	void Collide_objects(std::vector<Object>& obj, HDC const& hmapdc);
-	void Move(std::vector<Object>& obj, float const delta);
+	void Collide_objects(std::vector<Tank>& obj, HDC const& hmapdc);
+	void ballistics(std::vector<Tank>& obj, float const delta);
 }
 
 namespace Engine
 {
 	bool magenta_switch;
 
-	std::vector<Object> tank;
-	std::vector<Object> missile;
+	std::vector<Tank> tank;
+	std::vector<Object> obj;
 	
 	LRESULT CALLBACK Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter)
@@ -50,14 +48,17 @@ namespace Engine
 			{
 				Rendering::initialize(hwindow);
 
+				tank.push_back(Tank({ 100,100 }, 49, 42));
+				tank.back().ballistics_initialize(0, 0);
+
 				magenta_switch = false;
 				return 0;
 			}
 			case WM_APP:
 			{
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);
-				Rendering::update(hwindow, tank,/*true*/magenta_switch);
-				Physics::Move(tank,Time::getdelta());
+				Rendering::update(hwindow,tank,/*true*/magenta_switch);
+				Physics::ballistics(tank,Time::getdelta());
 				Physics::Collide_objects(tank, Rendering::getmapdc());
 				return 0;
 			}

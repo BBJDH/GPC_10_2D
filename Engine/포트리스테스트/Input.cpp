@@ -1,33 +1,28 @@
 #include<Windows.h>
 #include<vector>
-#include"Object.h"
+#include"Tank.h"
 namespace Input
 {
-	namespace
-	{
-		int const speed =8;
-	}
-
 	void Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Object> & obj, HDC const& hmapdc, bool &magenta_switch)
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Tank> & tank, HDC const& hmapdc, bool &magenta_switch)
 	{
 		switch (umessage)
 		{
 			case WM_LBUTTONDOWN:
 			{
-				obj.push_back
-				(
-					Object
-					(
-						{
-							static_cast<float>(LOWORD(lparameter)),
-							static_cast<float>(HIWORD(lparameter))
-						},
-						49,
-						42
-					)
-				);
-				obj.back().ballistics_initialize(0, 0);
+				//obj.push_back
+				//(
+				//	Tank
+				//	(
+				//		{
+				//			static_cast<float>(LOWORD(lparameter)),
+				//			static_cast<float>(HIWORD(lparameter))
+				//		},
+				//		49,
+				//		42
+				//	)
+				//);
+				//obj.back().ballistics_initialize(0, 0);
 				return;
 			}
 			case WM_RBUTTONDOWN:
@@ -53,6 +48,7 @@ namespace Input
 				//magenta_switch = true;
 				return;
 			}
+			case WM_KEYDOWN: { tank.front().input_key(wparameter); return; }
 
 			return;
 

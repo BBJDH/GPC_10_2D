@@ -1,13 +1,13 @@
 #include "Object.h"
 
 Object::Object() :pos{ 400.0f,0.0f }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ 0 }, height{ 0 },
-velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, stand{true},
+velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, stand{true},
 /*test*/ support_point{0.0f,0.0f}
 {
 }
 
 Object::Object(Position const & pos, unsigned const width, unsigned const height) : pos{ pos }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ width }, height{ height },
-velocity{ 0.0f }, move_time{ 0.0f }, move_angle{ 0.0f }, image_angle{ 0.0f }, stand{ true },
+velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, stand{ true },
 /*test*/ support_point{ 0.0f,0.0f }
 {
 }
@@ -18,11 +18,11 @@ void Object::moveto(Position const & pos)
 	this->pos.y = pos.y;
 }
 
-void Object::ballistics_initialize(float const move_angle, float const velocity)
+void Object::ballistics_initialize(float const moving_angle, float const velocity)
 {
-	this->move_angle = move_angle*Radian;
-	this->velocity0.x = velocity*static_cast<float>(cos(this->move_angle));
-	this->velocity0.y = velocity*static_cast<float>(sin(this->move_angle));
+	this->moving_angle = moving_angle*Radian;
+	this->velocity0.x = velocity*static_cast<float>(cos(this->moving_angle));
+	this->velocity0.y = velocity*static_cast<float>(sin(this->moving_angle));
 	this->pos0 = pos;
 	this->stand = false;
 }
@@ -34,7 +34,7 @@ Position const Object::getpos() const
 
 float const Object::gettime() const
 {
-	return move_time;
+	return moving_time;
 }
 
 unsigned const Object::getwidth() const
@@ -60,7 +60,9 @@ bool Object::is_stand()
 void Object::stop_move(float const thetha)
 {
 	this->image_angle = thetha;
-	this->stand = true;
+	this->stand = false;
+	this->moving_time = 0.0f;
+	this->pos0 = this->pos;
 }
 
 Position const Object::getsup_pos() const
@@ -77,10 +79,10 @@ void Object::ballistics_equation(float const delta)
 {
 	if (!stand)
 	{
-		this->move_time += delta* SPEED;
-		this->pos.x = this->pos0.x + velocity0.x * move_time;
-		this->pos.y = this->pos0.y - velocity0.y * move_time
-					  +(grav_accerl*static_cast<float>(pow(move_time,2)))/2;
+		this->moving_time += delta* SPEED;
+		this->pos.x = this->pos0.x + velocity0.x * moving_time;
+		this->pos.y = this->pos0.y - velocity0.y * moving_time
+					  +(grav_accerl*static_cast<float>(pow(moving_time,2)))/2;
 	}
 }
 
