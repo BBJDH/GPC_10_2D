@@ -1,4 +1,5 @@
-#include "Tank.h"
+#include "Object.h"
+#include"stdafx.h"
 
 Tank::Tank(Position const& pos, unsigned const width, unsigned const height)
 	:Object(pos, width, height), hp{ 1000 }, stamina{50},

@@ -2,14 +2,14 @@
 template <typename T>
 class SingletonT
 {
-public:
+protected:
 	//싱글톤 인스턴스 선언
 	//static으로 한번만 생성되도록 작성
 	static T * singleton_instance;
 	SingletonT() {};
 	~SingletonT() {};
 
-private:
+public:
 	//생성된 인스턴스 반환
 	static T* get_singleton();
 	//생성된 인스턴스 메모리에서 해제
@@ -29,6 +29,7 @@ T* SingletonT<T>::get_singleton()
 {
 	if (singleton_instance == nullptr)
 		singleton_instance = new T;
+	return singleton_instance;
 }
 
 template<typename T>

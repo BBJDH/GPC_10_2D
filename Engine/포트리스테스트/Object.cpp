@@ -1,4 +1,6 @@
 #include "Object.h"
+#include"stdafx.h"
+
 
 Object::Object() :pos{ 400.0f,0.0f }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ 0 }, height{ 0 },
 velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, falling{true},
@@ -60,7 +62,7 @@ bool Object::is_falling()
 void Object::stop_move(float const thetha)
 {
 	this->image_angle = thetha;
-	this->falling = true;
+	this->falling = false;
 	this->moving_time = 0.0f;
 	this->pos0 = this->pos;
 }

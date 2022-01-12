@@ -12,6 +12,12 @@ namespace Input
 	{
 		switch (umessage)
 		{
+			case WM_MOUSEMOVE:
+			{
+				_Mouse->x = LOWORD(lparameter);
+				_Mouse->y = HIWORD(lparameter);
+				return;
+			}
 			case WM_LBUTTONDOWN:
 			{
 				tank.push_back

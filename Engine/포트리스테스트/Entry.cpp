@@ -14,7 +14,7 @@ int WINAPI WinMain
 )
 {
 	srand(static_cast<unsigned>(time(NULL)));
-	HWND hdodgewindow =HWND();
+	HWND hgamewindow =HWND();
 
 	WNDCLASSEX basic = WNDCLASSEX();
 
@@ -29,54 +29,59 @@ int WINAPI WinMain
 
 	RegisterClassEx(&basic);
 
-	CREATESTRUCT dodgewindow = CREATESTRUCT();
+	CREATESTRUCT gamewindow = CREATESTRUCT();
 
-	dodgewindow.hInstance = hInstance;
-	dodgewindow.cx        = 800;
-	dodgewindow.cy        = 600;
-	dodgewindow.lpszClass = "basic";
-	dodgewindow.lpszName  = "Fortress";
-	dodgewindow.style     = WS_OVERLAPPED | \
+	gamewindow.hInstance = hInstance;
+	gamewindow.cx        = WINSIZE_X;
+	gamewindow.cy        = WINSIZE_Y;
+	gamewindow.lpszClass = "basic";
+	gamewindow.lpszName  = "Fortress";
+	gamewindow.style     = WS_OVERLAPPED | \
 							WS_CAPTION | \
 							WS_MINIMIZEBOX | \
 							WS_SYSMENU;
 	RECT workspace = RECT();
-	workspace.right = dodgewindow.cx;
-	workspace.bottom = dodgewindow.cy;
+	workspace.right = gamewindow.cx;
+	workspace.bottom = gamewindow.cy;
 
 	AdjustWindowRectEx
 	(
 		&workspace,
-		dodgewindow.style,
-		static_cast<bool>(dodgewindow.hMenu),
-		dodgewindow.dwExStyle
+		gamewindow.style,
+		static_cast<bool>(gamewindow.hMenu),
+		gamewindow.dwExStyle
 	);
-	dodgewindow.cx = workspace.right - workspace.left;
-	dodgewindow.cy = workspace.bottom - workspace.top;
+	gamewindow.cx = workspace.right - workspace.left;
+	gamewindow.cy = workspace.bottom - workspace.top;
 
-	dodgewindow.x = (GetSystemMetrics(SM_CXSCREEN) -dodgewindow.cx)/2;
-	dodgewindow.y = (GetSystemMetrics(SM_CYSCREEN) -dodgewindow.cy)/2;
+	gamewindow.x = (GetSystemMetrics(SM_CXSCREEN) -gamewindow.cx)/2;
+	gamewindow.y = (GetSystemMetrics(SM_CYSCREEN) -gamewindow.cy)/2;
 
-	hdodgewindow = CreateWindowEx
+	hgamewindow = CreateWindowEx
 	(
-		dodgewindow.dwExStyle,
-		dodgewindow.lpszClass,
-		dodgewindow.lpszName,
-		dodgewindow.style,
-		dodgewindow.x,
-		dodgewindow.y,
-		dodgewindow.cx,
-		dodgewindow.cy,
-		dodgewindow.hwndParent,
-		dodgewindow.hMenu,
-		dodgewindow.hInstance,
-		dodgewindow.lpCreateParams
+		gamewindow.dwExStyle,
+		gamewindow.lpszClass,
+		gamewindow.lpszName,
+		gamewindow.style,
+		gamewindow.x,
+		gamewindow.y,
+		gamewindow.cx,
+		gamewindow.cy,
+		gamewindow.hwndParent,
+		gamewindow.hMenu,
+		gamewindow.hInstance,
+		gamewindow.lpCreateParams
 	);
-	ShowWindow(hdodgewindow,SW_RESTORE);
+	ShowWindow(hgamewindow,SW_RESTORE);
 	MSG msg = MSG();
+	RECT Clip;
+	GetClientRect(hgamewindow, &Clip);
+	ClientToScreen(hgamewindow, (LPPOINT)&Clip);
+	ClientToScreen(hgamewindow, (LPPOINT)(&Clip.right));
+	ClipCursor(&Clip);
 	while (true)
 	{
-		if(PeekMessage(&msg,hdodgewindow,WM_NULL, WM_NULL,PM_REMOVE))
+		if(PeekMessage(&msg,hgamewindow,WM_NULL, WM_NULL,PM_REMOVE))
 		{
 			if(msg.message == WM_QUIT)
 				return static_cast<int>(msg.wParam);
@@ -85,7 +90,7 @@ int WINAPI WinMain
 		}
 		else
 		{
-			SendMessage(hdodgewindow,WM_APP,0,0);
+			SendMessage(hgamewindow,WM_APP,0,0);
 		}
 
 	}

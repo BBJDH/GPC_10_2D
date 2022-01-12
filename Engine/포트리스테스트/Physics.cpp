@@ -129,7 +129,7 @@ namespace Physics
 		int const g = GetGValue(color);
 		int const b = GetBValue(color);
 
-		if(!(r==255 and g ==0 and b == 255) and y <600 and x>0 and x<800)
+		if(!(r==255 and g ==0 and b == 255) and y < MAPSIZE_H and x>0 and x< MAPSIZE_W)
 			return true;
 		return false;
 	}
@@ -142,7 +142,7 @@ namespace Physics
 		bool letfpoint_isfound = false;
 		bool rightpoint_isfound = false;
 
-		for (unsigned j = selected_y-2; j < selected_y + 6; ++j)
+		for (unsigned j = selected_y-5; j < selected_y + 5; ++j)
 		{
 			if(!letfpoint_isfound)
 			{

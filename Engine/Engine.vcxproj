@@ -26,6 +26,7 @@
     <ClCompile Include="포트리스테스트\Entry.cpp" />
     <ClCompile Include="포트리스테스트\Input.cpp" />
     <ClCompile Include="포트리스테스트\Missile.cpp" />
+    <ClCompile Include="포트리스테스트\Mouse.cpp" />
     <ClCompile Include="포트리스테스트\Object.cpp" />
     <ClCompile Include="포트리스테스트\Physics.cpp" />
     <ClCompile Include="포트리스테스트\Rendering.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="포트리스테스트\stdafx.h" />
     <ClInclude Include="포트리스테스트\Tank.h" />
     <ClInclude Include="포트리스테스트\vector.h" />
+    <ClInclude Include="포트리스테스트\Mouse.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -45,6 +45,12 @@ namespace Engine
 		{
 			case WM_CREATE:
 			{
+
+
+
+
+
+
 				Rendering::initialize(hwindow);
 
 				tank.push_back(Tank({ 100,100 }, 49, 42));

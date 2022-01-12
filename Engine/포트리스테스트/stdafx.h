@@ -32,17 +32,19 @@ struct Position
 #include"Tank.h"
 
 
+
 //충돌에 쓰일 벡터(cmath)
 #include"vector.h"
 
 //싱글톤 생성
+#include"Mouse.h"
 #include"Camera.h"
 
 //=====================================
 //	## 싱글톤 추가 ##
 //=====================================
 #define _CAM Camera::get_singleton()
-
+#define _Mouse Mouse::get_singleton()
 
 //=====================================
 //	## 디파인문 ## (윈도우 초기화 셋팅)
@@ -54,13 +56,13 @@ struct Position
 //#ifdef FULLSCREEN
 //#define WINSTARTX 0
 //#define WINSTARTY 0
-//#define WINSIZEX GetSystemMetrics(SM_CXSCREEN)
-//#define WINSIZEY GetSystemMetrics(SM_CYSCREEN)
+//#define WINSIZE_X GetSystemMetrics(SM_CXSCREEN)
+//#define WINSIZE_Y GetSystemMetrics(SM_CYSCREEN)
 //#else 
 //#define WINSTARTX 100
 //#define WINSTARTY 0
-#define WINSIZEX 800
-#define WINSIZEY 600
+#define WINSIZE_X 800  //1280
+#define WINSIZE_Y 600  //760
 //#endif // FULLSCREEN
 
 
@@ -79,4 +81,7 @@ struct Position
 // 나중에 사용해 보자
 //extern HINSTANCE _hInstance;
 //extern HWND _hWnd;
-//extern POINT _ptMouse;
+
+#define R_Image_SIZE 50
+#define MAPSIZE_W	 1500
+#define MAPSIZE_H	 1000
