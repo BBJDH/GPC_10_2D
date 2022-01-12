@@ -29,13 +29,18 @@
     <ClCompile Include="포트리스테스트\Object.cpp" />
     <ClCompile Include="포트리스테스트\Physics.cpp" />
     <ClCompile Include="포트리스테스트\Rendering.cpp" />
+    <ClCompile Include="포트리스테스트\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="포트리스테스트\Tank.cpp" />
     <ClCompile Include="포트리스테스트\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="포트리스테스트\Camera.h" />
     <ClInclude Include="포트리스테스트\matrix.h" />
     <ClInclude Include="포트리스테스트\Missile.h" />
     <ClInclude Include="포트리스테스트\Object.h" />
+    <ClInclude Include="포트리스테스트\SingletonT.h" />
     <ClInclude Include="포트리스테스트\stdafx.h" />
     <ClInclude Include="포트리스테스트\Tank.h" />
     <ClInclude Include="포트리스테스트\vector.h" />
@@ -148,6 +153,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

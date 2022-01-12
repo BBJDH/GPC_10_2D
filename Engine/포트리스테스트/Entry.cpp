@@ -1,5 +1,5 @@
-#include<Windows.h>
-#include<time.h>
+#include"stdafx.h"
+
 namespace Engine{
 	LRESULT CALLBACK Procedure
 	(HWND , UINT , WPARAM , LPARAM );

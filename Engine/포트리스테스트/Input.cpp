@@ -1,6 +1,4 @@
-#include<Windows.h>
-#include<vector>
-#include"Tank.h"
+#include"stdafx.h"
 
 namespace Physics
 {

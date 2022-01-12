@@ -60,7 +60,7 @@ bool Object::is_falling()
 void Object::stop_move(float const thetha)
 {
 	this->image_angle = thetha;
-	this->falling = false;
+	this->falling = true;
 	this->moving_time = 0.0f;
 	this->pos0 = this->pos;
 }

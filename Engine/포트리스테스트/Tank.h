@@ -1,9 +1,5 @@
 #pragma once
-#include"Object.h"
-#include<iostream>
 #include"stdafx.h"
-#include<Windows.h>
-
 
 
 

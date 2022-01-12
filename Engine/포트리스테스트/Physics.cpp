@@ -1,9 +1,4 @@
-#include<Windows.h>
-#include<vector>
-#include"Object.h"
-#include"vector.h"
-#include"Tank.h"
-
+#include"stdafx.h"
 
 struct tyCircle final
 {

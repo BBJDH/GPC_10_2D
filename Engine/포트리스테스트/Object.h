@@ -5,13 +5,16 @@
 class Object 
 {
 protected:
-	Position	   pos;
+	//가속도 계산시 사용
 	Position	   pos0;
 	Position	   velocity0;
+	float		   moving_time;
+
+	//평시 사용
+	Position	   pos;
 	unsigned const width;
 	unsigned const height;
 	float		   velocity;
-	float		   moving_time;
 	float          moving_angle;
 	float		   image_angle;
 	bool		   falling;
@@ -24,9 +27,9 @@ public:
 	Object();
 	Object(Position const & pos, unsigned const width, unsigned const height);
 	Position const getpos() const;
-	float const gettime() const;
 	unsigned const getwidth() const;
 	unsigned const getheight() const;
+	float const gettime() const;
 	float const getimage_angle()const;
 	bool is_falling();
 	void moveto(Position const & pos);

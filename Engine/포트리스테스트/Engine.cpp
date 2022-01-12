@@ -1,7 +1,6 @@
-#include<Windows.h>
-#include<vector>
-#include"Object.h"
-#include"Tank.h"
+#include"stdafx.h"
+
+
 #pragma comment(lib, "msimg32.lib")
 
 namespace Rendering

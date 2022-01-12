@@ -1,6 +1,6 @@
-#include<Windows.h>
+#include"stdafx.h"
 
-#include<chrono>
+
 
 namespace Time
 {

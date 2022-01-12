@@ -1,8 +1,5 @@
-#include<Windows.h>
-#include<vector>
-#include<string>
-#include"Object.h"
-#include"Tank.h"
+
+
 #include"stdafx.h"
 
 namespace Rendering
