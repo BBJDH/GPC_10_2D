@@ -22,6 +22,7 @@
     <Font Include="211119_외부폰트추가,DrawText\kodia.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="포트리스테스트\Camera.cpp" />
     <ClCompile Include="포트리스테스트\Engine.cpp" />
     <ClCompile Include="포트리스테스트\Entry.cpp" />
     <ClCompile Include="포트리스테스트\Input.cpp" />

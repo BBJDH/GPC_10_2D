@@ -7,7 +7,6 @@ namespace Rendering
 {
 	void initialize(HWND const& hwindow);
 	void update(HWND const& hwindow, std::vector<Tank> const& obj, bool const magenta_switch);
-	BITMAP const getbitmap();
 	void destroy();
 	HDC getmapdc();
 	HBITMAP getmapbit();
@@ -59,12 +58,14 @@ namespace Engine
 				magenta_switch = false;
 				return 0;
 			}
+
 			case WM_APP:
 			{
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);
-				Rendering::update(hwindow,tank,/*true*/magenta_switch);
+				_CAM->move(_Mouse->getpos());
 				Physics::ballistics(tank,Time::getdelta());
 				Physics::Collide_objects(tank, Rendering::getmapdc());
+				Rendering::update(hwindow,tank,/*true*/magenta_switch );
 				return 0;
 			}
 			case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:

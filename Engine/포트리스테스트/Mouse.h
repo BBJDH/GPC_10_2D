@@ -1,5 +1,5 @@
 #pragma once
-#include"stdafx.h"
+//#include"stdafx.h"
 #include"SingletonT.h"
 
 class Mouse : public SingletonT<Mouse>

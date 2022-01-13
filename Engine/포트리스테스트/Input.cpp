@@ -14,19 +14,27 @@ namespace Input
 		{
 			case WM_MOUSEMOVE:
 			{
+				RECT Clip;
+				GetClientRect(hwindow, &Clip);
+				ClientToScreen(hwindow, (LPPOINT)&Clip);
+				ClientToScreen(hwindow, (LPPOINT)(&Clip.right));
+				ClipCursor(&Clip);
 				_Mouse->x = LOWORD(lparameter);
 				_Mouse->y = HIWORD(lparameter);
 				return;
 			}
 			case WM_LBUTTONDOWN:
 			{
+
+				float x = static_cast<float>(_Mouse->x)+_CAM->pos.x;
+				float y = static_cast<float>(_Mouse->y)+_CAM->pos.y;
 				tank.push_back
 				(
 					Tank
 					(
 						{
-							static_cast<float>(LOWORD(lparameter)),
-							static_cast<float>(HIWORD(lparameter))
+							x,
+							y
 						},
 						49,
 						42
@@ -37,8 +45,9 @@ namespace Input
 			}
 			case WM_RBUTTONDOWN:
 			{
-				unsigned x = LOWORD(lparameter);
-				unsigned y = HIWORD(lparameter);
+
+				unsigned x = _Mouse->x+static_cast<unsigned>(_CAM->pos.x);
+				unsigned y = _Mouse->y+static_cast<unsigned>(_CAM->pos.y);
 
 				HBRUSH hNewBrush = CreateSolidBrush(RGB(255,0,255));
 				HPEN hNewPen = CreatePen(PS_SOLID, 2, 0xff00ff);

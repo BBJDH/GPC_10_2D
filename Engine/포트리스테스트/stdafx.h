@@ -43,8 +43,8 @@ struct Position
 //=====================================
 //	## 싱글톤 추가 ##
 //=====================================
-#define _CAM Camera::get_singleton()
 #define _Mouse Mouse::get_singleton()
+#define _CAM Camera::get_singleton()
 
 //=====================================
 //	## 디파인문 ## (윈도우 초기화 셋팅)
@@ -82,6 +82,7 @@ struct Position
 //extern HINSTANCE _hInstance;
 //extern HWND _hWnd;
 
-#define R_Image_SIZE 50
+#define R_Image_SIZE 100
 #define MAPSIZE_W	 1500
-#define MAPSIZE_H	 1000
+#define MAPSIZE_H	 800
+#define UI_H		 110

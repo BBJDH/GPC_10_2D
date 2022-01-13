@@ -51,6 +51,9 @@
     <ClCompile Include="포트리스테스트\Mouse.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="포트리스테스트\Camera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="포트리스테스트\matrix.h">

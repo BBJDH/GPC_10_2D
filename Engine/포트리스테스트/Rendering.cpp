@@ -12,12 +12,13 @@ namespace Rendering
 	}//싱글톤으로 생성하여 외부 접근 못하게
 
 
-	void drawbitmp(HDC const& hdc_dest,int const x, int const y,
-		int const width,int const height,HBITMAP const& hbitmap)
+	void drawbitmp(HDC const& hdc_dest,int const win_x, int const win_y,
+		int const width,int const height,int const image_x, int const image_y, HBITMAP const& hbitmap)
 	{
 		HDC hbufferdc = CreateCompatibleDC(hdc_dest);
 		HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hbufferdc, hbitmap));
-		BitBlt(hdc_dest, 0, 0, WINSIZE_X, WINSIZE_Y, hbufferdc, 0, 0, SRCCOPY);
+		BitBlt(hdc_dest, win_x, win_y, width, height, hbufferdc, image_x, image_y, SRCCOPY);
+		//윈도우에서 출력할 위치, 너비높이, 가져올 이미지의 시작점(왼쪽위)
 		SelectObject(hbufferdc, oldbit);
 		DeleteDC(hbufferdc);
 	}
@@ -27,8 +28,8 @@ namespace Rendering
 
 		HDC hdc = GetDC(hwindow);
 		hmapdc = CreateCompatibleDC(hdc);
-		hmapbit = CreateCompatibleBitmap(hdc, WINSIZE_X, WINSIZE_Y);
-		hmagentabit = CreateCompatibleBitmap(hdc, WINSIZE_X, WINSIZE_Y);
+		hmapbit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H);
+		hmagentabit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H);
 		htank_bit = CreateCompatibleBitmap(hdc, R_Image_SIZE, R_Image_SIZE);
 
 		SelectObject(hmapdc, hmagentabit);
@@ -45,7 +46,7 @@ namespace Rendering
 		hmapbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/포트리스/Asset/Map/sky_M.bmp"),
+			TEXT("./소스파일/포트리스/Asset/Map/sky_M_1500800.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -83,7 +84,7 @@ namespace Rendering
 		GetObject(hmapbit, sizeof(BITMAP), &mapbit);
 
 
-		drawbitmp(hmapdc, 0, 0, mapbit.bmWidth, mapbit.bmHeight, hmapbit);			//맵 파일 그리기
+		drawbitmp(hmapdc, 0, 0, mapbit.bmWidth, mapbit.bmHeight, 0,0, hmapbit);			//맵 파일 그리기
 
 
 		ReleaseDC(hwindow, hdc);
@@ -136,20 +137,20 @@ namespace Rendering
 		HBITMAP hOldBmp,tempbmp;
 		hMemdc = CreateCompatibleDC(hdc);
 		himagedc = CreateCompatibleDC(hdc);
-		tempbmp = CreateCompatibleBitmap(hdc, 100, 100);
+		tempbmp = CreateCompatibleBitmap(hdc, R_Image_SIZE, R_Image_SIZE);
 		SelectObject(hMemdc, tempbmp);
 
 		HBRUSH brush = CreateSolidBrush(RGB(255, 0, 255));
 		hOldBmp = static_cast<HBITMAP>(SelectObject(hMemdc, brush));
-		PatBlt(hMemdc, 0, 0, 100 , 100 , PATCOPY);
+		PatBlt(hMemdc, 0, 0, R_Image_SIZE , R_Image_SIZE , PATCOPY);
 		SelectObject(hMemdc, hOldBmp);
 		DeleteObject(brush);
 
 
 		hOldBmp = static_cast<HBITMAP>(SelectObject(himagedc, hBmp));
 		BOOL result = PlgBlt(hMemdc, vertex, himagedc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, 0, 0, 0);
-		GdiTransparentBlt(hdc, ixDisplay- bitmap.bmWidth, iyDisplay- bitmap.bmHeight, 100, 100,
-			hMemdc, 0, 0, 100, 100,  RGB(255, 0, 255));
+		GdiTransparentBlt(hdc, ixDisplay- bitmap.bmWidth, iyDisplay- bitmap.bmHeight, R_Image_SIZE, R_Image_SIZE,
+			hMemdc, 0, 0, R_Image_SIZE, R_Image_SIZE,  RGB(255, 0, 255));
 
 		SelectObject(himagedc, hOldBmp);
 		DeleteObject(tempbmp);
@@ -163,17 +164,18 @@ namespace Rendering
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
-		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, WINSIZE_X, WINSIZE_Y);
+		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H+UI_H);
 		BITMAP bmp;
 
 		SelectObject(hvirtualdc, hvirtualbit);
 
-		drawbitmp(hvirtualdc,0,0, WINSIZE_X, WINSIZE_Y, hbackground_bit);			//배경 파일 그리기
+		drawbitmp(hvirtualdc,static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), WINSIZE_X, WINSIZE_Y,
+			0,0, hbackground_bit);			//배경 파일 그리기
 		GetObject(hmagentabit, sizeof(BITMAP), &bmp);
 
-		TransparentBlt(hvirtualdc, 0, 0, bmp.bmWidth, bmp.bmHeight, hmapdc,
-			0, 0, bmp.bmWidth, bmp.bmHeight, RGB(255, 0, 255));
-		//Rectangle(hvirtualdc,0,500,WINSIZE_X,WINSIZE_Y);
+		TransparentBlt(hvirtualdc, 0, 0, MAPSIZE_W, MAPSIZE_H, hmapdc,
+			0, 0, MAPSIZE_W, MAPSIZE_H, RGB(255, 0, 255));
+		////Rectangle(hvirtualdc,0,500,WINSIZE_X,WINSIZE_Y);
 
 		if (!obj.empty())								//오브젝트 그리기(개수만큼)
 		{
@@ -192,27 +194,34 @@ namespace Rendering
 			}
 		}
 		GetObject(huibit, sizeof(BITMAP), &bmp);
-		drawbitmp_transparent(hvirtualdc, 0,0, bmp, huibit);
+		drawbitmp_transparent(hvirtualdc, static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), bmp, huibit);
 
 		if (!obj.empty())								//오브젝트 그리기(개수만큼)
 		{
 			SetBkMode(hvirtualdc, TRANSPARENT);
 			SetTextColor(hvirtualdc, RGB(255, 255, 255));
-			//std::string temp = "x :" + std::to_string(obj.back().getpos().x);		//탱크x좌표
-			std::string temp = "x :" + std::to_string(_Mouse->x);		//마우스x좌표
-			TextOut(hvirtualdc, 0, 0, temp.c_str(), static_cast<int>(temp.size()));
-			//temp = "y :" + std::to_string(obj.back().getpos().y);		//탱크y좌표
-			temp = "y :" + std::to_string(_Mouse->y);					//마우스y좌표
-			TextOut(hvirtualdc, 100, 0, temp.c_str(), static_cast<int>(temp.size()));
+			//std::string temp = "x :" + std::to_string(_CAM->pos.x);		//마우스x좌표
+			//TextOut(hvirtualdc, 0, 0, temp.c_str(), static_cast<int>(temp.size()));
+			//temp = "y :" + std::to_string(_CAM->pos.y);					//마우스y좌표
+			//TextOut(hvirtualdc, 100, 0, temp.c_str(), static_cast<int>(temp.size()));
 
+			std::string temp = "m_x :" + std::to_string(_Mouse->x+_CAM->pos.x);					//마우스y좌표
+			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+0, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+			temp = "m_y :" + std::to_string(_Mouse->y+_CAM->pos.y);					//마우스y좌표
+			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+150, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+
+			temp = "tank_x :" + std::to_string(obj.back().getpos().x);		//탱크x좌표
+			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+370, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+			temp = "tank_y :" + std::to_string(obj.back().getpos().y);		//탱크y좌표
+			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+520, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
 			temp = "angle :" + std::to_string(obj.back().getimage_angle());									//버틴시간 텍스트
-			TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
+			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+680, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
 		}
 
 		if(magenta_switch)
-			BitBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, hmapdc, 0, 0, SRCCOPY);
+			BitBlt(hdc, 0,0, WINSIZE_X, WINSIZE_Y, hmapdc, static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), SRCCOPY);
 		else
-			BitBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, hvirtualdc, 0, 0, SRCCOPY);
+			BitBlt(hdc, 0,0, WINSIZE_X, WINSIZE_Y, hvirtualdc,static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), SRCCOPY);
 
 
 		DeleteDC(hvirtualdc);
@@ -241,5 +250,6 @@ namespace Rendering
 
 
 	//https://doggyfoot.tistory.com/52
+	//스타크래프트 리소스
 
 }
