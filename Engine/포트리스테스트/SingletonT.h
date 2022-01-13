@@ -31,7 +31,7 @@ T* SingletonT<T>::get_singleton()
 		singleton_instance = new T;
 	return singleton_instance;
 }
-
+//생성된 인스턴스 메모리에서 해제
 template<typename T>
 void SingletonT<T>::release_singleton()
 {

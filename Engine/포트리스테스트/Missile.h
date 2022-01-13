@@ -1,6 +1,6 @@
 #pragma once
 
-class Missile
+class Missile : public Object
 {
 	enum class Type 
 	{

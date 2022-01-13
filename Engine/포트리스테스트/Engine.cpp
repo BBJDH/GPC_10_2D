@@ -45,11 +45,6 @@ namespace Engine
 			case WM_CREATE:
 			{
 
-
-
-
-
-
 				Rendering::initialize(hwindow);
 
 				tank.push_back(Tank({ 100,100 }, 49, 42));
@@ -65,7 +60,7 @@ namespace Engine
 				_CAM->move(_Mouse->getpos());
 				Physics::ballistics(tank,Time::getdelta());
 				Physics::Collide_objects(tank, Rendering::getmapdc());
-				Rendering::update(hwindow,tank,/*true*/magenta_switch );
+				Rendering::update(hwindow,tank,/*true*/ magenta_switch);
 				return 0;
 			}
 			case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
@@ -81,6 +76,9 @@ namespace Engine
 
 			case WM_DESTROY:
 			{
+				Rendering::destroy();
+				_CAM->release_singleton();
+				_Mouse->release_singleton();
 				ExitProcess(0);
 				return 0;
 			}

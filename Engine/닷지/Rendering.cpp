@@ -17,7 +17,7 @@ namespace Rendering
 		hmapbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./家胶颇老/Stars-background/starfield_alpha.bmp"),
+			TEXT("./家胶颇老/村瘤/starfield_alpha.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -26,7 +26,7 @@ namespace Rendering
 		hfighterbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./家胶颇老/spaceshipset32x32/player_ship.bmp"),
+			TEXT("./家胶颇老/村瘤/player_ship.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -36,7 +36,7 @@ namespace Rendering
 		hmissilebit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./家胶颇老/missile.bmp"),
+			TEXT("./家胶颇老/村瘤/missile.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -46,7 +46,7 @@ namespace Rendering
 		hgameoverbit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./家胶颇老/ckwlghd12/GameOver2.bmp"),
+			TEXT("./家胶颇老/村瘤/GameOver2.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,

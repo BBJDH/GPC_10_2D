@@ -1,12 +1,10 @@
-
-
 #include"stdafx.h"
 
 namespace Rendering
 {
 	namespace
 	{
-		HBITMAP hmapbit, htank_bit, hmissilebit,hbackground_bit, huibit, hmagentabit;
+		HBITMAP htank_bit, hmissilebit,hbackground_bit, huibit, hmagentabit;
 
 		HDC hmapdc;
 	}//싱글톤으로 생성하여 외부 접근 못하게
@@ -27,9 +25,9 @@ namespace Rendering
 		//HBRUSH hbrush = CreateSolidBrush(RGB(255, 0, 255));
 
 		HDC hdc = GetDC(hwindow);
+		HBITMAP hmapbit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H+UI_H);
 		hmapdc = CreateCompatibleDC(hdc);
-		hmapbit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H);
-		hmagentabit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H);
+		hmagentabit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H+UI_H);
 		htank_bit = CreateCompatibleBitmap(hdc, R_Image_SIZE, R_Image_SIZE);
 
 		SelectObject(hmapdc, hmagentabit);
@@ -86,7 +84,7 @@ namespace Rendering
 
 		drawbitmp(hmapdc, 0, 0, mapbit.bmWidth, mapbit.bmHeight, 0,0, hmapbit);			//맵 파일 그리기
 
-
+		DeleteObject(hmapbit);
 		ReleaseDC(hwindow, hdc);
 
 	}
@@ -102,39 +100,18 @@ namespace Rendering
 		DeleteDC(hmemdc);
 	}
 
-	BOOL RotateSizingImage(HDC const hdc, HBITMAP const hBmp,
-		double const dblAngle,
-		int    const ixRotateAxis, int const iyRotateAxis,
-		int    const ixDisplay,    int const iyDisplay)
+	bool sizeup_and_draw_r_a(HDC const hdc, HBITMAP const hBmp, unsigned const window_x,unsigned const window_y, POINT const * vertex, unsigned const size=3)
 	{
-		BITMAP    bitmap;
-		POINT     vertex[3]    = { 0 };
-		GetObject(hBmp, sizeof(BITMAP), &bitmap);
-		double	  bmpwidth  = static_cast<double>(bitmap.bmWidth);
-		double	  bmpheight = static_cast<double>(bitmap.bmHeight);
-		double	  ixRotate  = static_cast<double>(ixRotateAxis);
-		double	  iyRotate  = static_cast<double>(iyRotateAxis);
-		double dblx, dbly, dest_x, dest_y, cosVal, sinVal;
-		cosVal = cos(-dblAngle*Radian), sinVal = sin(-dblAngle*Radian);
 
-		// 1. 회전축을 기준으로 상대좌표를 구하고
-		// 2. 회전후 위치좌표(상대좌표)를 얻은 후
-		// 3. 얻은 값을 원래의 좌표에 적용.
- 		for (size_t i = 0; i < 3; i++)
-		{
-			if (i == 0) { dblx = -ixRotate, dbly = -iyRotate; }    // left up  꼭지점 부분
-			else if (i == 1) { dblx = bmpwidth - ixRotate, dbly = -iyRotate; }  // right up 꼭지점 부분
-			else if (i == 2) { dblx = -ixRotate, dbly = bmpheight - iyRotate; } // left low 꼭지점 부분
-			dest_x = dblx * cosVal - dbly * sinVal;
-			dest_y = dblx * sinVal + dbly * cosVal;
-			dest_x += ixRotate, dest_y += iyRotate;
-			vertex[i].x = 50 - static_cast<long>(ixRotate) + static_cast<long>(dest_x);
-			vertex[i].y = 50 - static_cast<long>(iyRotate) + static_cast<long>(dest_y);
-		}
-
+		// 1. 가상의 도화지를 만들고(100X100) 전체를 마젠타로 칠하고
+		// 2. 받은 정점만큼 이미지를 회전해서 출력하고
+		// 3. 최종 그려질 윈도우 좌표에 마젠타를 지우고 가져다 놓는다
 		HDC hMemdc;
 		HDC himagedc;
 		HBITMAP hOldBmp,tempbmp;
+		BITMAP    bitmap;
+		GetObject(hBmp, sizeof(BITMAP), &bitmap);
+
 		hMemdc = CreateCompatibleDC(hdc);
 		himagedc = CreateCompatibleDC(hdc);
 		tempbmp = CreateCompatibleBitmap(hdc, R_Image_SIZE, R_Image_SIZE);
@@ -142,86 +119,142 @@ namespace Rendering
 
 		HBRUSH brush = CreateSolidBrush(RGB(255, 0, 255));
 		hOldBmp = static_cast<HBITMAP>(SelectObject(hMemdc, brush));
-		PatBlt(hMemdc, 0, 0, R_Image_SIZE , R_Image_SIZE , PATCOPY);
+		PatBlt(hMemdc, 0, 0, R_Image_SIZE , R_Image_SIZE , PATCOPY);	//마젠타로 100X100 도화지 전체 칠하기
 		SelectObject(hMemdc, hOldBmp);
+		DeleteObject(tempbmp);
 		DeleteObject(brush);
 
-
 		hOldBmp = static_cast<HBITMAP>(SelectObject(himagedc, hBmp));
-		BOOL result = PlgBlt(hMemdc, vertex, himagedc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, 0, 0, 0);
-		GdiTransparentBlt(hdc, ixDisplay- bitmap.bmWidth, iyDisplay- bitmap.bmHeight, R_Image_SIZE, R_Image_SIZE,
+		bool result = PlgBlt(hMemdc, vertex, himagedc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, 0, 0, 0);		//정점만큼 이미지 회전
+		GdiTransparentBlt(hdc, window_x- bitmap.bmWidth, window_y- bitmap.bmHeight, R_Image_SIZE, R_Image_SIZE,		//마젠타 지우고 지정된 좌표에 출력
 			hMemdc, 0, 0, R_Image_SIZE, R_Image_SIZE,  RGB(255, 0, 255));
 
 		SelectObject(himagedc, hOldBmp);
-		DeleteObject(tempbmp);
 		DeleteObject(hOldBmp);
 		DeleteDC(hMemdc);
 		DeleteDC(himagedc);
+
 		return result;
 	}
 
-	void update(HWND const& hwindow, std::vector<Tank> const & obj,bool const magenta_switch)
+	bool drawbitmp_rotate_alpha(HDC const hdc, HBITMAP const hbmp,double const angle,
+		float const half_width, float const half_height,float const window_x, float const window_y)
+	{
+		POINT     vertex[3]    = { 0 };
+		BITMAP    bitmap;
+		GetObject(hbmp, sizeof(BITMAP), &bitmap);
+		double	  bmpwidth  = static_cast<double>(bitmap.bmWidth);
+		double	  bmpheight = static_cast<double>(bitmap.bmHeight);
+		double	  half_w  = static_cast<double>(half_width);
+		double	  half_h  = static_cast<double>(half_height);
+		double x, y, dest_x, dest_y, cosVal, sinVal;
+		cosVal = cos(-angle*Radian), sinVal = sin(-angle*Radian);
+
+		// 1. 중점을 기준으로 상대좌표를 구하고(3개 왼위 오위 왼아래)
+		// 2. 회전된좌표(상대좌표)를 얻은 후 
+		// 3. 가상의 도화지 중점에 상대좌표를 더해 그리는 함수에게 전달(sizeup_and_draw_r_a)
+ 		for (size_t i = 0; i < 3; i++)
+		{
+			if (i == 0) { x = -half_w, y = -half_h; }    // left up  꼭지점 부분(윈도우 좌표계)
+			else if (i == 1) { x = bmpwidth - half_w, y = -half_h; }  // right up 꼭지점 부분(윈도우 좌표계)
+			else if (i == 2) { x = -half_w, y = bmpheight - half_h; } // left low 꼭지점 부분(윈도우 좌표계)
+			dest_x = x * cosVal - y * sinVal;
+			dest_y = x * sinVal + y * cosVal; //회전한 좌표 구하기
+
+			vertex[i].x = R_Image_SIZE/2 + static_cast<long>(dest_x);
+			vertex[i].y = R_Image_SIZE/2 + static_cast<long>(dest_y); // 이미지중점에서 회전한 좌표 더함
+		}
+		bool result = sizeup_and_draw_r_a(hdc,hbmp,static_cast<int const>(window_x),static_cast<int const>(window_y),vertex);
+
+		return result;
+	}
+	void draw_object(HDC const hdc, Object const& obj)
+	{
+		int const camx = static_cast<int const>(_CAM->pos.x);
+		int const camy = static_cast<int const>(_CAM->pos.y);
+		drawbitmp_rotate_alpha
+		(
+			hdc,htank_bit,
+			obj.getimage_angle(),
+			obj.getwidth()/2.0f,
+			obj.getheight() /2.0f,
+			obj.getpos().x-camx,
+			obj.getpos().y-camy
+		);
+	}
+	void draw_tanks(HDC const hdc,std::vector<Tank> const & tank)
+	{
+
+		if (!tank.empty())								//오브젝트 그리기(개수만큼)
+		{
+			for (size_t i = 0; i < tank.size(); i++)
+			{
+				draw_object(hdc,tank[i]);
+			}
+		}
+	}
+	void draw_missiles(HDC const hdc,std::vector<Missile> const & missile)
+	{
+
+		if (!missile.empty())								//오브젝트 그리기(개수만큼)
+		{
+			for (size_t i = 0; i < missile.size(); i++)
+			{
+				draw_object(hdc,missile[i]);
+			}
+		}
+	}
+	void update(HWND const& hwindow, std::vector<Tank> const & tank,bool const magenta_switch)
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
-		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H+UI_H);
+		HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, WINSIZE_X, WINSIZE_Y);
 		BITMAP bmp;
+		int const camx = static_cast<int const>(_CAM->pos.x);
+		int const camy = static_cast<int const>(_CAM->pos.y);
 
 		SelectObject(hvirtualdc, hvirtualbit);
 
-		drawbitmp(hvirtualdc,static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), WINSIZE_X, WINSIZE_Y,
-			0,0, hbackground_bit);			//배경 파일 그리기
+		drawbitmp(hvirtualdc,0, 0, WINSIZE_X, WINSIZE_Y,
+			0,0, hbackground_bit);								//배경 파일 그리기
+
 		GetObject(hmagentabit, sizeof(BITMAP), &bmp);
-
-		TransparentBlt(hvirtualdc, 0, 0, MAPSIZE_W, MAPSIZE_H, hmapdc,
-			0, 0, MAPSIZE_W, MAPSIZE_H, RGB(255, 0, 255));
-		////Rectangle(hvirtualdc,0,500,WINSIZE_X,WINSIZE_Y);
-
-		if (!obj.empty())								//오브젝트 그리기(개수만큼)
-		{
-			for (size_t i = 0; i < obj.size(); i++)
-			{
-				//drawbitmp_transparent(hvirtualdc, static_cast<const int>(obj[i].getpos().x) - (fighter.bmWidth / 2),
-				//	static_cast<const int>(obj[i].getpos().y) - (fighter.bmHeight / 2), fighter, htank_bit);	
-				RotateSizingImage(hvirtualdc,htank_bit,obj[i].getimage_angle(),obj[i].getwidth()/2, obj[i].getheight() /2,
-					static_cast<const int>(obj[i].getpos().x),
-					static_cast<const int>(obj[i].getpos().y));
-				Ellipse(hvirtualdc, 
-					static_cast<const int>(obj[i].getpos().x - 2),
-					static_cast<const int>(obj[i].getpos().y+ obj[i].getheight() / 2 - 2),
-					static_cast<const int>(obj[i].getpos().x + 2),
-					static_cast<const int>(obj[i].getpos().y+ obj[i].getheight() / 2 + 2));
-			}
-		}
+		TransparentBlt(hvirtualdc, 0, 0, WINSIZE_X, WINSIZE_Y,
+			hmapdc,camx, camy, WINSIZE_X, WINSIZE_Y,
+			RGB(255, 0, 255));									//맵 그리기
+		draw_tanks(hvirtualdc,tank);							//탱크들 그리기	
+																//미사일들 그리기
 		GetObject(huibit, sizeof(BITMAP), &bmp);
-		drawbitmp_transparent(hvirtualdc, static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), bmp, huibit);
+		drawbitmp_transparent(hvirtualdc, 0, 0, bmp, huibit);	//UI 그리기
 
-		if (!obj.empty())								//오브젝트 그리기(개수만큼)
+#pragma region 그래픽 디버깅
+
+		if (!tank.empty())																	// 좌표디버깅							
 		{
 			SetBkMode(hvirtualdc, TRANSPARENT);
 			SetTextColor(hvirtualdc, RGB(255, 255, 255));
-			//std::string temp = "x :" + std::to_string(_CAM->pos.x);		//마우스x좌표
-			//TextOut(hvirtualdc, 0, 0, temp.c_str(), static_cast<int>(temp.size()));
-			//temp = "y :" + std::to_string(_CAM->pos.y);					//마우스y좌표
-			//TextOut(hvirtualdc, 100, 0, temp.c_str(), static_cast<int>(temp.size()));
 
-			std::string temp = "m_x :" + std::to_string(_Mouse->x+_CAM->pos.x);					//마우스y좌표
-			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+0, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
-			temp = "m_y :" + std::to_string(_Mouse->y+_CAM->pos.y);					//마우스y좌표
-			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+150, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
 
-			temp = "tank_x :" + std::to_string(obj.back().getpos().x);		//탱크x좌표
-			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+370, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
-			temp = "tank_y :" + std::to_string(obj.back().getpos().y);		//탱크y좌표
-			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+520, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
-			temp = "angle :" + std::to_string(obj.back().getimage_angle());									//버틴시간 텍스트
-			TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+680, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+			std::string temp = "m_x :" + std::to_string(_Mouse->x + _CAM->pos.x);			//마우스x좌표
+			//std::string temp = "m_x :" + std::to_string(camx);							//스크린x좌표
+			TextOut(hvirtualdc, 0, 0, temp.c_str(), static_cast<int>(temp.size()));
+			temp = "m_y :" + std::to_string(_Mouse->y + _CAM->pos.y);						//마우스y좌표
+			//temp = "m_y :" + std::to_string(camy);										//스크린y좌표
+			TextOut(hvirtualdc, 150, 0, temp.c_str(), static_cast<int>(temp.size()));
+			temp = "tank_x :" + std::to_string(tank.back().getpos().x);						//탱크x좌표
+			TextOut(hvirtualdc, 370, 0, temp.c_str(), static_cast<int>(temp.size()));
+			temp = "tank_y :" + std::to_string(tank.back().getpos().y);						//탱크y좌표
+			TextOut(hvirtualdc, 520, 0, temp.c_str(), static_cast<int>(temp.size()));
+			temp = "angle :" + std::to_string(tank.back().getimage_angle());					//자세각도
+			TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
 		}
 
-		if(magenta_switch)
-			BitBlt(hdc, 0,0, WINSIZE_X, WINSIZE_Y, hmapdc, static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), SRCCOPY);
+		if (magenta_switch)																	// 충돌디버깅
+			BitBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, hmapdc, camx, camy, SRCCOPY);
 		else
-			BitBlt(hdc, 0,0, WINSIZE_X, WINSIZE_Y, hvirtualdc,static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), SRCCOPY);
+			BitBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, hvirtualdc, 0, 0, SRCCOPY);
+
+#pragma endregion
 
 
 		DeleteDC(hvirtualdc);
@@ -231,13 +264,15 @@ namespace Rendering
 
 	void destroy()
 	{
-		DeleteObject(hmagentabit);
-		DeleteObject(hmapbit);
-		DeleteObject(htank_bit);
+		DeleteObject(huibit);
 		DeleteObject(hmissilebit);
+		DeleteObject(htank_bit);
+		DeleteObject(hmagentabit);
 		DeleteObject(hbackground_bit);
 	}
 
+
+	//TODO: 마젠타 맵 싱글톤으로 만들기
 	HDC  getmapdc()
 	{
 		return hmapdc;
@@ -251,5 +286,77 @@ namespace Rendering
 
 	//https://doggyfoot.tistory.com/52
 	//스타크래프트 리소스
+	// 
+	// 
+	//삽질..(도화지 크게 그려서 몽땅 그려놓고 옮겨옴)
+	//void update(HWND const& hwindow, std::vector<Tank> const & obj,bool const magenta_switch)
+	//{
+	//	HDC hdc = GetDC(hwindow);
+	//	HDC hvirtualdc = CreateCompatibleDC(hdc);
+	//	HBITMAP hvirtualbit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H+UI_H);
+	//	BITMAP bmp;
+
+	//	SelectObject(hvirtualdc, hvirtualbit);
+
+	//	drawbitmp(hvirtualdc,static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), WINSIZE_X, WINSIZE_Y,
+	//		0,0, hbackground_bit);			//배경 파일 그리기
+	//	GetObject(hmagentabit, sizeof(BITMAP), &bmp);
+
+	//	TransparentBlt(hvirtualdc, 0, 0, MAPSIZE_W, MAPSIZE_H, hmapdc,
+	//		0, 0, MAPSIZE_W, MAPSIZE_H, RGB(255, 0, 255));
+	//	////Rectangle(hvirtualdc,0,500,WINSIZE_X,WINSIZE_Y);
+
+	//	if (!obj.empty())								//오브젝트 그리기(개수만큼)
+	//	{
+	//		for (size_t i = 0; i < obj.size(); i++)
+	//		{
+	//			//drawbitmp_transparent(hvirtualdc, static_cast<const int>(obj[i].getpos().x) - (fighter.bmWidth / 2),
+	//			//	static_cast<const int>(obj[i].getpos().y) - (fighter.bmHeight / 2), fighter, htank_bit);	
+	//			RotateSizingImage(hvirtualdc,htank_bit,obj[i].getimage_angle(),obj[i].getwidth()/2, obj[i].getheight() /2,
+	//				static_cast<const int>(obj[i].getpos().x),
+	//				static_cast<const int>(obj[i].getpos().y));
+	//			Ellipse(hvirtualdc, 
+	//				static_cast<const int>(obj[i].getpos().x - 2),
+	//				static_cast<const int>(obj[i].getpos().y+ obj[i].getheight() / 2 - 2),
+	//				static_cast<const int>(obj[i].getpos().x + 2),
+	//				static_cast<const int>(obj[i].getpos().y+ obj[i].getheight() / 2 + 2));
+	//		}
+	//	}
+	//	GetObject(huibit, sizeof(BITMAP), &bmp);
+	//	drawbitmp_transparent(hvirtualdc, static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), bmp, huibit);
+
+	//	if (!obj.empty())								//오브젝트 그리기(개수만큼)
+	//	{
+	//		SetBkMode(hvirtualdc, TRANSPARENT);
+	//		SetTextColor(hvirtualdc, RGB(255, 255, 255));
+	//		//std::string temp = "x :" + std::to_string(_CAM->pos.x);		//마우스x좌표
+	//		//TextOut(hvirtualdc, 0, 0, temp.c_str(), static_cast<int>(temp.size()));
+	//		//temp = "y :" + std::to_string(_CAM->pos.y);					//마우스y좌표
+	//		//TextOut(hvirtualdc, 100, 0, temp.c_str(), static_cast<int>(temp.size()));
+
+	//		std::string temp = "m_x :" + std::to_string(_Mouse->x+_CAM->pos.x);					//마우스y좌표
+	//		TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+0, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+	//		temp = "m_y :" + std::to_string(_Mouse->y+_CAM->pos.y);					//마우스y좌표
+	//		TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+150, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+
+	//		temp = "tank_x :" + std::to_string(obj.back().getpos().x);		//탱크x좌표
+	//		TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+370, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+	//		temp = "tank_y :" + std::to_string(obj.back().getpos().y);		//탱크y좌표
+	//		TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+520, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+	//		temp = "angle :" + std::to_string(obj.back().getimage_angle());									//버틴시간 텍스트
+	//		TextOut(hvirtualdc, static_cast<int const>(_CAM->pos.x)+680, static_cast<int const>(_CAM->pos.y), temp.c_str(), static_cast<int>(temp.size()));
+	//	}
+
+	//	if(magenta_switch)
+	//		BitBlt(hdc, 0,0, WINSIZE_X, WINSIZE_Y, hmapdc, static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), SRCCOPY);
+	//	else
+	//		BitBlt(hdc, 0,0, WINSIZE_X, WINSIZE_Y, hvirtualdc,static_cast<int const>(_CAM->pos.x), static_cast<int const>(_CAM->pos.y), SRCCOPY);
+
+
+	//	DeleteDC(hvirtualdc);
+	//	DeleteObject(hvirtualbit);
+	//	ReleaseDC(hwindow, hdc);
+	//}
+
 
 }
