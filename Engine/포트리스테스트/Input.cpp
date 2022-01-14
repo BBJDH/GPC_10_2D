@@ -1,6 +1,6 @@
 #include"stdafx.h"
 
-namespace Physics
+namespace UI
 {
 	void find_nextstep(HDC const& hmapdc, Tank& tank, bool const isright);
 }
@@ -21,6 +21,8 @@ namespace Input
 				ClipCursor(&Clip);
 				_Mouse->x = LOWORD(lparameter);
 				_Mouse->y = HIWORD(lparameter);
+
+
 				return;
 			}
 			case WM_LBUTTONDOWN:
@@ -73,14 +75,27 @@ namespace Input
 				{
 				case VK_LEFT:
 				{
-					Physics::find_nextstep(hmapdc, tank.front(), false);
+					UI::find_nextstep(hmapdc, tank.front(), false);
 					//tank.front().input_key(wparameter); 
 					return; 
 				}
 				case VK_RIGHT:
 				{
-					Physics::find_nextstep(hmapdc, tank.front(), true);
+					UI::find_nextstep(hmapdc, tank.front(), true);
 					//tank.front().input_key(wparameter);
+					return;
+				}
+				case VK_UP:
+				{
+					
+					return;
+				}
+				case VK_DOWN:
+				{
+					return;
+				}
+				case VK_SPACE:
+				{
 					return;
 				}
 					

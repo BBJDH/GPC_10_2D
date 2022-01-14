@@ -30,12 +30,15 @@
     <ClCompile Include="포트리스테스트\Mouse.cpp" />
     <ClCompile Include="포트리스테스트\Object.cpp" />
     <ClCompile Include="포트리스테스트\Physics.cpp" />
+    <ClCompile Include="포트리스테스트\Random.cpp" />
     <ClCompile Include="포트리스테스트\Rendering.cpp" />
     <ClCompile Include="포트리스테스트\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="포트리스테스트\Tank.cpp" />
     <ClCompile Include="포트리스테스트\Time.cpp" />
+    <ClCompile Include="포트리스테스트\Turnmanager.cpp" />
+    <ClCompile Include="포트리스테스트\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="포트리스테스트\Camera.h" />
@@ -46,7 +49,9 @@
     <ClInclude Include="포트리스테스트\SingletonT.h" />
     <ClInclude Include="포트리스테스트\stdafx.h" />
     <ClInclude Include="포트리스테스트\Tank.h" />
+    <ClInclude Include="포트리스테스트\Turnmanager.h" />
     <ClInclude Include="포트리스테스트\vector.h" />
+    <ClInclude Include="포트리스테스트\Random.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

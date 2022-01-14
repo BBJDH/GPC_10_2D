@@ -16,17 +16,17 @@ private:
 	unsigned	   stamina;
 	float		   fire_angle;
 	float		   fire_velocity;
+	bool		   myturn;
 
 
 public:
-
-
 
 	Tank(Position const& pos, unsigned const width, unsigned const height);
 	unsigned const gethp() const;
 	void take_damage(unsigned const damage);
 	void input_key(WPARAM const wparam);
 	void setstate(State const state);
+	void setmyturn(bool myturn);
 
 	
 };

@@ -72,7 +72,7 @@ namespace Rendering
 		hmissilebit = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/missile.bmp"),
+			TEXT("./소스파일/포트리스/bomb.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,

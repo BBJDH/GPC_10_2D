@@ -5,6 +5,7 @@
 #include<math.h>
 #include<time.h>
 #include<chrono>
+#include<cassert>
 
 
 //STL
@@ -36,6 +37,8 @@ struct Position
 
 //충돌에 쓰일 벡터(cmath)
 #include"vector.h"
+//랜덤추출함수
+#include"Random.h"
 
 //싱글톤 생성
 #include"Mouse.h"
@@ -67,6 +70,14 @@ struct Position
 //#endif // FULLSCREEN
 
 
+//게임 세팅
+#define R_Image_SIZE 100
+#define MAPSIZE_W	 1500
+#define MAPSIZE_H	 800
+#define UI_H		 110
+#define PLAYERS		 8
+
+
 //물리, 수학관련
 #define grav_accerl 9.8f //Gravialional accerleration
 #define PI 3.141592f
@@ -83,7 +94,3 @@ struct Position
 //extern HINSTANCE _hInstance;
 //extern HWND _hWnd;
 
-#define R_Image_SIZE 100
-#define MAPSIZE_W	 1500
-#define MAPSIZE_H	 800
-#define UI_H		 110

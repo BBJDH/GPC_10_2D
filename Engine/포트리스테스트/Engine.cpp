@@ -35,8 +35,9 @@ namespace Engine
 	bool magenta_switch;
 
 	std::vector<Tank> tank;
-	std::vector<Object> obj;
-	
+	std::vector<Missile> missile;
+	Random rand_turn;
+
 	LRESULT CALLBACK Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter)
 	{
@@ -44,23 +45,25 @@ namespace Engine
 		{
 			case WM_CREATE:
 			{
-
+				Random r(10,MAPSIZE_W-10,PLAYERS);
 				Rendering::initialize(hwindow);
-
-				tank.push_back(Tank({ 100,100 }, 49, 42));
-				tank.back().ballistics_initialize(0, 0);
-
+				for (unsigned i = 0; i < PLAYERS; i++)
+				{
+					tank.push_back(Tank({ static_cast<float>(r.GetResult(i)),0 }, 49, 42));
+					tank.back().ballistics_initialize(0, 0);
+				}
 				magenta_switch = false;
+				
 				return 0;
 			}
 
 			case WM_APP:
 			{
-				Time::Procedure(hwindow, umessage, wparameter, lparameter);
-				_CAM->move(_Mouse->getpos());
-				Physics::ballistics(tank,Time::getdelta());
-				Physics::Collide_objects(tank, Rendering::getmapdc());
-				Rendering::update(hwindow,tank,/*true*/ magenta_switch);
+				Time::Procedure(hwindow, umessage, wparameter, lparameter);//시간계산
+				_CAM->move(_Mouse->getpos()); //마우스 위치에 따라 카메라 이동
+				Physics::ballistics(tank,Time::getdelta()); //낙하가 켜진 탱크들 낙하좌표 계산 
+				Physics::Collide_objects(tank, Rendering::getmapdc());	//낙하한 탱크 충돌검사
+				Rendering::update(hwindow,tank,/*true*/ magenta_switch);	//그리기
 				return 0;
 			}
 			case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
@@ -76,6 +79,7 @@ namespace Engine
 
 			case WM_DESTROY:
 			{
+				rand_turn.~Random();
 				Rendering::destroy();
 				_CAM->release_singleton();
 				_Mouse->release_singleton();
@@ -88,11 +92,3 @@ namespace Engine
 	}
 }
 
-
-//(2,0) - (8,4) = (6,4) =>(3,2)
-//0001000000
-// 000000000
-// 000000000
-// 000000001
-// 000000000
-//

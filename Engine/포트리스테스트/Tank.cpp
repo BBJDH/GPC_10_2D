@@ -3,7 +3,8 @@
 
 Tank::Tank(Position const& pos, unsigned const width, unsigned const height)
 	:Object(pos, width, height), hp{ 1000 }, stamina{50},
-	fire_angle{ 0.0f }, fire_velocity{0.0f},state{State::Nomal_right}
+	fire_angle{ 0.0f }, fire_velocity{ 0.0f }, myturn{false},
+	state{State::Nomal_right}
 {
 }
 //namespace Physics
@@ -44,4 +45,9 @@ void Tank::input_key(WPARAM const wparam)
 void Tank::setstate(State const state)
 {
 	this->state = state;
+}
+
+void Tank::setmyturn(bool myturn)
+{
+	this->myturn = myturn;
 }
