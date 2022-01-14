@@ -168,7 +168,7 @@ namespace Rendering
 
 		return result;
 	}
-	void draw_object(HDC const hdc, Object const& obj)
+	void draw_object(HDC const hdc, Object const& obj) //카메라만큼 밀어서 출력
 	{
 		int const camx = static_cast<int const>(_CAM->pos.x);
 		int const camy = static_cast<int const>(_CAM->pos.y);
@@ -204,6 +204,27 @@ namespace Rendering
 			}
 		}
 	}
+	void draw_UI(HDC const hdc,std::vector<Tank> const & tank)
+	{
+		BITMAP bmp;
+		GetObject(huibit, sizeof(BITMAP), &bmp);
+		drawbitmp_transparent(hdc, 0, 0, bmp, huibit);	
+
+
+
+		HBRUSH hNewBrush = CreateSolidBrush(RGB(255,0,0));
+		HPEN hNewPen = CreatePen(PS_SOLID, 2, RGB(255,0,0));
+		HBITMAP hOldBmp = static_cast<HBITMAP>(SelectObject(hdc, hNewBrush));
+		SelectObject(hdc, hNewPen);
+
+		//Rectangle(hdc, 280,550,280+tank[_Turn->whosturn()].getpower(),550);
+		Rectangle(hdc, 280,550,700,550);
+		SelectObject(hdc, hOldBmp);
+		DeleteObject(hNewBrush);
+		DeleteObject(hNewPen);
+
+
+	}
 	void update(HWND const& hwindow, std::vector<Tank> const & tank,bool const magenta_switch)
 	{
 		HDC hdc = GetDC(hwindow);
@@ -223,9 +244,10 @@ namespace Rendering
 			hmapdc,camx, camy, WINSIZE_X, WINSIZE_Y,
 			RGB(255, 0, 255));									//맵 그리기
 		draw_tanks(hvirtualdc,tank);							//탱크들 그리기	
+
 																//미사일들 그리기
-		GetObject(huibit, sizeof(BITMAP), &bmp);
-		drawbitmp_transparent(hvirtualdc, 0, 0, bmp, huibit);	//UI 그리기
+		draw_UI(hvirtualdc,tank);								//UI 그리기
+
 
 #pragma region 그래픽 디버깅
 
@@ -235,17 +257,19 @@ namespace Rendering
 			SetTextColor(hvirtualdc, RGB(255, 255, 255));
 
 
-			std::string temp = "m_x :" + std::to_string(_Mouse->x + _CAM->pos.x);			//마우스x좌표
-			//std::string temp = "m_x :" + std::to_string(camx);							//스크린x좌표
+			//std::string temp = "m_x :" + std::to_string(_Mouse->x + _CAM->pos.x);			//마우스x좌표
+			std::string temp = "w_x :" + std::to_string(_Mouse->x);							//마우스스크린x좌표
 			TextOut(hvirtualdc, 0, 0, temp.c_str(), static_cast<int>(temp.size()));
-			temp = "m_y :" + std::to_string(_Mouse->y + _CAM->pos.y);						//마우스y좌표
-			//temp = "m_y :" + std::to_string(camy);										//스크린y좌표
+			//temp = "m_y :" + std::to_string(_Mouse->y + _CAM->pos.y);						//마우스y좌표
+			temp = "w_y :" + std::to_string(_Mouse->y);										//마우스스크린y좌표
 			TextOut(hvirtualdc, 150, 0, temp.c_str(), static_cast<int>(temp.size()));
-			temp = "tank_x :" + std::to_string(tank.back().getpos().x);						//탱크x좌표
+			temp = "tank_x :" + std::to_string(tank[_Turn->whosturn()].getpos().x);			//탱크x좌표
 			TextOut(hvirtualdc, 370, 0, temp.c_str(), static_cast<int>(temp.size()));
-			temp = "tank_y :" + std::to_string(tank.back().getpos().y);						//탱크y좌표
+			temp = "tank_y :" + std::to_string(tank[_Turn->whosturn()].getpos().y);			//탱크y좌표
 			TextOut(hvirtualdc, 520, 0, temp.c_str(), static_cast<int>(temp.size()));
-			temp = "angle :" + std::to_string(tank.back().getimage_angle());					//자세각도
+			temp = "power :" + std::to_string(tank[_Turn->whosturn()].getpower());					//자세각도
+			//temp = "angle :" + std::to_string(tank.back().getimage_angle());					//자세각도
+			//temp = "turn :" + std::to_string(_Turn->whosturn());					//턴
 			TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));
 		}
 
@@ -255,7 +279,6 @@ namespace Rendering
 			BitBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, hvirtualdc, 0, 0, SRCCOPY);
 
 #pragma endregion
-
 
 		DeleteDC(hvirtualdc);
 		DeleteObject(hvirtualbit);

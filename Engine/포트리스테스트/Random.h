@@ -11,19 +11,23 @@
 //[12345] 에서 3이 뽑히면 [1254]3  ([]가 rand의 범위, 뽑을때마다 --size;)
 class Random 
 {
+private:
+	constexpr void Swap(int& a, int& b);
+	int* result;
+	unsigned int arr_size;
+
 public:
 
 	Random() = default;
 	Random(int const& start_num, int const& end_num, unsigned const& count);
 	Random(Random const& r);
 	int GetResult(unsigned const& index)const;
-	operator int() const;
+	bool operator ==(Random const & right_rand)const;
+	bool operator !=(Random const & right_rand)const;
+	Random& operator =(Random const & right_rand);
+	operator int() const; //rand를 단일 정수로 반환 취급하는경우
 	~Random();
 
 	//void Print()const; //콘솔 테스트용
 
-private:
-	constexpr void Swap(int& a, int& b);
-	int* result;
-	unsigned int arr_size;
 };

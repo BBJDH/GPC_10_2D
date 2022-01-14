@@ -15,7 +15,8 @@ namespace Rendering
 namespace Input
 {
 	void Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Tank>& obj, HDC const& hmapdc, bool& magenta_switch);
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, 
+		std::vector<Tank> & tank,std::vector<Missile> & missile, HDC const& hmapdc, bool &magenta_switch);
 }
 namespace Time
 {
@@ -45,6 +46,7 @@ namespace Engine
 		{
 			case WM_CREATE:
 			{
+				srand(static_cast<unsigned>(time(NULL)));
 				Random r(10,MAPSIZE_W-10,PLAYERS);
 				Rendering::initialize(hwindow);
 				for (unsigned i = 0; i < PLAYERS; i++)
@@ -60,6 +62,7 @@ namespace Engine
 			case WM_APP:
 			{
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);//시간계산
+				_Turn->checkturn(tank,missile);	//턴체크후 다음턴 부여
 				_CAM->move(_Mouse->getpos()); //마우스 위치에 따라 카메라 이동
 				Physics::ballistics(tank,Time::getdelta()); //낙하가 켜진 탱크들 낙하좌표 계산 
 				Physics::Collide_objects(tank, Rendering::getmapdc());	//낙하한 탱크 충돌검사
@@ -73,7 +76,7 @@ namespace Engine
 			case WM_KEYUP:        case WM_XBUTTONDOWN: case WM_XBUTTONUP:
 			{
 				Input::Procedure
-				(hwindow, umessage, wparameter, lparameter, tank, Rendering::getmapdc(), magenta_switch);
+				(hwindow, umessage, wparameter, lparameter, tank,missile, Rendering::getmapdc(), magenta_switch);
 				return 0;
 			}
 

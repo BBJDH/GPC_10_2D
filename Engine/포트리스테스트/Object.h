@@ -19,6 +19,8 @@ protected:
 	float          moving_angle;
 	float		   image_angle;
 	bool		   falling;
+	bool		   myturn;
+
 
 	//for test
 	Position	   support_point;
@@ -32,11 +34,14 @@ public:
 	unsigned const getheight() const;
 	float const gettime() const;
 	float const getimage_angle()const;
-	bool is_falling();
+	bool is_falling()const;
+	bool is_myturn()const;
 	void moveto(Position const & pos);
 	void ballistics_equation(float const moving_time);
 	void ballistics_initialize(float const moving_angle, float const velocity);
 	void stop_move(float const thetha);
+	void setmyturn(bool myturn);
+
 
 	//for test
 	Position const getsup_pos() const;

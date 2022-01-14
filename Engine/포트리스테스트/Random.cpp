@@ -54,6 +54,15 @@ int Random::GetResult(unsigned const& index)const
 	assert(index < arr_size);
 	return result[index];
 }
+bool Random::operator==(Random const& right_rand)const
+{
+	
+	return this->result == right_rand.result;
+}
+bool Random::operator!=(Random const& right_rand)const
+{
+	return !(*this==right_rand);
+}
 //void Random::Print() const
 //{
 //	for (unsigned i = 0; i < arr_size; i++)
@@ -71,6 +80,22 @@ Random::operator int() const
 	assert(result != nullptr);
 	assert(arr_size == 1);
 	return result[0];
+}
+
+Random& Random::operator=(Random const& right_rand)
+{
+	if (*this != right_rand)
+	{
+		delete[] result;
+		this->arr_size = right_rand.arr_size;
+		this->result = new int[this->arr_size];
+		for (size_t i = 0; i < right_rand.arr_size; i++)
+		{
+			this->result[i] = right_rand.result[i];
+		}
+	}
+	return *this;
+
 }
 
 Random::~Random()

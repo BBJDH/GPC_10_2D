@@ -11,7 +11,7 @@ namespace UI
 {
 	void find_nextstep(HDC const& hmapdc,  Tank & tank,  bool const isright)
 	{
-		if (!tank.is_falling())
+		if (tank.is_myturn())
 		{
 			unsigned	   stepx = static_cast<unsigned>(tank.getpos().x - 1); //기본 왼쪽일때 시작할 점
 			unsigned const stepy = static_cast<unsigned>(tank.getpos().y+tank.getheight()/2 - 3); 
@@ -42,6 +42,16 @@ namespace UI
 			tank.moveto({ static_cast<float>(stepx) ,tank.getpos().y });
 			tank.ballistics_initialize(0,0);
 			return;
+		}
+	}
+	void fire(Tank& tank, std::vector<Missile>& missile, bool const keyon)
+	{
+		if(keyon)
+			tank.plus_power();
+		else
+		{
+			//미사일 생성
+			tank.setmyturn(false);
 		}
 
 	}

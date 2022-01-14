@@ -43,12 +43,14 @@ struct Position
 //싱글톤 생성
 #include"Mouse.h"
 #include"Camera.h"
+#include"Turnmanager.h"
 
 //=====================================
 //	## 싱글톤 추가 ##
 //=====================================
 #define _Mouse Mouse::get_singleton()
 #define _CAM Camera::get_singleton()
+#define _Turn Turnmanager::get_singleton()
 
 //=====================================
 //	## 디파인문 ## (윈도우 초기화 셋팅)

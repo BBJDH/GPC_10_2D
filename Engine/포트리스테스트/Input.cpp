@@ -3,12 +3,14 @@
 namespace UI
 {
 	void find_nextstep(HDC const& hmapdc, Tank& tank, bool const isright);
+	void fire(Tank& tank, std::vector<Missile>& missile, bool const keyon);
 }
 
 namespace Input
 {
 	void Procedure
-	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, std::vector<Tank> & tank, HDC const& hmapdc, bool &magenta_switch)
+	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, 
+		std::vector<Tank> & tank,std::vector<Missile> & missile, HDC const& hmapdc, bool &magenta_switch)
 	{
 		switch (umessage)
 		{
@@ -75,30 +77,46 @@ namespace Input
 				{
 				case VK_LEFT:
 				{
-					UI::find_nextstep(hmapdc, tank.front(), false);
+					UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], false);
 					//tank.front().input_key(wparameter); 
 					return; 
 				}
 				case VK_RIGHT:
 				{
-					UI::find_nextstep(hmapdc, tank.front(), true);
+					UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], true);
 					//tank.front().input_key(wparameter);
 					return;
 				}
 				case VK_UP:
 				{
-					
+					tank[_Turn->whosturn()].plus_angle(1);
 					return;
 				}
 				case VK_DOWN:
 				{
+					tank[_Turn->whosturn()].plus_angle(-1);
 					return;
 				}
 				case VK_SPACE:
 				{
+					UI::fire(tank[_Turn->whosturn()],missile,true);
 					return;
 				}
 					
+				}
+			}
+			case WM_KEYUP: 
+			{
+				switch (wparameter)
+				{
+				
+				case VK_SPACE:
+				{
+					UI::fire(tank[_Turn->whosturn()],missile,false);
+
+					return;
+				}
+
 				}
 			}
 

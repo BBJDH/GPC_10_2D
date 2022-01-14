@@ -3,13 +3,13 @@
 
 
 Object::Object() :pos{ 400.0f,0.0f }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ 0 }, height{ 0 },
-velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, falling{true},
+velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, falling{true},myturn{false},
 /*test*/ support_point{0.0f,0.0f}
 {
 }
 
 Object::Object(Position const & pos, unsigned const width, unsigned const height) : pos{ pos }, pos0{ 0.0f,0.0f }, velocity0{ 0.0f,0.0f }, width{ width }, height{ height },
-velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, falling{ true },
+velocity{ 0.0f }, moving_time{ 0.0f }, moving_angle{ 0.0f }, image_angle{ 0.0f }, falling{ true },myturn{false},
 /*test*/ support_point{ 0.0f,0.0f }
 {
 }
@@ -54,9 +54,14 @@ float const Object::getimage_angle() const
 	return image_angle;
 }
 
-bool Object::is_falling()
+bool Object::is_falling() const
 {
 	return falling;
+}
+
+bool Object::is_myturn() const
+{
+	return myturn;
 }
 
 void Object::stop_move(float const thetha)
@@ -65,6 +70,11 @@ void Object::stop_move(float const thetha)
 	this->falling = false;
 	this->moving_time = 0.0f;
 	this->pos0 = this->pos;
+}
+
+void Object::setmyturn(bool myturn)
+{
+	this->myturn = myturn;
 }
 
 Position const Object::getsup_pos() const
