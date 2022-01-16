@@ -217,8 +217,9 @@ namespace Rendering
 		HBITMAP hOldBmp = static_cast<HBITMAP>(SelectObject(hdc, hNewBrush));
 		SelectObject(hdc, hNewPen);
 
-		//Rectangle(hdc, 280,550,280+tank[_Turn->whosturn()].getpower(),550);
-		Rectangle(hdc, 280,550,700,550);
+		Rectangle(hdc, UI_POWER_X, UI_POWER_Y,
+			UI_POWER_X +tank[_Turn->whosturn()].getpower()* UI_POWER_MUL, UI_POWER_Y+ UI_POWER_H);
+		//Rectangle(hdc, 280,550,330,600);
 		SelectObject(hdc, hOldBmp);
 		DeleteObject(hNewBrush);
 		DeleteObject(hNewPen);
@@ -247,6 +248,8 @@ namespace Rendering
 
 																//미사일들 그리기
 		draw_UI(hvirtualdc,tank);								//UI 그리기
+
+
 
 
 #pragma region 그래픽 디버깅

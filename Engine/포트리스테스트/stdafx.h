@@ -76,8 +76,19 @@ struct Position
 #define R_Image_SIZE 100
 #define MAPSIZE_W	 1500
 #define MAPSIZE_H	 800
-#define UI_H		 110
 #define PLAYERS		 8
+
+
+//UI 세팅
+#define UI_H		 110
+#define UI_POWER_X		 282
+#define UI_POWER_Y		 550
+#define UI_POWER_H		 15
+#define UI_POWER_MUL		 5
+
+
+
+
 
 
 //물리, 수학관련
