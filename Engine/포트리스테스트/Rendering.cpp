@@ -4,7 +4,7 @@ namespace Rendering
 {
 	namespace
 	{
-		HBITMAP htank_bit, hmissilebit,hbackground_bit, huibit, hmagentabit;
+		HBITMAP htank_bit, hmissilebit,hbackground_bit, huibit_0,huibit_1, hmagentabit;
 
 		HDC hmapdc;
 	}//싱글톤으로 생성하여 외부 접근 못하게
@@ -50,10 +50,19 @@ namespace Rendering
 			0,
 			LR_LOADFROMFILE | LR_DEFAULTSIZE
 		));
-		huibit = static_cast<HBITMAP>(LoadImage
+		huibit_0 = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/포트리스/인터페이스_800600.bmp"),
+			TEXT("./소스파일/포트리스/인터페이스/인터페이스_0.bmp"),
+			IMAGE_BITMAP,
+			0,
+			0,
+			LR_LOADFROMFILE | LR_DEFAULTSIZE
+		));
+		huibit_1 = static_cast<HBITMAP>(LoadImage
+		(
+			NULL,
+			TEXT("./소스파일/포트리스/인터페이스/인터페이스_1.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -145,7 +154,7 @@ namespace Rendering
 		double	  half_h  = static_cast<double>(half_height);
 		//double	  radius  = sqrt( pow(half_w,2)+pow(half_h,2));
 		double x, y, dest_x, dest_y, cosVal, sinVal;
-		cosVal = cos(angle*Radian), sinVal = sin(angle*Radian);
+		cosVal = cos(angle), sinVal = sin(angle);
 
 		// 1. 중점을 기준으로 상대좌표를 구하고(3개 왼위 오위 왼아래)
 		// 2. 회전된좌표(상대좌표)를 얻은 후 
@@ -202,38 +211,62 @@ namespace Rendering
 			}
 		}
 	}
-	void ui_angle_line(HDC const hdc, float const angle)
+	void ui_angle_line(HDC const hdc, int const angle,COLORREF color)
 	{
-		unsigned min_x = UI_ANGLE_MIN_Length;
-		unsigned min_y = UI_ANGLE_CENTER_Y;
-		unsigned max_x = UI_ANGLE_MAX_Length;
-		unsigned max_y = UI_ANGLE_CENTER_Y;
+		double cosval = cos(-angle*Radian);
+		double sinval = sin(-angle*Radian); //윈도우 좌표계라 앵글 반대
+		int max_x = static_cast<int>(UI_ANGLE_MAX_Length * cosval );
+		int max_y = static_cast<int>(UI_ANGLE_MAX_Length * sinval ); 
+		int min_x = static_cast<int>(UI_ANGLE_MIN_Length * cosval ); 
+		int min_y = static_cast<int>(UI_ANGLE_MIN_Length * sinval ); 
+		HPEN hnewpen = CreatePen(PS_SOLID, 1, color);
+		HPEN holdpen = static_cast<HPEN>(SelectObject(hdc, hnewpen));
 
-		MoveToEx(hdc, UI_ANGLE_CENTER_X+UI_ANGLE_MIN_Length, UI_ANGLE_CENTER_Y, NULL);
-		LineTo(hdc, UI_ANGLE_CENTER_X+UI_ANGLE_MAX_Length,UI_ANGLE_CENTER_Y);
+		MoveToEx(hdc,UI_ANGLE_CENTER_X + min_x, UI_ANGLE_CENTER_Y + min_y, NULL);
+		LineTo(hdc, UI_ANGLE_CENTER_X+max_x,UI_ANGLE_CENTER_Y+max_y);
+		SelectObject(hdc, holdpen);
+
+	}
+	void ui_angle_bar(HDC const hdc, int const x,int const y,int const width,int const height,COLORREF color)
+	{
+
+		HBRUSH hnewbrush = CreateSolidBrush(color);
+		HBRUSH holdbrush = static_cast<HBRUSH>(SelectObject(hdc, hnewbrush));
+		HPEN hnewpen = CreatePen(PS_SOLID, 1, color);
+		HPEN holdpen = static_cast<HPEN>(SelectObject(hdc, hnewpen));
+
+		Rectangle(hdc, x, y,width,height); 
+
+		SelectObject(hdc, holdpen);
+		SelectObject(hdc, holdbrush);
+		DeleteObject(hnewpen);
+		DeleteObject(hnewbrush);
+		DeleteObject(holdbrush);
+		DeleteObject(holdpen);
+
 	}
 
-	void draw_ui(HDC const hdc,std::vector<Tank> const & tank)
+	void draw_ui(HDC const hdc,Tank const & tank)
 	{
+		int const landig_ang = static_cast<int const>(-tank.getimage_angle()/Radian);
 		BITMAP bmp;
-		GetObject(huibit, sizeof(BITMAP), &bmp);
-		drawbitmp_transparent(hdc, 0, 0, bmp, huibit);	
+		GetObject(huibit_0, sizeof(BITMAP), &bmp);
+		drawbitmp_transparent(hdc, 0, 0, bmp, huibit_0);
+
+		//ui_angle_line(hdc,landig_ang+tank.getangle_min(),GUIDE_ANGLE_Color);
+		//ui_angle_line(hdc,landig_ang+tank.getangle_max(),GUIDE_ANGLE_Color);
 
 
+		ui_angle_bar(hdc,UI_POWER_X, UI_POWER_Y,
+			UI_POWER_X +tank.getpower() * UI_POWER_MUL, UI_POWER_Y+ UI_POWER_H,Power_Color); //파워게이지
 
-		HBRUSH hNewBrush = CreateSolidBrush(Power_Color);
-		HPEN hNewPen = CreatePen(PS_SOLID, 2, Power_Color);
-		HBITMAP hOldBmp = static_cast<HBITMAP>(SelectObject(hdc, hNewBrush));
-		SelectObject(hdc, hNewPen);
 
-		Rectangle(hdc, UI_POWER_X, UI_POWER_Y,
-			UI_POWER_X +tank[_Turn->whosturn()].getpower()* UI_POWER_MUL, UI_POWER_Y+ UI_POWER_H); //파워게이지
-		//Rectangle(hdc,92,  535, 92+10,535+10);
-		//UI_angle(hdc, tank[_Turn->whosturn()]);
+		//ui_angle_line(hdc,landig_ang + tank.getangle_min()+ tank.getangle(),Power_Color);
 
-		SelectObject(hdc, hOldBmp);
-		DeleteObject(hNewBrush);
-		DeleteObject(hNewPen);
+
+		drawbitmp_transparent(hdc, 0, 0, bmp, huibit_1);	
+
+
 
 
 	}
@@ -258,7 +291,7 @@ namespace Rendering
 		draw_tanks(hvirtualdc,tank);							//탱크들 그리기	
 
 																//미사일들 그리기
-		draw_ui(hvirtualdc,tank);								//UI 그리기
+		draw_ui(hvirtualdc,tank[_Turn->whosturn()]);								//UI 그리기
 
 
 
@@ -301,7 +334,8 @@ namespace Rendering
 
 	void destroy()
 	{
-		DeleteObject(huibit);
+		DeleteObject(huibit_0);
+		DeleteObject(huibit_1);
 		DeleteObject(hmissilebit);
 		DeleteObject(htank_bit);
 		DeleteObject(hmagentabit);

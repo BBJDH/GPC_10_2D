@@ -14,7 +14,7 @@ namespace UI
 		if (tank.is_myturn())
 		{
 			unsigned	   stepx = static_cast<unsigned>(tank.getpos().x - 1); //기본 왼쪽일때 시작할 점
-			unsigned const stepy = static_cast<unsigned>(tank.getpos().y+tank.getheight()/2 - 3); 
+			unsigned const stepy = static_cast<unsigned>(tank.getpos().y+tank.getheight()/2 - 4); 
 			if (isright)
 				stepx = static_cast<unsigned>(tank.getpos().x+1);
 
@@ -22,7 +22,7 @@ namespace UI
 			//위에 세번째점에서 충돌이면 이동불가
 			//이후 아래 두번째점까지 충돌지점을 찾아 옮김
 			//충돌지점이 하나도 없다면 오른쪽으로 한칸이동 후 낙하
-			for (unsigned i = stepy; i < stepy+7; i++)
+			for (unsigned i = stepy; i < stepy+8; i++)
 			{
 				if ( i == stepy)
 				{
@@ -35,7 +35,7 @@ namespace UI
 				if (Physics::Collide(hmapdc, stepx, i))
 				{
 					tank.moveto({ static_cast<float>(stepx) ,static_cast<float>(i-tank.getheight()/2)});
-					tank.stop_move(-Physics::calc_landing_angle(stepx, i, hmapdc) / Radian);
+					tank.stop_move(Physics::calc_landing_angle(stepx, i, hmapdc));
 					return;
 				}
 			}

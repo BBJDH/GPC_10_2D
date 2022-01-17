@@ -3,8 +3,8 @@
 
 Tank::Tank(Position const& pos, unsigned const width, unsigned const height)
 	:Object(pos, width, height), hp{ 1000 }, stamina{50},
-	fire_angle_min{20}, fire_angle_max{70},
-	fire_angle{ 0.0f }, fire_velocity{ 0.0f }, state{State::Nomal_right}
+	fire_angle_min{35}, fire_angle_max{65},
+	fire_angle{ 0 }, fire_velocity{ 0.0f }, state{State::Nomal_right}
 {
 }
 //namespace Physics
@@ -81,5 +81,8 @@ void Tank::setstate(State const state)
 void Tank::plus_angle(int angle)
 {
 	this->fire_angle += angle;
+	if(fire_angle >fire_angle_max-fire_angle_min or fire_angle<0)
+		this->fire_angle -= angle;
+
 }
 

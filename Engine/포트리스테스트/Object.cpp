@@ -49,7 +49,7 @@ unsigned const Object::getheight() const
 	return this->height;
 }
 
-float const Object::getimage_angle() const
+float const Object::getimage_angle() const //Radian ¹ÝÈ¯ (-PIE/2 ~ PIE/2)
 {
 	return image_angle;
 }

@@ -135,14 +135,14 @@ namespace Physics
 	}
 	float const calc_landing_angle(unsigned const start_x, unsigned const selected_y, HDC const& hmapdc)
 	{
-		long double leftpoint_x =start_x-3;
+		long double leftpoint_x =start_x-2;
 		long double leftpoint_y =0;
-		long double rightpoint_x =static_cast<long double>(start_x)+3;
+		long double rightpoint_x =static_cast<long double>(start_x)+2;
 		long double rightpoint_y =0;
 		bool letfpoint_isfound = false;
 		bool rightpoint_isfound = false;
 
-		for (unsigned j = selected_y-5; j < selected_y + 5; ++j)
+		for (unsigned j = selected_y-4; j < selected_y + 4; ++j)
 		{
 			if(!letfpoint_isfound)
 			{
@@ -163,7 +163,9 @@ namespace Physics
 		}
 		if(letfpoint_isfound and rightpoint_isfound)
 		{
-			return static_cast<float>( atan2(rightpoint_y-leftpoint_y,rightpoint_x-leftpoint_x));
+			long double i =atan((rightpoint_y-leftpoint_y)/(rightpoint_x-leftpoint_x));
+			long double j =static_cast<float>( atan((rightpoint_y-leftpoint_y)/(rightpoint_x-leftpoint_x)));
+			return static_cast<float>( atan((rightpoint_y-leftpoint_y)/(rightpoint_x-leftpoint_x)));
 		}
 		return 0.0f;
 
@@ -179,7 +181,7 @@ namespace Physics
 			if(Collide(hmapdc, start_x, j))
 			{
 				obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight()/2)});
-				obj.stop_move(-calc_landing_angle(start_x,j,hmapdc)/Radian);
+				obj.stop_move(calc_landing_angle(start_x,j,hmapdc));
 				return;
 			}
 			
