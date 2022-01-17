@@ -226,6 +226,8 @@ namespace Rendering
 		LineTo(hdc, UI_ANGLE_CENTER_X+max_x,UI_ANGLE_CENTER_Y+max_y);
 		SelectObject(hdc, holdpen);
 
+
+		DeleteObject(hnewpen);
 	}
 	void ui_angle_bar(HDC const hdc, int const x,int const y,int const width,int const height,COLORREF color)
 	{
@@ -241,8 +243,6 @@ namespace Rendering
 		SelectObject(hdc, holdbrush);
 		DeleteObject(hnewpen);
 		DeleteObject(hnewbrush);
-		DeleteObject(holdbrush);
-		DeleteObject(holdpen);
 
 	}
 
@@ -253,18 +253,18 @@ namespace Rendering
 		GetObject(huibit_0, sizeof(BITMAP), &bmp);
 		drawbitmp_transparent(hdc, 0, 0, bmp, huibit_0);
 
-		//ui_angle_line(hdc,landig_ang+tank.getangle_min(),GUIDE_ANGLE_Color);
-		//ui_angle_line(hdc,landig_ang+tank.getangle_max(),GUIDE_ANGLE_Color);
+		ui_angle_line(hdc,landig_ang+tank.getangle_min(),GUIDE_ANGLE_Color);
+		ui_angle_line(hdc,landig_ang+tank.getangle_max(),GUIDE_ANGLE_Color);
 
 
 		ui_angle_bar(hdc,UI_POWER_X, UI_POWER_Y,
 			UI_POWER_X +tank.getpower() * UI_POWER_MUL, UI_POWER_Y+ UI_POWER_H,Power_Color); //파워게이지
 
 
-		//ui_angle_line(hdc,landig_ang + tank.getangle_min()+ tank.getangle(),Power_Color);
+		ui_angle_line(hdc,landig_ang + tank.getangle_min()+ tank.getangle(),Power_Color);
 
 
-		drawbitmp_transparent(hdc, 0, 0, bmp, huibit_1);	
+		//drawbitmp_transparent(hdc, 0, 0, bmp, huibit_1);	
 
 
 
