@@ -85,9 +85,10 @@ struct Position
 #define UI_POWER_Y		 550
 #define UI_POWER_H		 15
 #define UI_POWER_MUL		 5
-
-
-
+#define UI_ANGLE_CENTER_X		92
+#define UI_ANGLE_CENTER_Y		535
+#define UI_ANGLE_MIN_Length		8
+#define UI_ANGLE_MAX_Length		 60
 
 
 
@@ -96,6 +97,10 @@ struct Position
 #define PI 3.141592f
 #define Radian (PI/180.0f)
 #define SPEED 6
+
+//색상관련
+#define Transparent_Color RGB(255, 0, 255)
+#define Power_Color RGB(255, 0, 0)
 
 
 

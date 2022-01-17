@@ -135,7 +135,7 @@ namespace Physics
 	}
 	float const calc_landing_angle(unsigned const start_x, unsigned const selected_y, HDC const& hmapdc)
 	{
-		long double leftpoint_x =start_x;
+		long double leftpoint_x =start_x-3;
 		long double leftpoint_y =0;
 		long double rightpoint_x =static_cast<long double>(start_x)+3;
 		long double rightpoint_y =0;

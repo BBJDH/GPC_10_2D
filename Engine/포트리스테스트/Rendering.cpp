@@ -22,7 +22,7 @@ namespace Rendering
 	}
 	void initialize(HWND const&  hwindow)
 	{
-		//HBRUSH hbrush = CreateSolidBrush(RGB(255, 0, 255));
+		//HBRUSH hbrush = CreateSolidBrush(Transparent_Color);
 
 		HDC hdc = GetDC(hwindow);
 		HBITMAP hmapbit = CreateCompatibleBitmap(hdc, MAPSIZE_W, MAPSIZE_H+UI_H);
@@ -95,7 +95,7 @@ namespace Rendering
 		HBITMAP oldbit = static_cast<HBITMAP>(SelectObject(hmemdc,hbitmp));
 
 		TransparentBlt(hdc_dest,x,y,bit_src.bmWidth,bit_src.bmHeight, hmemdc,
-			0,0, bit_src.bmWidth, bit_src.bmHeight,RGB(255,0,255));
+			0,0, bit_src.bmWidth, bit_src.bmHeight,Transparent_Color);
 		SelectObject(hmemdc,oldbit);
 		DeleteDC(hmemdc);
 	}
@@ -117,7 +117,7 @@ namespace Rendering
 		tempbmp = CreateCompatibleBitmap(hdc, R_Image_SIZE, R_Image_SIZE);
 		SelectObject(hMemdc, tempbmp);
 
-		HBRUSH brush = CreateSolidBrush(RGB(255, 0, 255));
+		HBRUSH brush = CreateSolidBrush(Transparent_Color);
 		hOldBmp = static_cast<HBITMAP>(SelectObject(hMemdc, brush));
 		PatBlt(hMemdc, 0, 0, R_Image_SIZE , R_Image_SIZE , PATCOPY);	//마젠타로 100X100 도화지 전체 칠하기
 		SelectObject(hMemdc, hOldBmp);
@@ -127,7 +127,7 @@ namespace Rendering
 		hOldBmp = static_cast<HBITMAP>(SelectObject(himagedc, hBmp));
 		bool result = PlgBlt(hMemdc, vertex, himagedc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, 0, 0, 0);		//정점만큼 이미지 회전
 		GdiTransparentBlt(hdc, window_x- bitmap.bmWidth, window_y- bitmap.bmHeight, R_Image_SIZE, R_Image_SIZE,		//마젠타 지우고 지정된 좌표에 출력
-			hMemdc, 0, 0, R_Image_SIZE, R_Image_SIZE,  RGB(255, 0, 255));
+			hMemdc, 0, 0, R_Image_SIZE, R_Image_SIZE,  Transparent_Color);
 
 		SelectObject(himagedc, hOldBmp);
 		DeleteObject(hOldBmp);
@@ -141,14 +141,11 @@ namespace Rendering
 		float const half_width, float const half_height,float const window_x, float const window_y)
 	{
 		POINT     vertex[3]    = { 0 };
-		BITMAP    bitmap;
-		GetObject(hbmp, sizeof(BITMAP), &bitmap);
-		double	  bmpwidth  = static_cast<double>(bitmap.bmWidth);
-		double	  bmpheight = static_cast<double>(bitmap.bmHeight);
 		double	  half_w  = static_cast<double>(half_width);
 		double	  half_h  = static_cast<double>(half_height);
+		//double	  radius  = sqrt( pow(half_w,2)+pow(half_h,2));
 		double x, y, dest_x, dest_y, cosVal, sinVal;
-		cosVal = cos(-angle*Radian), sinVal = sin(-angle*Radian);
+		cosVal = cos(angle*Radian), sinVal = sin(angle*Radian);
 
 		// 1. 중점을 기준으로 상대좌표를 구하고(3개 왼위 오위 왼아래)
 		// 2. 회전된좌표(상대좌표)를 얻은 후 
@@ -156,10 +153,11 @@ namespace Rendering
  		for (size_t i = 0; i < 3; i++)
 		{
 			if (i == 0) { x = -half_w, y = -half_h; }    // left up  꼭지점 부분(윈도우 좌표계)
-			else if (i == 1) { x = bmpwidth - half_w, y = -half_h; }  // right up 꼭지점 부분(윈도우 좌표계)
-			else if (i == 2) { x = -half_w, y = bmpheight - half_h; } // left low 꼭지점 부분(윈도우 좌표계)
+			else if (i == 1) { x = half_w, y = -half_h; }  // right up 꼭지점 부분(윈도우 좌표계)
+			else if (i == 2) { x = -half_w, y = half_h; } // left low 꼭지점 부분(윈도우 좌표계)
 			dest_x = x * cosVal - y * sinVal;
 			dest_y = x * sinVal + y * cosVal; //회전한 좌표 구하기
+
 
 			vertex[i].x = R_Image_SIZE/2 + static_cast<long>(dest_x);
 			vertex[i].y = R_Image_SIZE/2 + static_cast<long>(dest_y); // 이미지중점에서 회전한 좌표 더함
@@ -204,7 +202,18 @@ namespace Rendering
 			}
 		}
 	}
-	void draw_UI(HDC const hdc,std::vector<Tank> const & tank)
+	void ui_angle_line(HDC const hdc, float const angle)
+	{
+		unsigned min_x = UI_ANGLE_MIN_Length;
+		unsigned min_y = UI_ANGLE_CENTER_Y;
+		unsigned max_x = UI_ANGLE_MAX_Length;
+		unsigned max_y = UI_ANGLE_CENTER_Y;
+
+		MoveToEx(hdc, UI_ANGLE_CENTER_X+UI_ANGLE_MIN_Length, UI_ANGLE_CENTER_Y, NULL);
+		LineTo(hdc, UI_ANGLE_CENTER_X+UI_ANGLE_MAX_Length,UI_ANGLE_CENTER_Y);
+	}
+
+	void draw_ui(HDC const hdc,std::vector<Tank> const & tank)
 	{
 		BITMAP bmp;
 		GetObject(huibit, sizeof(BITMAP), &bmp);
@@ -212,14 +221,16 @@ namespace Rendering
 
 
 
-		HBRUSH hNewBrush = CreateSolidBrush(RGB(255,0,0));
-		HPEN hNewPen = CreatePen(PS_SOLID, 2, RGB(255,0,0));
+		HBRUSH hNewBrush = CreateSolidBrush(Power_Color);
+		HPEN hNewPen = CreatePen(PS_SOLID, 2, Power_Color);
 		HBITMAP hOldBmp = static_cast<HBITMAP>(SelectObject(hdc, hNewBrush));
 		SelectObject(hdc, hNewPen);
 
 		Rectangle(hdc, UI_POWER_X, UI_POWER_Y,
-			UI_POWER_X +tank[_Turn->whosturn()].getpower()* UI_POWER_MUL, UI_POWER_Y+ UI_POWER_H);
-		//Rectangle(hdc, 280,550,330,600);
+			UI_POWER_X +tank[_Turn->whosturn()].getpower()* UI_POWER_MUL, UI_POWER_Y+ UI_POWER_H); //파워게이지
+		//Rectangle(hdc,92,  535, 92+10,535+10);
+		//UI_angle(hdc, tank[_Turn->whosturn()]);
+
 		SelectObject(hdc, hOldBmp);
 		DeleteObject(hNewBrush);
 		DeleteObject(hNewPen);
@@ -243,11 +254,11 @@ namespace Rendering
 		GetObject(hmagentabit, sizeof(BITMAP), &bmp);
 		TransparentBlt(hvirtualdc, 0, 0, WINSIZE_X, WINSIZE_Y,
 			hmapdc,camx, camy, WINSIZE_X, WINSIZE_Y,
-			RGB(255, 0, 255));									//맵 그리기
+			Transparent_Color);									//맵 그리기
 		draw_tanks(hvirtualdc,tank);							//탱크들 그리기	
 
 																//미사일들 그리기
-		draw_UI(hvirtualdc,tank);								//UI 그리기
+		draw_ui(hvirtualdc,tank);								//UI 그리기
 
 
 
@@ -329,7 +340,7 @@ namespace Rendering
 	//	GetObject(hmagentabit, sizeof(BITMAP), &bmp);
 
 	//	TransparentBlt(hvirtualdc, 0, 0, MAPSIZE_W, MAPSIZE_H, hmapdc,
-	//		0, 0, MAPSIZE_W, MAPSIZE_H, RGB(255, 0, 255));
+	//		0, 0, MAPSIZE_W, MAPSIZE_H, Transparent_Color);
 	//	////Rectangle(hvirtualdc,0,500,WINSIZE_X,WINSIZE_Y);
 
 	//	if (!obj.empty())								//오브젝트 그리기(개수만큼)
