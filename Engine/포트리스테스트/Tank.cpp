@@ -7,6 +7,10 @@ Tank::Tank(Position const& pos, unsigned const width, unsigned const height)
 	fire_angle{ 0 }, fire_velocity{ 0.0f }, state{State::Nomal_right}
 {
 }
+Tank& Tank::operator=(Tank const& other_tank)
+{
+	// TODO: 여기에 return 문을 삽입합니다.
+}
 //namespace Physics
 //{
 //	bool Collide(HDC const hdc, int const x, int const y)

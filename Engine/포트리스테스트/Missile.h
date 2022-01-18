@@ -2,18 +2,17 @@
 
 class Missile : public Object
 {
-	enum class Type 
-	{
-		Circle, Ellipse
-	};
+	//enum class Type 
+	//{
+	//	Circle, Ellipse
+	//};
 private:
-	Position pos;
-	Type     explosion_type;
-	unsigned width;
-	unsigned height;
-	unsigned damage;
-	float    move_angle;
-	float    move_speed;
+
+	//Type     explosion_type;
+
+public:
+	Missile(Position const& pos, unsigned const width, unsigned const height);
+
 };
 //
 //미사일 클래스

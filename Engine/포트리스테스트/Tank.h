@@ -23,6 +23,7 @@ private:
 public:
 
 	Tank(Position const& pos, unsigned const width, unsigned const height);
+	Tank & operator=(Tank const & other_tank);
 	unsigned const gethp() const;
 	int const getpower()const;
 	int const getangle()const;

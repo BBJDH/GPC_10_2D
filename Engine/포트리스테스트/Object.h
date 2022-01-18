@@ -5,6 +5,8 @@
 
 class Object 
 {
+public:
+	enum class Type {Tank,Missile,Item};
 protected:
 	//가속도 계산시 사용
 	Position	   pos0;
@@ -20,15 +22,20 @@ protected:
 	float		   image_angle;
 	bool		   falling;
 	bool		   myturn;
+	bool		   out;
 
 
 	//for test
 	Position	   support_point;
 
 
+	void asign(Object const& other_obj);
+
 public:
 	Object();
 	Object(Position const & pos, unsigned const width, unsigned const height);
+	Object(Object  const & obj);
+	Object & operator =(Object const& other_obj );
 	Position const getpos() const;
 	unsigned const getwidth() const;
 	unsigned const getheight() const;
@@ -36,6 +43,7 @@ public:
 	float const getimage_angle()const;
 	bool is_falling()const;
 	bool is_myturn()const;
+	bool is_out()const;
 	void moveto(Position const & pos);
 	void ballistics_equation(float const moving_time);
 	void ballistics_initialize(float const moving_angle, float const velocity);

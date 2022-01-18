@@ -51,6 +51,13 @@ namespace UI
 		else
 		{
 			//미사일 생성
+			missile.push_back(Missile({tank.getpos().x,tank.getpos().y}, 31, 33));
+			missile.back().ballistics_initialize(
+				static_cast<float const>(-tank.getimage_angle()/Radian+tank.getangle_min()+tank.getangle()),
+				static_cast<float const>(tank.getpower()*UI_POWER_MUL));
+			float i = tank.getimage_angle()/Radian;
+			int	  j = tank.getangle_min();
+			int	  k = tank.getangle();
 			tank.setmyturn(false);
 		}
 

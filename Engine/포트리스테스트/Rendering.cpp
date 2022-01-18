@@ -53,7 +53,7 @@ namespace Rendering
 		huibit_0 = static_cast<HBITMAP>(LoadImage
 		(
 			NULL,
-			TEXT("./소스파일/포트리스/인터페이스/인터페이스_0.bmp"),
+			TEXT("./소스파일/포트리스/인터페이스/test/최단입점수정3.bmp"),
 			IMAGE_BITMAP,
 			0,
 			0,
@@ -175,19 +175,42 @@ namespace Rendering
 
 		return result;
 	}
-	void draw_object(HDC const hdc, Object const& obj) //카메라만큼 밀어서 출력
+	void draw_object(HDC const hdc, Object const& obj,Object::Type const type) //카메라만큼 밀어서 출력
 	{
 		int const camx = static_cast<int const>(_CAM->pos.x);
 		int const camy = static_cast<int const>(_CAM->pos.y);
-		drawbitmp_rotate_alpha
-		(
-			hdc,htank_bit,
-			obj.getimage_angle(),
-			obj.getwidth()/2.0f,
-			obj.getheight() /2.0f,
-			obj.getpos().x-camx,
-			obj.getpos().y-camy
-		);
+		switch (type)
+		{
+		case Object::Type::Tank:
+		{
+			drawbitmp_rotate_alpha
+			(
+				hdc,htank_bit,
+				obj.getimage_angle(),
+				obj.getwidth()/2.0f,
+				obj.getheight() /2.0f,
+				obj.getpos().x-camx,
+				obj.getpos().y-camy
+			);
+			return;
+		}
+		case Object::Type::Missile:
+		{
+			drawbitmp_rotate_alpha
+			(
+				hdc,hmissilebit,
+				obj.getimage_angle(),
+				obj.getwidth()/2.0f,
+				obj.getheight() /2.0f,
+				obj.getpos().x-camx,
+				obj.getpos().y-camy
+			);
+		}
+		return;
+
+		}
+		return;
+
 	}
 	void draw_tanks(HDC const hdc,std::vector<Tank> const & tank)
 	{
@@ -196,7 +219,7 @@ namespace Rendering
 		{
 			for (size_t i = 0; i < tank.size(); i++)
 			{
-				draw_object(hdc,tank[i]);
+				draw_object(hdc,tank[i],Object::Type::Tank);
 			}
 		}
 	}
@@ -207,7 +230,7 @@ namespace Rendering
 		{
 			for (size_t i = 0; i < missile.size(); i++)
 			{
-				draw_object(hdc,missile[i]);
+				draw_object(hdc,missile[i],Object::Type::Missile);
 			}
 		}
 	}
@@ -256,21 +279,16 @@ namespace Rendering
 		ui_angle_line(hdc,landig_ang+tank.getangle_min(),GUIDE_ANGLE_Color);
 		ui_angle_line(hdc,landig_ang+tank.getangle_max(),GUIDE_ANGLE_Color);
 
+		ui_angle_line(hdc,landig_ang + tank.getangle_min()+ tank.getangle(),Power_Color);
+
+		drawbitmp_transparent(hdc, 0, 0, bmp, huibit_1);	
 
 		ui_angle_bar(hdc,UI_POWER_X, UI_POWER_Y,
 			UI_POWER_X +tank.getpower() * UI_POWER_MUL, UI_POWER_Y+ UI_POWER_H,Power_Color); //파워게이지
 
 
-		ui_angle_line(hdc,landig_ang + tank.getangle_min()+ tank.getangle(),Power_Color);
-
-
-		//drawbitmp_transparent(hdc, 0, 0, bmp, huibit_1);	
-
-
-
-
 	}
-	void update(HWND const& hwindow, std::vector<Tank> const & tank,bool const magenta_switch)
+	void update(HWND const& hwindow, std::vector<Tank> const & tank,std::vector<Missile> const & missile,bool const magenta_switch)
 	{
 		HDC hdc = GetDC(hwindow);
 		HDC hvirtualdc = CreateCompatibleDC(hdc);
@@ -290,7 +308,7 @@ namespace Rendering
 			Transparent_Color);									//맵 그리기
 		draw_tanks(hvirtualdc,tank);							//탱크들 그리기	
 
-																//미사일들 그리기
+		draw_missiles(hvirtualdc,missile);						//미사일들 그리기
 		draw_ui(hvirtualdc,tank[_Turn->whosturn()]);								//UI 그리기
 
 
@@ -314,7 +332,9 @@ namespace Rendering
 			TextOut(hvirtualdc, 370, 0, temp.c_str(), static_cast<int>(temp.size()));
 			temp = "tank_y :" + std::to_string(tank[_Turn->whosturn()].getpos().y);			//탱크y좌표
 			TextOut(hvirtualdc, 520, 0, temp.c_str(), static_cast<int>(temp.size()));
-			temp = "power :" + std::to_string(tank[_Turn->whosturn()].getpower());					//자세각도
+			temp = "tank :" + std::to_string(tank.size());					//탱크수
+			//temp = "missile :" + std::to_string(missile.size());					//미사일수
+			//temp = "power :" + std::to_string(tank[_Turn->whosturn()].getpower());					//자세각도
 			//temp = "angle :" + std::to_string(tank.back().getimage_angle());					//자세각도
 			//temp = "turn :" + std::to_string(_Turn->whosturn());					//턴
 			TextOut(hvirtualdc, 680, 0, temp.c_str(), static_cast<int>(temp.size()));

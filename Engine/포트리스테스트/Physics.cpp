@@ -209,13 +209,29 @@ namespace Physics
 			}
 		}
 	}
-	void ballistics(std::vector<Tank>& tank,float const delta)
+	void ballistics(std::vector<Tank>& tank,std::vector<Missile>& missile,float const delta)
 	{
 		if (!tank.empty())
 		{
 			for (size_t i = 0; i < tank.size(); i++)
 			{
 				tank[i].ballistics_equation(delta);
+				//화면밖으로 나가면 죽음처리
+				if(tank[i].is_out())
+					tank.erase(tank.begin()+i);
+
+			}
+		}
+		if (!missile.empty())
+		{
+			for (size_t i = 0; i < missile.size(); i++)
+			{
+				missile[i].ballistics_equation(delta);
+				//화면밖으로 나가면 제거
+				if(missile[i].is_out())
+					missile.erase(missile.begin()+i);
+				
+
 			}
 		}
 	}

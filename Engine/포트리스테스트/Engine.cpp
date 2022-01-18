@@ -6,7 +6,7 @@
 namespace Rendering
 {
 	void initialize(HWND const& hwindow);
-	void update(HWND const& hwindow, std::vector<Tank> const& obj, bool const magenta_switch);
+	void update(HWND const& hwindow, std::vector<Tank> const & tank,std::vector<Missile> const & missile,bool const magenta_switch);
 	void destroy();
 	HDC getmapdc();
 	HBITMAP getmapbit();
@@ -28,7 +28,7 @@ namespace Time
 namespace Physics
 {
 	void Collide_objects(std::vector<Tank>& obj, HDC const& hmapdc);
-	void ballistics(std::vector<Tank>& obj, float const delta);
+	void ballistics(std::vector<Tank>& tank,std::vector<Missile>& missile,float const delta);
 }
 
 namespace Engine
@@ -64,9 +64,9 @@ namespace Engine
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);//시간계산
 				_Turn->checkturn(tank,missile);	//턴체크후 다음턴 부여
 				_CAM->move(_Mouse->getpos()); //마우스 위치에 따라 카메라 이동
-				Physics::ballistics(tank,Time::getdelta()); //낙하가 켜진 탱크들 낙하좌표 계산 
+				Physics::ballistics(tank,missile,Time::getdelta()); //낙하가 켜진 탱크들 낙하좌표 계산 
 				Physics::Collide_objects(tank, Rendering::getmapdc());	//낙하한 탱크 충돌검사
-				Rendering::update(hwindow,tank,/*true*/ magenta_switch);	//그리기
+				Rendering::update(hwindow,tank,missile,/*true*/ magenta_switch);	//그리기
 				return 0;
 			}
 			case WM_MOUSEWHEEL:   case WM_MOUSEHWHEEL: case WM_MOUSEMOVE:
