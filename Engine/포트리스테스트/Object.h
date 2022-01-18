@@ -29,7 +29,7 @@ protected:
 	Position	   support_point;
 
 
-	void asign(Object const& other_obj);
+	void assign(Object const& other_obj);
 
 public:
 	Object();

@@ -170,7 +170,7 @@ namespace Physics
 		return 0.0f;
 
 	}
-	void Collide_object(Object & obj, HDC const& hmapdc)
+	bool Collide_object(Object & obj, HDC const& hmapdc)
 	{
 		unsigned const start_x = static_cast<const unsigned>(obj.getpos().x);//ÀÌ¹ÌÁö °¡¿îµ¥ xÁÂÇ¥
 		unsigned const start_y = static_cast<const unsigned>(obj.getpos().y+obj.getheight()/2);
@@ -182,10 +182,11 @@ namespace Physics
 			{
 				obj.moveto({obj.getpos().x, static_cast<float>(j- obj.getheight()/2)});
 				obj.stop_move(calc_landing_angle(start_x,j,hmapdc));
-				return;
+				return true;
 			}
 			
 		}
+		return false;
 	}
 	void Collide_objects(std::vector<Object>& obj, HDC const& hmapdc)
 	{
@@ -198,7 +199,7 @@ namespace Physics
 			}
 		}
 	}
-	void Collide_objects(std::vector<Tank>& tank, HDC const& hmapdc)
+	void Collide_objects(std::vector<Tank>& tank,std::vector<Missile>& missile, HDC const& hmapdc)
 	{
 		if (!tank.empty())
 		{
@@ -206,6 +207,22 @@ namespace Physics
 			{
 				if (tank[i].is_falling())
 					Collide_object(tank[i], hmapdc);
+			}
+		}
+		if (!missile.empty())
+		{
+			for (size_t i = 0; i < missile.size(); i++)
+			{
+				if (missile[i].is_falling())
+				{
+					if (Collide_object(missile[i], hmapdc))
+					{
+						//ºÎµúÇû´Ù¸é Æø¹ß ÈÄ Á¦°Å
+						missile[i].boom(hmapdc);
+						missile.erase(missile.begin()+i);
+					}
+				}
+
 			}
 		}
 	}
@@ -216,9 +233,11 @@ namespace Physics
 			for (size_t i = 0; i < tank.size(); i++)
 			{
 				tank[i].ballistics_equation(delta);
-				//È­¸é¹ÛÀ¸·Î ³ª°¡¸é Á×À½Ã³¸®
-				if(tank[i].is_out())
-					tank.erase(tank.begin()+i);
+				if (tank[i].is_out())
+				{
+					tank[i].take_damage(TANK_HP);
+					tank[i].stop_move(0.0f);
+				}
 
 			}
 		}

@@ -135,7 +135,7 @@ namespace Rendering
 
 		hOldBmp = static_cast<HBITMAP>(SelectObject(himagedc, hBmp));
 		bool result = PlgBlt(hMemdc, vertex, himagedc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, 0, 0, 0);		//정점만큼 이미지 회전
-		GdiTransparentBlt(hdc, window_x- bitmap.bmWidth, window_y- bitmap.bmHeight, R_Image_SIZE, R_Image_SIZE,		//마젠타 지우고 지정된 좌표에 출력
+		GdiTransparentBlt(hdc, window_x- R_Image_SIZE/2, window_y- R_Image_SIZE/2, R_Image_SIZE, R_Image_SIZE,		//마젠타 지우고 지정된 좌표에 출력
 			hMemdc, 0, 0, R_Image_SIZE, R_Image_SIZE,  Transparent_Color);
 
 		SelectObject(himagedc, hOldBmp);
@@ -220,6 +220,15 @@ namespace Rendering
 			for (size_t i = 0; i < tank.size(); i++)
 			{
 				draw_object(hdc,tank[i],Object::Type::Tank);
+
+#pragma region 위치 디버깅
+				//int const camx = static_cast<int const>(_CAM->pos.x);
+				//int const camy = static_cast<int const>(_CAM->pos.y);
+				//int const x = static_cast<int const>(tank[i].getpos().x - camx);
+				//int const y = static_cast<int const>(tank[i].getpos().y - camy);
+				//Ellipse(hdc, x - 2, y - 2, x + 2, y + 2);
+#pragma endregion
+
 			}
 		}
 	}
@@ -231,6 +240,15 @@ namespace Rendering
 			for (size_t i = 0; i < missile.size(); i++)
 			{
 				draw_object(hdc,missile[i],Object::Type::Missile);
+
+#pragma region 위치 디버깅
+				//int const camx = static_cast<int const>(_CAM->pos.x);
+				//int const camy = static_cast<int const>(_CAM->pos.y);
+				//int const x = static_cast<int const>(missile[i].getpos().x - camx);
+				//int const y = static_cast<int const>(missile[i].getpos().y - camy);
+				//Ellipse(hdc, x - 2, y - 2, x + 2, y + 2);
+#pragma endregion
+
 			}
 		}
 	}

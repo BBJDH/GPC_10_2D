@@ -15,14 +15,6 @@ namespace Time
 		float interval = 0;
 		float const speed = 0.03f;
 
-		float missile_interval = 0;
-		float missile_regenspeed = 0.1f;
-
-		float pause_interval = 0;
-		float const pause_speed = 0.05f;
-
-		float gameover_interval = 0;
-		bool  isfirstprint = true;
 
 	}
 
@@ -42,37 +34,8 @@ namespace Time
 			}
 		}
 	}
-	void gameover_timeinitialize()
-	{
-		isfirstprint = true;
-	}
-	void gameover()
-	{
-		if (isfirstprint)
-		{
-			gameover_interval = 0;
-			isfirstprint = false;
-		}
-	}
-	bool isprint_gameover()
-	{
-		gameover_interval += Delta;
-		if (static_cast<int>(gameover_interval) %2)
-		{
-			return false;
-		}
-		return true;
-	}
-	bool isregentime()
-	{
-		missile_interval += Delta;
-		if (missile_interval > missile_regenspeed)
-		{
-			missile_interval = 0;
-			return true;
-		}
-		return false;
-	}
+
+
 	bool isinterval()
 	{
 		interval += Delta;
@@ -83,16 +46,7 @@ namespace Time
 		}
 		return false;
 	}
-	bool ispauseinterval()
-	{
-		pause_interval += Delta;
-		if (pause_interval > pause_speed)
-		{
-			pause_interval = 0;
-			return true;
-		}
-		return false;
-	}
+
 	float getelapsed()
 	{
 		return Elapsed;

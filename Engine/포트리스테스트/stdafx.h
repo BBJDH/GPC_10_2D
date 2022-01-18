@@ -77,14 +77,19 @@ struct Position
 #define MAPSIZE_W	 1500
 #define MAPSIZE_H	 800
 #define PLAYERS		 8
+#define TANK_HP		 1000
+#define OUT_RANGE	 100
+#define FIRE_MIN_Length	 15
+
 
 
 //UI ¼¼ÆÃ
-#define UI_H		 110
-#define UI_POWER_X		 282
-#define UI_POWER_Y		 550
-#define UI_POWER_H		 15
-#define UI_POWER_MUL		 5
+#define UI_SCREEN_SCROLL	30
+#define UI_H				110
+#define UI_POWER_X			282
+#define UI_POWER_Y			550
+#define UI_POWER_H			 15
+#define UI_POWER_MUL		 4
 #define UI_ANGLE_CENTER_X		92
 #define UI_ANGLE_CENTER_Y		534
 #define UI_ANGLE_MIN_Length		8

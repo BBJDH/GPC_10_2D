@@ -17,24 +17,26 @@ namespace Input
 	void Procedure
 	(HWND hwindow, UINT umessage, WPARAM wparameter, LPARAM lparameter, 
 		std::vector<Tank> & tank,std::vector<Missile> & missile, HDC const& hmapdc, bool &magenta_switch);
+	void input(std::vector<Tank> & tank,std::vector<Missile> & missile, HDC const& hmapdc, bool &magenta_switch);
 }
 namespace Time
 {
 	void Procedure
 	(HWND const , UINT const , WPARAM const , LPARAM const );
+	bool isinterval();
 	float const getdelta();
 }
 
 namespace Physics
 {
-	void Collide_objects(std::vector<Tank>& obj, HDC const& hmapdc);
+	void Collide_objects(std::vector<Tank>& tank,std::vector<Missile>& missile, HDC const& hmapdc);
 	void ballistics(std::vector<Tank>& tank,std::vector<Missile>& missile,float const delta);
 }
 
 namespace Engine
 {
 	bool magenta_switch;
-
+	float interval =0;
 	std::vector<Tank> tank;
 	std::vector<Missile> missile;
 	Random rand_turn;
@@ -62,10 +64,15 @@ namespace Engine
 			case WM_APP:
 			{
 				Time::Procedure(hwindow, umessage, wparameter, lparameter);//시간계산
-				_Turn->checkturn(tank,missile);	//턴체크후 다음턴 부여
-				_CAM->move(_Mouse->getpos()); //마우스 위치에 따라 카메라 이동
 				Physics::ballistics(tank,missile,Time::getdelta()); //낙하가 켜진 탱크들 낙하좌표 계산 
-				Physics::Collide_objects(tank, Rendering::getmapdc());	//낙하한 탱크 충돌검사
+				Physics::Collide_objects(tank, missile, Rendering::getmapdc());	//낙하한 탱크 충돌검사
+				if (Time::isinterval())
+				{
+					_Turn->checkturn(tank,missile);	//턴체크후 다음턴 부여
+					_CAM->move(_Mouse->getpos()); //마우스 위치에 따라 카메라 이동
+					Input::input(tank,missile,Rendering::getmapdc(),magenta_switch);
+					interval =0;
+				}
 				Rendering::update(hwindow,tank,missile,/*true*/ magenta_switch);	//그리기
 				return 0;
 			}

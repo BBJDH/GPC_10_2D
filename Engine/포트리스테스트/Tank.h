@@ -29,6 +29,7 @@ public:
 	int const getangle()const;
 	int const getangle_min()const;
 	int const getangle_max()const;
+	bool is_dead()const;
 	void take_damage(unsigned const damage);
 	void input_key(WPARAM const wparam);
 	void setstate(State const state);

@@ -17,7 +17,20 @@ bool Turnmanager::is_tank_turn(std::vector<Tank>& tank)
 	{
 		for (size_t i = 0; i < tank.size(); i++)
 		{
-			if(is_obj_turn(tank[i]))
+			if(is_obj_turn(tank[i]) and !tank[i].is_dead())
+				return true;
+		}
+	}
+	return false;
+}
+
+bool Turnmanager::check_tank_falling(std::vector<Tank>& tank)
+{
+	if (!tank.empty())
+	{
+		for (size_t i = 0; i < tank.size(); i++)
+		{
+			if(tank[i].is_falling())
 				return true;
 		}
 	}
@@ -39,9 +52,12 @@ bool Turnmanager::is_missile_turn(std::vector<Missile>& missile)
 
 void Turnmanager::checkturn(std::vector<Tank>& tank, std::vector<Missile>& missile)
 {
-	if(is_tank_turn(tank) or is_missile_turn(missile))
+	//누군가 턴을 수행중이면서 살아있거나, 미사일이 날아가고 있거나, 누가 떨어지고있다면 스킵
+	//해당 턴을 받았는데 죽었다면 다음턴으로 넘기기
+	int i =whosturn();
+	if(is_tank_turn(tank) or is_missile_turn(missile) or check_tank_falling(tank))
 		return ;
-	index++;
+	index++;		
 
 	if(index>=PLAYERS)
 		rerand();

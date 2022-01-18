@@ -30,21 +30,21 @@ namespace Input
 			case WM_LBUTTONDOWN:
 			{
 
-				float x = static_cast<float>(_Mouse->x)+_CAM->pos.x;
-				float y = static_cast<float>(_Mouse->y)+_CAM->pos.y;
-				tank.push_back
-				(
-					Tank
-					(
-						{
-							x,
-							y
-						},
-						49,
-						42
-					)
-				);
-				tank.back().ballistics_initialize(0, 0);
+				//float x = static_cast<float>(_Mouse->x)+_CAM->pos.x;
+				//float y = static_cast<float>(_Mouse->y)+_CAM->pos.y;
+				//tank.push_back
+				//(
+				//	Tank
+				//	(
+				//		{
+				//			x,
+				//			y
+				//		},
+				//		49,
+				//		42
+				//	)
+				//);
+				//tank.back().ballistics_initialize(0, 0);
 				return;
 			}
 			case WM_RBUTTONDOWN:
@@ -77,29 +77,31 @@ namespace Input
 				{
 				case VK_LEFT:
 				{
-					UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], false);
+					//UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], false);
 					//tank.front().input_key(wparameter); 
 					return; 
 				}
 				case VK_RIGHT:
 				{
-					UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], true);
+					//UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], true);
 					//tank.front().input_key(wparameter);
 					return;
 				}
 				case VK_UP:
 				{
-					tank[_Turn->whosturn()].plus_angle(1);
+					//if(tank[_Turn->whosturn()].is_myturn())
+					//	tank[_Turn->whosturn()].plus_angle(1);
 					return;
 				}
 				case VK_DOWN:
 				{
-					tank[_Turn->whosturn()].plus_angle(-1);
+					//if(tank[_Turn->whosturn()].is_myturn())
+					//	tank[_Turn->whosturn()].plus_angle(-1);
 					return;
 				}
 				case VK_SPACE:
 				{
-					UI::fire(tank[_Turn->whosturn()],missile,true);
+					//UI::fire(tank[_Turn->whosturn()],missile,true);
 					return;
 				}
 					
@@ -125,6 +127,28 @@ namespace Input
 		}
 
 
+	}
+	void input(std::vector<Tank> & tank,std::vector<Missile> & missile, HDC const& hmapdc, bool &magenta_switch)
+	{
+		unsigned keycode = 0;
+		if ((GetAsyncKeyState(VK_LEFT) & 0x8000))
+			UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], false);
+		if ((GetAsyncKeyState(VK_RIGHT) & 0x8000))
+			UI::find_nextstep(hmapdc, tank[_Turn->whosturn()], true);
+		if ((GetAsyncKeyState(VK_UP) & 0x8000))
+		{
+			if(tank[_Turn->whosturn()].is_myturn() and !tank[_Turn->whosturn()].is_dead())
+				tank[_Turn->whosturn()].plus_angle(1);
+		}
+		if ((GetAsyncKeyState(VK_DOWN) & 0x8000))
+		{
+			if(tank[_Turn->whosturn()].is_myturn()and !tank[_Turn->whosturn()].is_dead())
+				tank[_Turn->whosturn()].plus_angle(-1);
+		}
+		if ((GetAsyncKeyState(VK_SPACE) & 0x8000))
+			UI::fire(tank[_Turn->whosturn()],missile,true);
+
+		return ;
 	}
 
 }

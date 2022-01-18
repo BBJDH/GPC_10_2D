@@ -7,11 +7,14 @@ class Missile : public Object
 	//	Circle, Ellipse
 	//};
 private:
-
+	int const bomb_range_w;
+	int const bomb_range_h;
 	//Type     explosion_type;
 
 public:
 	Missile(Position const& pos, unsigned const width, unsigned const height);
+	Missile & operator=(Missile const& other_miss);
+	void boom(HDC const& hmapdc);
 
 };
 //

@@ -22,7 +22,7 @@ out{obj.out},/*test*/ support_point{obj.support_point }
 
 {
 }
-void Object::asign(Object const& other_obj)
+void Object::assign(Object const& other_obj)
 {
 	this->pos0          = other_obj.pos0         ;
 	this->velocity0     = other_obj.velocity0    ;
@@ -39,7 +39,7 @@ void Object::asign(Object const& other_obj)
 
 Object& Object::operator=(Object const& other_obj)
 {
-	asign(other_obj);
+	assign(other_obj);
 	return *this;
 }
 
@@ -130,7 +130,7 @@ void Object::ballistics_equation(float const delta)
 		this->pos.y = this->pos0.y - velocity0.y * moving_time
 					  +(grav_accerl*static_cast<float>(pow(moving_time,2)))/2;
 	}
-	if(this->pos.y>MAPSIZE_H or this->pos.x >MAPSIZE_W or this->pos.x<0)
+	if(this->pos.y>MAPSIZE_H+OUT_RANGE or this->pos.x >MAPSIZE_W+OUT_RANGE or this->pos.x<0-OUT_RANGE)
 		this->out = true;
 }
 
